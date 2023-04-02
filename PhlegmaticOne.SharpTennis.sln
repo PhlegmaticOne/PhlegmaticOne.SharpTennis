@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhlegmaticOne.SharpTennis.Game", "PhlegmaticOne.SharpTennis.Game.csproj", "{2655AA48-B242-4F9C-8978-978E21BE8655}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug2|Any CPU = Debug2|Any CPU
+		Debug2|x64 = Debug2|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug|x64.ActiveCfg = Debug|x64
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug|x64.Build.0 = Debug|x64
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug2|Any CPU.ActiveCfg = Debug2|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug2|Any CPU.Build.0 = Debug2|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug2|x64.ActiveCfg = Debug2|x64
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Debug2|x64.Build.0 = Debug2|x64
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Release|x64.ActiveCfg = Release|x64
+		{2655AA48-B242-4F9C-8978-978E21BE8655}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43DC2FD5-5A74-4615-8D99-90CDB4C17F6C}
+	EndGlobalSection
+EndGlobal
