@@ -9,7 +9,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         private readonly List<GameObject> _gameObjects;
 
         public static Scene Current { get; private set; }
-        public Camera Camera { get; private set; }
+        public Camera Camera { get; set; }
 
         public Scene() : this(new List<GameObject>()) { }
 
@@ -18,11 +18,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
             _gameObjects = new List<GameObject>();
             _gameObjects.AddRange(gameObjects);
             Current = this;
-        }
-
-        public override void Start()
-        {
-            Camera = GetComponent<Camera>();
         }
 
         public void AddGameObject(GameObject gameObject)

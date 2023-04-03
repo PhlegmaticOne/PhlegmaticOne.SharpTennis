@@ -158,7 +158,7 @@ cbuffer illumination : register(b1)
 cbuffer lightClasses : register(b2)
 {
     CBaseLight baseLight;
-    CDirectionalLight directinalLight;
+    CDirectionalLight directionalLight;
     CPointLight pointLight;
     CSpotLight spotLight;
 }

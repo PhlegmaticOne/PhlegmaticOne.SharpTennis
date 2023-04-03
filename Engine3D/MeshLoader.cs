@@ -4,6 +4,7 @@ using SharpDX.DXGI;
 using SharpDX.WIC;
 using SharpDX;
 using System.Collections.Generic;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
@@ -13,15 +14,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D
     public class MeshLoader
     {
         private readonly DirectX3DGraphics _directX3DGraphics;
-        private readonly MeshRenderer _meshRenderer;
+        private readonly SamplerState _pointSampler;
         private readonly ImagingFactory _imagingFactory;
         private readonly SampleDescription _sampleDescription;
 
-        public MeshLoader(DirectX3DGraphics directX3DGraphics, MeshRenderer meshRenderer)
+        public MeshLoader(DirectX3DGraphics directX3DGraphics, SamplerState pointSampler)
         {
             _sampleDescription = new SampleDescription(1, 0);
             _directX3DGraphics = directX3DGraphics;
-            _meshRenderer = meshRenderer;
+            _pointSampler = pointSampler;
             _imagingFactory = new ImagingFactory();
         }
 
@@ -54,7 +55,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D
 
                     texturePath = string.Concat("assets\\", texturePath);
 
-                    Texture texture = LoadTextureFromFile(texturePath, _meshRenderer.PointSampler, false);
+                    Texture texture = LoadTextureFromFile(texturePath, false);
 
                     material = new Material(texture,
                         new Vector3(emissive.R, emissive.G, emissive.B),
@@ -123,14 +124,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D
                 var meshData = MeshObjectData.Create(vertices.ToArray(), indices.ToArray(), 
                     PrimitiveTopology.TriangleList, material, _directX3DGraphics);
 
-                meshes.Add(new MeshComponent(meshData));
+                var go = new GameObject();
+                var meshComponent = new MeshComponent(meshData);
+                go.AddComponent(meshComponent);
+                meshes.Add(meshComponent);
             }
 
             return meshes;
         }
 
 
-        private Texture LoadTextureFromFile(string fileName, SamplerState samplerState, bool generateMips, int mipLevels = -1)
+        public Texture LoadTextureFromFile(string fileName, bool generateMips, int mipLevels = -1)
         {
             var decoder = new BitmapDecoder(_imagingFactory, fileName, DecodeOptions.CacheOnDemand);
             var bitmapFirstFrame = decoder.GetFrame(0);
@@ -195,7 +199,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D
 
             Utilities.Dispose(ref formatConverter);
 
-            return new Texture(textureObject, shaderResourceView, width, height, samplerState);
+            return new Texture(textureObject, shaderResourceView, width, height, _pointSampler);
         }
     }
 }

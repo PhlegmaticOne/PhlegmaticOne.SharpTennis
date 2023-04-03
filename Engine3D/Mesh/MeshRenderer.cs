@@ -11,25 +11,21 @@ using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Shaders;
+using Assimp;
+using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 {
     public class MeshRenderer : BehaviorObject, IRenderer
     {
         private const int MaxLights = 8;
-        private const int LightSourceTypeCount = (int)LightSourceType.Spot + 1;
+        private const int LightSourceTypeCount = (int)Structs.LightSourceType.Spot + 1;
 
         private readonly string[] _lightClassVariableNames = {
             "baseLight",
             "directionalLight",
             "pointLight",
             "spotLight"
-        };
-        private readonly InputElement[] _inputElements = {
-            new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
-            new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 16, 0),
-            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 32, 0),
-            new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
         };
 
         private readonly DirectX3DGraphics _directX3DGraphics;
@@ -60,21 +56,79 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public MeshRenderer(DirectX3DGraphics directX3DGraphics, MeshRendererData meshRendererData)
         {
+            var pixelData = meshRendererData.PixelShaderInfo;
+            var vertexData = meshRendererData.VertexShaderInfo;
+
             _directX3DGraphics = directX3DGraphics;
             _device = _directX3DGraphics.Device;
             _deviceContext = _directX3DGraphics.DeviceContext;
-            CreatePixelShader(meshRendererData);
-            CreateVertexShader(meshRendererData);
-            CreateSamplers();
+
+            _pixelShaderClassLinkage = new ClassLinkage(_device);
+            _vertexShaderClassLinkage = new ClassLinkage(_device);
+
+
+            var pixelShaderByteCode =
+                ShaderBytecode.CompileFromFile(pixelData.ShaderPath, pixelData.EntryPoint, pixelData.Profile,
+                    ShaderFlags.Debug | ShaderFlags.SkipOptimization, EffectFlags.None, null, new IncludeHandler());
+
+            _pixelShader = new PixelShader(_device, pixelShaderByteCode, _pixelShaderClassLinkage);
+
+            InitializeIllumination(pixelShaderByteCode);
+
+            var vertexShaderByteCode =
+                ShaderBytecode.CompileFromFile(vertexData.ShaderPath, vertexData.EntryPoint, vertexData.Profile, ShaderFlags.None, EffectFlags.None, null, new IncludeHandler());
+
+            _vertexShader = new VertexShader(_device, vertexShaderByteCode, _vertexShaderClassLinkage);
+            Utilities.Dispose(ref _vertexShaderClassLinkage);
+
+            var inputElements = new[]
+            {
+                new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 16, 0),
+                new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 32, 0),
+                new InputElement("TEXCOORD", 0, Format.R32G32_Float, 48, 0)
+            };
+
+            _shaderSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
+
+            _inputLayout = new InputLayout(_device, _shaderSignature, inputElements);
+
+            Utilities.Dispose(ref vertexShaderByteCode);
+            Utilities.Dispose(ref pixelShaderByteCode);
+
+            _deviceContext.InputAssembler.InputLayout = _inputLayout;
+
+
+            var samplerStateDescription = new SamplerStateDescription
+            {
+                Filter = Filter.Anisotropic,
+                AddressU = TextureAddressMode.Clamp,
+                AddressV = TextureAddressMode.Clamp,
+                AddressW = TextureAddressMode.Clamp,
+                MipLodBias = 0,
+                MaximumAnisotropy = 16,
+                ComparisonFunction = Comparison.Never,
+                BorderColor = new SharpDX.Mathematics.Interop.RawColor4(1.0f, 1.0f, 1.0f, 1.0f),
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+
+            _anisotropicSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
+
+            samplerStateDescription.Filter = Filter.MinMagMipLinear;
+            _linearSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
+
+            samplerStateDescription.Filter = Filter.MinMagMipPoint;
+            _pointSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
+
             CreateConstantBuffers();
-            CreateIllumination();
         }
 
         private LightSource GenerateDefaultLight()
         {
             var lightSource = new LightSource
             {
-                lightSourceType = LightSourceType.Directional,
+                lightSourceType = Structs.LightSourceType.Directional,
                 ConstantAttenuation = 0.01f,
                 color = new Vector3(0.99f, 0.84f, 0.69f),
                 direction = Vector3.Normalize(new Vector3(0.5f, -2.0f, 1.0f))
@@ -91,24 +145,35 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public void PreRender()
         {
-            //var camera = Scene.Current.Camera;
-            //_illuminationProperties.eyePosition = (Vector4)camera.Transform.Position;
+            if (Scene.Current == null)
+            {
+                return;
+            }
+
+            var camera = Scene.Current.Camera;
             UpdatePerFrameConstantBuffers(Time.PassedTime);
-            //UpdateIllumination(_illuminationProperties);
+            _illuminationProperties.eyePosition = (Vector4)camera.Transform.Position;
+            UpdateIllumination(_illuminationProperties);
         }
 
 
         public void Render()
         {
-            //var camera = Scene.Current.Camera;
-            //var viewMatrix = camera.GetViewMatrix();
-            //var projectionMatrix = camera.GetProjectionMatrix();
+            if (Scene.Current == null)
+            {
+                return;
+            }
 
-            //foreach (var meshComponent in Scene.Current.GetComponents<MeshComponent>())
-            //{
-            //    UpdatePerObjectConstantBuffers(meshComponent.Transform.GetWorldMatrix(), viewMatrix, projectionMatrix, 0);
-            //    RenderMeshObject(meshComponent);
-            //}
+            var camera = Scene.Current.Camera;
+            var viewMatrix = camera.GetViewMatrix();
+            var projectionMatrix = camera.GetProjectionMatrix();
+
+            foreach (var meshComponent in Scene.Current.GetComponents<MeshComponent>())
+            {
+                UpdatePerObjectConstantBuffers(meshComponent.Transform.GetWorldMatrix(),
+                    viewMatrix, projectionMatrix, 0);
+                RenderMeshObject(meshComponent);
+            }
         }
 
 
@@ -229,22 +294,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
         }
 
 
-        private void CreateIllumination()
-        {
-            _illuminationProperties = new IlluminationProperties();
-            var lightSource = new LightSource();
-            _illuminationProperties.globalAmbient = new Vector3(0.02f);
-            lightSource.lightSourceType = LightSourceType.Base;
-            lightSource.ConstantAttenuation = 0.01f;
-            lightSource.color = Vector3.Zero;
-            for (int i = 0; i < MaxLights; i++)
-            {
-                _illuminationProperties[i] = lightSource;
-            }
-
-            _illuminationProperties[0] = GenerateDefaultLight();
-        }
-
         private void CreateConstantBuffers()
         {
             _perFrameConstantBuffer = new PerFrameConstantBuffer(_device, _deviceContext, _deviceContext.VertexShader, 0, 0);
@@ -253,63 +302,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
             _illuminationPropertiesBufferObject = new Buffer11(_device,
                 Utilities.SizeOf<IlluminationProperties>(), ResourceUsage.Dynamic,
                 BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
-        }
-
-        private void CreateSamplers()
-        {
-            var samplerStateDescription = new SamplerStateDescription
-            {
-                Filter = Filter.Anisotropic,
-                AddressU = TextureAddressMode.Clamp,
-                AddressV = TextureAddressMode.Clamp,
-                AddressW = TextureAddressMode.Clamp,
-                MipLodBias = 0,
-                MaximumAnisotropy = 16,
-                ComparisonFunction = Comparison.Never,
-                BorderColor = new SharpDX.Mathematics.Interop.RawColor4(1.0f, 1.0f, 1.0f, 1.0f),
-                MinimumLod = 0,
-                MaximumLod = float.MaxValue
-            };
-
-            _anisotropicSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
-
-            samplerStateDescription.Filter = Filter.MinMagMipLinear;
-            _linearSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
-
-            samplerStateDescription.Filter = Filter.MinMagMipPoint;
-            _pointSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
-        }
-
-        private void CreateVertexShader(MeshRendererData meshRendererData)
-        {
-            var shaderInfo = meshRendererData.VertexShaderInfo;
-
-            _vertexShaderClassLinkage = new ClassLinkage(_device);
-            var vertexShaderByteCode = ShaderBytecode
-                .CompileFromFile(shaderInfo.ShaderPath, shaderInfo.EntryPoint, shaderInfo.Profile,
-                    ShaderFlags.None, EffectFlags.None, null, new IncludeHandler());
-
-            _vertexShader = new VertexShader(_device, vertexShaderByteCode, _vertexShaderClassLinkage);
-            _shaderSignature = ShaderSignature.GetInputSignature(vertexShaderByteCode);
-            _inputLayout = new InputLayout(_device, _shaderSignature, _inputElements);
-
-            Utilities.Dispose(ref _vertexShaderClassLinkage);
-            Utilities.Dispose(ref vertexShaderByteCode);
-
-            _deviceContext.InputAssembler.InputLayout = _inputLayout;
-        }
-
-        private void CreatePixelShader(MeshRendererData meshRendererData)
-        {
-            _pixelShaderClassLinkage = new ClassLinkage(_device);
-            var shaderInfo = meshRendererData.PixelShaderInfo;
-            var pixelShaderByteCode = ShaderBytecode
-                .CompileFromFile(shaderInfo.ShaderPath, shaderInfo.EntryPoint, shaderInfo.Profile,
-                    ShaderFlags.Debug | ShaderFlags.SkipOptimization, EffectFlags.None, 
-                    null, new IncludeHandler());
-            _pixelShader = new PixelShader(_device, pixelShaderByteCode, _pixelShaderClassLinkage);
-            InitializeIllumination(pixelShaderByteCode);
-            Utilities.Dispose(ref pixelShaderByteCode);
         }
     }
 }
