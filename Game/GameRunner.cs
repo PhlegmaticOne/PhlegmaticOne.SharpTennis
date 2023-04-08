@@ -1,17 +1,21 @@
 ﻿using System;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX;
-using PhlegmaticOne.SharpTennis.Game.Engine3D;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
+using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes;
 using SharpDX;
+using SharpDX.DirectInput;
 using SharpDX.DXGI;
 using SharpDX.Windows;
+using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
 using Screen = PhlegmaticOne.SharpTennis.Game.Common.Infrastructure.Screen;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game
@@ -24,11 +28,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         private readonly InputController _inputController;
 
         private bool _firstRun = true;
-        private bool _inCycle;
 
         private readonly RenderSequence _renderSequence;
         private readonly CanvasManager _canvasManager;
         private readonly MeshRenderer _meshRenderer;
+        private readonly RigidBodiesSystem _rigidBodiesSystem;
+        private readonly CollidingSystem _collisionSystem;
+        private RacketMoveController _racketMoveController;
 
         public GameRunner(RenderForm renderForm)
         {
@@ -52,7 +58,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             //canvasManager.AddCanvas(factory.CreateCanvas());
 
             //_canvasManager = canvasManager;
-            
+            _rigidBodiesSystem = new RigidBodiesSystem();
+            _collisionSystem = new CollidingSystem();
+
 
             _renderSequence = new RenderSequence(new IRenderer[]
             {
@@ -65,11 +73,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
 
         public void RenderFormResizedCallback(object sender, EventArgs args)
         {
-            if (_inCycle == false)
-            {
-                return;
-            }
-
             Screen.Initialize(_renderForm.ClientSize);
             if (Scene.Current != null)
             {
@@ -88,11 +91,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         {
             if (_firstRun)
             {
-                new GameSceneBuilder(new TextureMaterialsProvider(),
+                var scene = new GameSceneBuilder(new TextureMaterialsProvider(),
                         new MeshLoader(_directX3DGraphics, _meshRenderer.PointSampler))
                     .BuildScene();
 
-                _inCycle = true;
+                var racket = scene.GetComponent<Racket>();
+                _racketMoveController = new RacketMoveController(racket, scene.Camera, _inputController);
+                scene.Start();
                 RenderFormResizedCallback(this, EventArgs.Empty);
                 //_canvasManager.Start();
                 _firstRun = false;
@@ -100,13 +105,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
 
             Time.Update();
 
-            _inputController.UpdateMouseState();
-            _inputController.UpdateKeyboardState();
-
-            if (Scene.Current != null)
-            {
-                Scene.Current.Camera.Transform.Rotate(new Vector3(0.1f, 0.1f, 0.1f));
-            }
+            MoveCamera();
+            _racketMoveController.UpdateBehavior();
+            _collisionSystem.UpdateBehavior();
+            _rigidBodiesSystem.UpdateBehavior();
 
             GameEvents.OnMouseMoved(new Vector2(_inputController.MouseRelativePositionX, _inputController.MouseRelativePositionY));
 
@@ -116,6 +118,52 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             }
 
             _renderSequence.UpdateBehavior();
+        }
+
+        private void MoveCamera()
+        {
+            var camera = Scene.Current.Camera;
+            _inputController.UpdateKeyboardState();
+            _inputController.UpdateMouseState();
+
+            if (_inputController.IsPressed(Key.S))
+            {
+                camera.Transform.Move(Vector3.UnitX / -5);
+            }
+
+            if (_inputController.IsPressed(Key.W))
+            {
+                camera.Transform.Move(Vector3.UnitX / 5);
+            }
+
+            if (_inputController.IsPressed(Key.Q))
+            {
+                camera.Transform.Move(Vector3.UnitY / 5);
+            }
+
+            if (_inputController.IsPressed(Key.E))
+            {
+                camera.Transform.Move(Vector3.UnitY / -5);
+            }
+
+            if (_inputController.IsPressed(Key.A))
+            {
+                camera.Transform.Move(Vector3.UnitZ / 5);
+            }
+
+            if (_inputController.IsPressed(Key.D))
+            {
+                camera.Transform.Move(Vector3.UnitZ / -5);
+            }
+
+            //if (_inputController.MouseUpdated)
+            //{
+            //    var deltaAngle = camera.FovY / _renderForm.ClientSize.Height;
+
+            //    camera.Transform.Rotate(new Vector3(
+            //        deltaAngle * _inputController.MouseRelativePositionX * 40,
+            //        deltaAngle * _inputController.MouseRelativePositionY * 40, 0));
+            //}
         }
 
         public void Run() => RenderLoop.Run(_renderForm, RenderLoopCallback);

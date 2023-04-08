@@ -21,9 +21,9 @@ namespace PhlegmaticOne.SharpTennis.Game
 
             var renderForm = new RenderForm
             {
-                //IsFullscreen = true,
+                IsFullscreen = true,
                 MinimumSize = new Size(960, 540),
-                //WindowState = FormWindowState.Maximized
+                WindowState = FormWindowState.Maximized
             };
 
             using (var gameRunner = new GameRunner(renderForm))

@@ -126,8 +126,8 @@ struct pixelData
     float4 positionScreenSpace : SV_POSITION;
     float4 positionWorldSpace : POSITION0;
     float4 normalWorldSpace : POSITION1;
-	float4 color : COLOR;
-	float2 texCoord : TEXCOORD0;
+    float4 color : COLOR;
+    float2 texCoord : TEXCOORD0;
 };
 
 cbuffer materialProperties : register(b0)
@@ -158,7 +158,7 @@ cbuffer illumination : register(b1)
 cbuffer lightClasses : register(b2)
 {
     CBaseLight baseLight;
-    CDirectionalLight directionalLight;
+    CDirectionalLight directinalLight;
     CPointLight pointLight;
     CSpotLight spotLight;
 }
@@ -182,7 +182,7 @@ float4 pixelShader(pixelData input) : SV_Target
     for (int i = 0; i <= MAX_LIGHTS - 1; i++)
     {
         lightSource light = lightSources[i];
-        if(light.enabled > 0)
+        if (light.enabled > 0)
         {
             lightParts p = lights[i].computeLight(light, input.positionWorldSpace.xyz, input.normalWorldSpace.xyz, eyePosition.xyz, specularPower);
             parts.diffusePart += p.diffusePart;
@@ -194,7 +194,7 @@ float4 pixelShader(pixelData input) : SV_Target
     light += parts.specularPart * specularK;
     if (input.normalWorldSpace.x != 0 || input.normalWorldSpace.y != 0 || input.normalWorldSpace.z != 0)
     {
-            color.xyz += light * materialColor.rgb;
+        color.xyz += light * materialColor.rgb;
     }
     //color.xyz = parts.specularPart * specularK;
     //color.xyz = parts.diffusePart * diffuseK;

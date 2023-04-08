@@ -5,7 +5,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 {
     public class Material
     {
-        public MaterialProperties MaterialProperties { get; }
+        public MaterialProperties MaterialProperties { get; set; }
         public Texture Texture { get; set; }
 
 

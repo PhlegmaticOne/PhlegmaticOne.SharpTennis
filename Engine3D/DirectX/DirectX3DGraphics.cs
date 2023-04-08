@@ -12,7 +12,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX
     public class DirectX3DGraphics : IDisposable
     {
         private readonly RenderForm _renderForm;
-        private readonly SampleDescription _sampleDescription;
         private readonly SwapChainDescription _swapChainDescription;
 
         private Device11 _device;
@@ -50,7 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX
 
             Configuration.EnableObjectTracking = true;
 
-            _sampleDescription = new SampleDescription(4, (int)StandardMultisampleQualityLevels.StandardMultisamplePattern);
+            var sampleDescription = new SampleDescription(4, (int)StandardMultisampleQualityLevels.StandardMultisamplePattern);
 
             _swapChainDescription = new SwapChainDescription
             {
@@ -58,7 +57,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX
                 ModeDescription = new ModeDescription(_renderForm.Width, _renderForm.Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
                 IsWindowed = true,
                 OutputHandle = renderForm.Handle,
-                SampleDescription = _sampleDescription,
+                SampleDescription = sampleDescription,
                 SwapEffect = SwapEffect.Discard,
                 Usage = Usage.RenderTargetOutput
             };
@@ -89,7 +88,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX
                 MipLevels = 1,
                 Width = _renderForm.ClientSize.Width,
                 Height = _renderForm.ClientSize.Height,
-                SampleDescription = _sampleDescription,
+                SampleDescription = sampleDescription,
                 Usage = ResourceUsage.Default,
                 BindFlags = BindFlags.DepthStencil,
                 CpuAccessFlags = CpuAccessFlags.None,

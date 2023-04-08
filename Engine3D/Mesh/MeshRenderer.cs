@@ -12,6 +12,7 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Shaders;
 using Assimp;
+using LightSourceType = PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs.LightSourceType;
 using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
@@ -23,7 +24,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         private readonly string[] _lightClassVariableNames = {
             "baseLight",
-            "directionalLight",
+            "directinalLight",
             "pointLight",
             "spotLight"
         };
@@ -32,7 +33,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
         private readonly Device11 _device;
         private readonly DeviceContext _deviceContext;
         private readonly int[] _lightVariableOffsets = new int[MaxLights];
-        private SamplerState _pointSampler;
         private VertexShader _vertexShader;
         private PixelShader _pixelShader;
         private ShaderSignature _shaderSignature;
@@ -52,7 +52,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
         private int _lightInterfaceCount;
         private IlluminationProperties _illuminationProperties;
 
-        public SamplerState PointSampler => _pointSampler;
+        public SamplerState PointSampler { get; }
 
         public MeshRenderer(DirectX3DGraphics directX3DGraphics, MeshRendererData meshRendererData)
         {
@@ -119,19 +119,40 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
             _linearSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
 
             samplerStateDescription.Filter = Filter.MinMagMipPoint;
-            _pointSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
+            PointSampler = new SamplerState(_directX3DGraphics.Device, samplerStateDescription);
 
             CreateConstantBuffers();
+            CreateIllumination();
+        }
+
+        private void CreateIllumination()
+        {
+            _illuminationProperties = new IlluminationProperties
+            {
+                globalAmbient = new Vector3(0.02f)
+            };
+            var lightSource = new LightSource
+            {
+                lightSourceType = LightSourceType.Base,
+                ConstantAttenuation = 0.01f,
+                color = Vector3.Zero
+            };
+            for (var i = 0; i < MaxLights; i++)
+            {
+                _illuminationProperties[i] = lightSource;
+            }
+
+            _illuminationProperties[0] = GenerateDefaultLight();
         }
 
         private LightSource GenerateDefaultLight()
         {
             var lightSource = new LightSource
             {
-                lightSourceType = Structs.LightSourceType.Directional,
+                lightSourceType = LightSourceType.Directional,
                 ConstantAttenuation = 0.01f,
                 color = new Vector3(0.99f, 0.84f, 0.69f),
-                direction = Vector3.Normalize(new Vector3(0.5f, -2.0f, 1.0f))
+                direction = Vector3.Normalize(new Vector3(2f, -2.0f, -1.0f))
             };
 
             return lightSource;
@@ -153,7 +174,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
             var camera = Scene.Current.Camera;
             UpdatePerFrameConstantBuffers(Time.PassedTime);
             _illuminationProperties.eyePosition = (Vector4)camera.Transform.Position;
-            UpdateIllumination(_illuminationProperties);
+            UpdateIllumination();
         }
 
 
@@ -179,7 +200,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public void EndRender()
         {
-            _directX3DGraphics.SwapChain.Present(1, PresentFlags.Restart); ;
+            _directX3DGraphics.SwapChain.Present(1, PresentFlags.Restart);
         }
 
 
@@ -226,17 +247,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
         }
 
         
-        public void UpdateIllumination(IlluminationProperties illumination)
+        public void UpdateIllumination()
         {
             _deviceContext.MapSubresource(_illuminationPropertiesBufferObject,
                 MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out var dataStream);
-            dataStream.Write(illumination);
+            dataStream.Write(_illuminationProperties);
             _deviceContext.UnmapSubresource(_illuminationPropertiesBufferObject, 0);
             _deviceContext.PixelShader.SetConstantBuffer(1, _illuminationPropertiesBufferObject);
 
             for (var i = 0; i < MaxLights; ++i)
             {
-                _lightInterfaces[_lightVariableOffsets[i]] = _lightInstances[(int)illumination[i].lightSourceType];
+                _lightInterfaces[_lightVariableOffsets[i]] = _lightInstances[(int)_illuminationProperties[i].lightSourceType];
             }
         }
 
@@ -249,10 +270,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
             Utilities.Dispose(ref _anisotropicSampler);
             Utilities.Dispose(ref _inputLayout);
             Utilities.Dispose(ref _shaderSignature);
-            Utilities.Dispose(ref _pixelShader);
-            Utilities.Dispose(ref _vertexShader);
-            Utilities.Dispose(ref _pixelShaderClassLinkage);
-
             Utilities.Dispose(ref _illuminationPropertiesBufferObject);
 
             for (var i = 0; i < LightSourceTypeCount; ++i)
@@ -261,6 +278,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
             }
 
             _lightInterfaces = null;
+            Utilities.Dispose(ref _pixelShader);
+            Utilities.Dispose(ref _vertexShader);
+            Utilities.Dispose(ref _pixelShaderClassLinkage);
+
+            
         }
 
         private void InitializeIllumination(CompilationResult pixelShaderByteCode)

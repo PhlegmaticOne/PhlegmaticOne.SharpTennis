@@ -6,13 +6,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 {
     public sealed class GameObject : BaseObject
     {
+        private static int Id;
         private readonly List<Component> _components;
 
-        public GameObject()
+        public GameObject(string name = null)
         {
             _components = new List<Component>();
             Transform = Transform.Identity(this);
+            Name = name ?? $"GameObject({Id++})";
         }
+        public string Name { get; set; }
 
         public Transform Transform { get; }
 
@@ -26,6 +29,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
             }
 
             _components.Add(component);
+        }
+
+        public void AddComponents(IEnumerable<Component> components, bool setDefaultTransform = true)
+        {
+            foreach (var component in components)
+            {
+                AddComponent(component, setDefaultTransform);
+            }
         }
 
         public bool HasComponent<T>() where T : Component => 
@@ -58,5 +69,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 
             _components.Clear();
         }
+
+        public override string ToString() => Name;
     }
 }

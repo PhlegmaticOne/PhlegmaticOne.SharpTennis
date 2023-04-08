@@ -1,15 +1,15 @@
-﻿using SharpDX.Direct3D;
+﻿using System.Collections.Generic;
+using System.IO;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
+using SharpDX;
+using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.WIC;
-using SharpDX;
-using System.Collections.Generic;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
 
-namespace PhlegmaticOne.SharpTennis.Game.Engine3D
+namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 {
     public class MeshLoader
     {
@@ -46,14 +46,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D
                     var diffuse = mat.ColorDiffuse;
                     var emissive = mat.ColorEmissive;
                     var secular = mat.ColorSpecular;
-                    var texturePath = slot.FilePath;
-
-                    while (texturePath[0] == '.')
-                    {
-                        texturePath = texturePath.Substring(3, texturePath.Length - 3);
-                    }
-
-                    texturePath = string.Concat("assets\\", texturePath);
+                    var texturePath = Path.GetFileName(slot.FilePath);
+                    texturePath = string.Concat("assets\\textures\\", texturePath);
 
                     Texture texture = LoadTextureFromFile(texturePath, false);
 

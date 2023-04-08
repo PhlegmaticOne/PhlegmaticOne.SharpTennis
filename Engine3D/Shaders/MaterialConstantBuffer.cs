@@ -15,6 +15,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Shaders
         public float _padding2;
         public Vector3 specularK;
         public float specularPower;
+
+        public void SetColor(Vector3 color)
+        {
+            //specularK = color;
+            diffuseK = color;
+        }
     }
 
     public class MaterialConstantBuffer : ConstantBuffer<MaterialProperties>

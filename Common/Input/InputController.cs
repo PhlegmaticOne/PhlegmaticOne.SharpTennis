@@ -76,6 +76,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
             _mousePressed = false;
         }
 
+        public bool IsPressed(Key key)
+        {
+            return _keyboardState.IsPressed(key);
+        }
+
         private void AcquireKeyboard()
         {
             try

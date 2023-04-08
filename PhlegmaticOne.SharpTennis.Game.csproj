@@ -143,7 +143,11 @@
     <Compile Include="Engine2D\Transform\Anchor.cs" />
     <Compile Include="Engine2D\Transform\RectTransform.cs" />
     <Compile Include="Engine3D\Camera.cs" />
-    <Compile Include="Engine3D\MeshLoader.cs" />
+    <Compile Include="Engine3D\Colliders\BoxCollider3D.cs" />
+    <Compile Include="Engine3D\Colliders\Collider.cs" />
+    <Compile Include="Engine3D\Colliders\CollidingSystem.cs" />
+    <Compile Include="Engine3D\Colliders\SphereCollider.cs" />
+    <Compile Include="Engine3D\Mesh\MeshLoader.cs" />
     <Compile Include="Engine3D\Mesh\MeshRendererData.cs" />
     <Compile Include="Engine3D\Mesh\Structs\IlluminationProperties.cs" />
     <Compile Include="Engine3D\Mesh\Structs\LightSource.cs" />
@@ -155,8 +159,11 @@
     <Compile Include="Common\Infrastructure\Time.cs" />
     <Compile Include="Common\Base\Transform.cs" />
     <Compile Include="Engine3D\Mesh\TextureMaterialsProvider.cs" />
+    <Compile Include="Engine3D\Rigid\RigidBodiesSystem.cs" />
+    <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
+    <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
     <Compile Include="Game\Interface\MenuCanvasFactory.cs" />
@@ -170,6 +177,11 @@
     <Compile Include="Engine3D\Shaders\ConstantBuffer.cs" />
     <Compile Include="Engine3D\Shaders\IncludeHandler.cs" />
     <Compile Include="Engine3D\Mesh\Material.cs" />
+    <Compile Include="Game\Models\Base\IFactory.cs" />
+    <Compile Include="Game\Models\Racket\Racket.cs" />
+    <Compile Include="Game\Models\Racket\RacketFactory.cs" />
+    <Compile Include="Game\Models\Table\TennisTable.cs" />
+    <Compile Include="Game\Models\Table\TennisTableFactory.cs" />
     <Compile Include="Game\Scenes\Base\ISceneBuilder.cs" />
     <Compile Include="Game\Scenes\GameSceneBuilder.cs" />
     <Compile Include="Program.cs" />
@@ -190,10 +202,16 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.manifest" />
+    <None Include="Assets\models\ball.fbx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\models\racket.fbx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\models\sky.fbx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\models\table.fbx">
+    <None Include="Assets\models\tennis_table.fbx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -212,6 +230,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\textures\sky-2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\tennis_racket_hand.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\play.png">

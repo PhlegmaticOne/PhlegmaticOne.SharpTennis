@@ -10,6 +10,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 
         public static Scene Current { get; private set; }
         public Camera Camera { get; set; }
+        public IReadOnlyList<GameObject> GameObjects => _gameObjects;
 
         public Scene() : this(new List<GameObject>()) { }
 
@@ -18,6 +19,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
             _gameObjects = new List<GameObject>();
             _gameObjects.AddRange(gameObjects);
             Current = this;
+        }
+
+        public override void Start()
+        {
+            var behaviorObjects = _gameObjects.SelectMany(x => x.GetComponents<BehaviorObject>());
+            foreach (var behaviorObject in behaviorObjects)
+            {
+                behaviorObject.Start();
+            }
         }
 
         public void AddGameObject(GameObject gameObject)
