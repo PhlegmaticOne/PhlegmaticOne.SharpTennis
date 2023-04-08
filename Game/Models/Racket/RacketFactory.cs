@@ -1,4 +1,6 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System.Collections.Generic;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using SharpDX;
@@ -16,6 +18,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             _textureMaterialsProvider = textureMaterialsProvider;
         }
 
+
         public Racket Create(Transform transform)
         {
             var racket = _meshLoader.LoadFbx("assets\\models\\racket.fbx", _textureMaterialsProvider.DefaultTexture);
@@ -28,12 +31,23 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
                 component.Transform.SetScale(transform.Scale);
             }
 
-            racket[0].Transform.Move(new Vector3(0.01f, 0, 0));
-
             var go = new GameObject("Racket");
             var model = new Racket(racket[0], racket[1]);
             go.AddComponent(model);
+            go.AddComponent(CreateCollider(transform.Position));
             return model;
+        }
+
+        private BoxCollider3D CreateCollider(Vector3 position)
+        {
+            var collider = new BoxCollider3D(position - new Vector3(0.5f, 0.5f, 1.5f),
+                position + new Vector3(0.5f, 5, 3.5f))
+            {
+                Offset = new Vector3(0, 3, 1),
+                RotationDivider = -60,
+                IsStatic = false
+            };
+            return collider;
         }
     }
 }

@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Commands\ICommand.cs" />
+    <Compile Include="Common\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Infrastructure\GameEvents.cs" />
     <Compile Include="Common\Infrastructure\Screen.cs" />
     <Compile Include="Common\Render\IRenderer.cs" />
@@ -177,6 +178,8 @@
     <Compile Include="Engine3D\Shaders\ConstantBuffer.cs" />
     <Compile Include="Engine3D\Shaders\IncludeHandler.cs" />
     <Compile Include="Engine3D\Mesh\Material.cs" />
+    <Compile Include="Game\Models\Ball\BallFactory.cs" />
+    <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Base\IFactory.cs" />
     <Compile Include="Game\Models\Racket\Racket.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />

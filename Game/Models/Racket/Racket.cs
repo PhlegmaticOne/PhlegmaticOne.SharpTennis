@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using SharpDX;
 
@@ -18,10 +19,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         }
 
         public List<MeshComponent> Meshes { get; }
+        public List<MeshComponent> Boxes { get; set; }
+        public BoxCollider3D BoxCollider { get; private set; }
 
         public override void Start()
         {
             Transform.SetPosition(_handComponent.Transform.Position);
+            BoxCollider = GameObject.GetComponent<BoxCollider3D>();
             Transform.Moved += TransformOnMoved;
             Transform.Rotated += TransformOnRotated;
         }
@@ -30,6 +34,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             _coloredComponent.Transform.Rotate(obj);
             _handComponent.Transform.Rotate(obj);
+            BoxCollider.Rotate(obj);
         }
 
         private void TransformOnMoved(Vector3 obj)

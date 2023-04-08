@@ -11,7 +11,8 @@
                 Update();
             }
         }
-        
+
+        public virtual void OnCollisionEnter() { }
         public virtual void Start() { }
         public virtual void OnDestroy() { }
         protected virtual void Update() { }

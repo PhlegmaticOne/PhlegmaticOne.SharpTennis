@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
@@ -86,6 +87,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             GameEvents.OnScreenResized(Screen.Size);
         }
 
+        private Racket _racket;
 
         public void RenderLoopCallback()
         {
@@ -95,8 +97,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                         new MeshLoader(_directX3DGraphics, _meshRenderer.PointSampler))
                     .BuildScene();
 
-                var racket = scene.GetComponent<Racket>();
-                _racketMoveController = new RacketMoveController(racket, scene.Camera, _inputController);
+                _racket = scene.GetComponent<Racket>();
+                _racketMoveController = new RacketMoveController(_racket, scene.Camera, _inputController);
                 scene.Start();
                 RenderFormResizedCallback(this, EventArgs.Empty);
                 //_canvasManager.Start();
@@ -115,6 +117,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             if (_inputController.MouseLeft)
             {
                 GameEvents.OnMouseClicked();
+            }
+
+            foreach (var s in _racket.Boxes.Zip(_racket.BoxCollider.GetVertices(), 
+                         (component, vector3) => new { component, vector3 }))
+            {
+                s.component.Transform.SetPosition(s.vector3);
             }
 
             _renderSequence.UpdateBehavior();
@@ -156,14 +164,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 camera.Transform.Move(Vector3.UnitZ / -5);
             }
 
-            //if (_inputController.MouseUpdated)
-            //{
-            //    var deltaAngle = camera.FovY / _renderForm.ClientSize.Height;
-
-            //    camera.Transform.Rotate(new Vector3(
-            //        deltaAngle * _inputController.MouseRelativePositionX * 40,
-            //        deltaAngle * _inputController.MouseRelativePositionY * 40, 0));
-            //}
+            if (_inputController.IsPressed(Key.Z))
+            {
+                camera.Transform.Rotate(Vector3.UnitX);
+            }
         }
 
         public void Run() => RenderLoop.Run(_renderForm, RenderLoopCallback);

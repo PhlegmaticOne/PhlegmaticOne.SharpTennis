@@ -14,8 +14,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 
         public void OnCollisionEnter(Collider other)
         {
-            RigidBody.InverseSpeed();
-            other.RigidBody.InverseSpeed();
+            if (Enabled == false)
+            {
+                return;
+            }
+
+            foreach (var behaviorObject in GameObject.GetComponents<BehaviorObject>())
+            {
+                behaviorObject.OnCollisionEnter();
+            }
+
+            RigidBody?.InverseSpeed();
         }
     }
 }

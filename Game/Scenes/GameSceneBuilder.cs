@@ -1,6 +1,11 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System.Collections.Generic;
+using System.Linq;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
@@ -17,6 +22,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly MeshLoader _meshLoader;
         private readonly TennisTableFactory _tennisTableFactory;
         private readonly RacketFactory _racketFactory;
+        private readonly BallFactory _ballFactory;
 
         public GameSceneBuilder(TextureMaterialsProvider textureMaterialsProvider,
             MeshLoader meshLoader)
@@ -25,6 +31,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _meshLoader = meshLoader;
             _tennisTableFactory = new TennisTableFactory(meshLoader, textureMaterialsProvider);
             _racketFactory = new RacketFactory(_meshLoader, _textureMaterialsProvider);
+            _ballFactory = new BallFactory(_meshLoader, textureMaterialsProvider);
         }
 
         public Scene BuildScene()
@@ -51,7 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             }
 
             var racket = _racketFactory.Create(new Transform(
-                new Vector3(-70, 10, 0),
+                new Vector3(-70, 2, 0),
                 new Vector3(90, -180, -90),
                 new Vector3(1, 1, 1)));
             racket.Color(Color.Red);
@@ -61,24 +68,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
                 scene.AddGameObject(meshComponent.GameObject);
             }
 
+            racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
 
-            //var ball = _meshLoader.LoadFbx("assets\\models\\ball.fbx", _textureMaterialsProvider.DefaultTexture)[0];
-            //ball.GameObject.Name = "Ball";
-            //var radius = ball.MeshObjectData.Vertices.Max(x => x.position.Z);
-            //ball.GameObject.AddComponent(new SphereCollider(new Vector3(0, 50, 0), radius));
-            //ball.GameObject.AddComponent(new RigidBody3D(new Vector3(0, -4, 0), RigidBodyType.Dynamic));
-            //ball.Transform.SetPosition(new Vector3(0, 50, 0));
-            //scene.AddGameObject(ball.GameObject);
+            var ball = _ballFactory.Create(new Transform(
+                new Vector3(-50, 2, 20), Vector3.Zero, Vector3.One));
+            scene.AddGameObject(ball.Mesh.GameObject);
+            scene.AddGameObject(ball.GameObject);
         }
 
-        private void DrawCollider(Scene scene, BoxCollider3D boxCollider)
+        private List<MeshComponent> DrawCollider(Scene scene, BoxCollider3D boxCollider)
         {
-            foreach (var corner in boxCollider.BoundingBox.GetCorners())
+            var list = new List<MeshComponent>();
+            var corners = boxCollider.BoundingBox.GetCorners();
+            foreach (var corner in corners)
             {
                 var ball = _meshLoader.LoadFbx("assets\\models\\ball.fbx", _textureMaterialsProvider.DefaultTexture)[0];
                 ball.Transform.SetPosition(corner);
                 scene.AddGameObject(ball.GameObject);
+                list.Add(ball);
             }
+            return list;
         }
 
         private Camera BuildCamera()

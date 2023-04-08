@@ -37,10 +37,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
             _scale = scale;
         }
 
-        public void Move(Vector3 position)
+        public void Move(Vector3 position, bool invokeEvent = true)
         {
             _position += position;
-            OnMoved(position);
+
+            if (invokeEvent)
+            {
+                OnMoved(position);
+            }
         }
 
         public void SetPosition(Vector3 position)
@@ -50,11 +54,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
             OnMoved(diff);
         }
 
-        public void Rotate(Vector3 rotation)
+        public void Rotate(Vector3 rotation, bool invokeEvent = true)
         {
             _rotation += rotation;
             ClampRotation(ref _rotation);
-            OnRotated(rotation);
+
+            if (invokeEvent)
+            {
+                OnRotated(rotation);
+            }
         }
 
         public void SetRotation(Vector3 rotation)

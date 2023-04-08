@@ -19,6 +19,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
                     if (a.Intersects(b))
                     {
                         a.OnCollisionEnter(b);
+                        b.OnCollisionEnter(a);
                     }
                 }
             }
