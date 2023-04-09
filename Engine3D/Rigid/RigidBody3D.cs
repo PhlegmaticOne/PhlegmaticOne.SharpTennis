@@ -6,18 +6,37 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid
 {
     public class RigidBody3D : BehaviorObject
     {
-        public Vector3 Speed { get; private set; }
-        public RigidBodyType RigidBodyType { get; }
+        public static float GlobalAcceleration = -1f;
+        public Vector3 Speed { get; set; }
+        public Vector3 Acceleration { get; set; }
+        public RigidBodyType RigidBodyType { get; private set; }
+        public float Bounciness { get; set; } = 1f;
 
         public RigidBody3D(Vector3 speed, RigidBodyType rigidBodyType = RigidBodyType.Static)
         {
             if (rigidBodyType == RigidBodyType.Static)
             {
-                speed = Vector3.Zero;
+                Speed = Vector3.Zero;
+                Acceleration = Vector3.Zero;
+            }
+            else
+            {
+                Speed = speed;
+                Acceleration = new Vector3(0, GlobalAcceleration, 0);
             }
 
-            Speed = speed;
             RigidBodyType = rigidBodyType;
+        }
+
+        public void Stop()
+        {
+            Acceleration = Vector3.Zero;
+            Speed = Vector3.Zero;
+        }
+
+        public void EnableGravity()
+        {
+            Acceleration = new Vector3(0, GlobalAcceleration, 0);
         }
 
         public bool IsDynamic => RigidBodyType == RigidBodyType.Dynamic;
@@ -28,22 +47,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid
             {
                 return;
             }
-            Transform.Move(Speed * Time.DeltaT);
-        }
 
-        public void InverseSpeed()
-        {
-            if (IsDynamic == false)
-            {
-                return;
-            }
-            Speed *= -1;
+            Speed += Acceleration;
+            Transform.Move(Speed * Time.DeltaT);
         }
     }
 
     public enum RigidBodyType
     {
         Static,
+        Kinematic,
         Dynamic
     }
 }

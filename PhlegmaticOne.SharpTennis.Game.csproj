@@ -183,6 +183,8 @@
     <Compile Include="Game\Models\Base\IFactory.cs" />
     <Compile Include="Game\Models\Racket\Racket.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />
+    <Compile Include="Game\Models\Table\TableNet.cs" />
+    <Compile Include="Game\Models\Table\TableTopPart.cs" />
     <Compile Include="Game\Models\Table\TennisTable.cs" />
     <Compile Include="Game\Models\Table\TennisTableFactory.cs" />
     <Compile Include="Game\Scenes\Base\ISceneBuilder.cs" />

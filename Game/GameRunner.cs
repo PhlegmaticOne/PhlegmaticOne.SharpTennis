@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
@@ -69,6 +70,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 //canvasManager
             });
             _renderForm.UserResized += RenderFormResizedCallback;
+            _renderForm.Closing += RenderFormOnClosing;
+        }
+
+        private void RenderFormOnClosing(object sender, CancelEventArgs e)
+        {
+            Scene.Current.OnDestroy();
         }
 
 

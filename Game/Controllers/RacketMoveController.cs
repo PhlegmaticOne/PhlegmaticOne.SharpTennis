@@ -8,6 +8,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
     public class RacketMoveController : BehaviorObject
     {
+        private readonly float _minX = -30;
+        private readonly float _maxX = -84;
+        private readonly float _minZ = -40;
+        private readonly float _maxZ = 40;
+
+
         private readonly Racket _racket;
         private readonly Camera _camera;
         private readonly InputController _inputController;
@@ -19,41 +25,51 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _inputController = inputController;
         }
 
-        private float _minX = -30;
-        private float _maxX = -84;
-        private float _minZ = -40;
-        private float _maxZ = 40;
+        public float MousePositionDivider { get; set; } = 20f;
+
 
         protected override void Update()
         {
-            if (_inputController.MouseUpdated)
+            if (_inputController.MouseUpdated == false)
             {
-                var deltaX = -(float)_inputController.MouseRelativePositionX / 20;
-                var deltaZ = -(float)_inputController.MouseRelativePositionY / 20;
-                _racket.Transform.Move(new Vector3(deltaZ, 0, deltaX));
-
-                var pos = _racket.Transform.Position;
-                var moveCamera = true;
-
-                if (pos.X > _minX || pos.X < _maxX)
-                {
-                    _racket.Transform.Move(new Vector3(-deltaZ, 0, 0));
-                    moveCamera = false;
-                }
-
-                if (pos.Z < _minZ || pos.Z > _maxZ)
-                {
-                    _racket.Transform.Move(new Vector3(0, 0, -deltaX));
-                    moveCamera = false;
-                }
-
-                Rotate();
-
-                if (moveCamera)
-                {
-                    MoveCamera(deltaX, deltaZ);
-                }
+                return;
             }
+
+            var deltaMove = GetMouseDeltaMove();
+            _racket.Transform.Move(deltaMove);
+            Rotate();
+
+            if (TryMoveBackRacket(deltaMove))
+            {
+                MoveCamera(deltaMove.Z, deltaMove.X);
+            }
+        }
+
+        private Vector3 GetMouseDeltaMove()
+        {
+            var deltaX = -(float)_inputController.MouseRelativePositionX / MousePositionDivider;
+            var deltaZ = -(float)_inputController.MouseRelativePositionY / MousePositionDivider;
+            return new Vector3(deltaZ, 0, deltaX);
+        }
+
+        private bool TryMoveBackRacket(Vector3 mouseDeltaMove)
+        {
+            var pos = _racket.Transform.Position;
+            var moveCamera = true;
+
+            if (pos.X > _minX || pos.X < _maxX)
+            {
+                _racket.Transform.Move(new Vector3(-mouseDeltaMove.X, 0, 0));
+                moveCamera = false;
+            }
+
+            if (pos.Z < _minZ || pos.Z > _maxZ)
+            {
+                _racket.Transform.Move(new Vector3(0, 0, -mouseDeltaMove.Z));
+                moveCamera = false;
+            }
+
+            return moveCamera;
         }
 
         private void Rotate()
@@ -67,7 +83,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private void MoveCamera(float deltaX, float deltaZ)
         {
-            _camera.Transform.Move(new Vector3(deltaZ, 0, deltaX) / 30);
+            _camera.Transform.Move(new Vector3(deltaZ, 0, deltaX) / 10);
         }
     }
 }

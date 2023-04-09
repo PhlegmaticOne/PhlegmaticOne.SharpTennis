@@ -23,8 +23,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
         public TennisTable Create(Transform transform)
         {
             var table = _meshLoader.LoadFbx("assets\\models\\tennis_table.fbx", _textureMaterialsProvider.DefaultTexture);
-            CreateTableTop(table);
-            CreateTableNet(table);
+            var top = CreateTableTop(table);
+            var net = CreateTableNet(table);
             CreateTableBase(table);
 
             foreach (var meshComponent in table)
@@ -32,7 +32,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
                 meshComponent.Transform.SetRotation(new Vector3(0, -90, 0));
             }
 
-            return new TennisTable(table);
+            var go = new GameObject("TennisTable");
+            var tennisTable = new TennisTable(table, top, net);
+            go.AddComponent(tennisTable);
+            return tennisTable;
         }
 
         private void CreateTableBase(List<MeshComponent> allMeshes)
@@ -48,7 +51,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             tableBase.Transform.Rotate(new Vector3(0, -90, 0));
         }
 
-        private void CreateTableNet(List<MeshComponent> allMeshes)
+        private TableNet CreateTableNet(List<MeshComponent> allMeshes)
         {
             var net1 = allMeshes[3];
             var net = allMeshes[4];
@@ -68,19 +71,32 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 
             var offset = new Vector3(0, 1.3f, -halfWidth - 2);
             var collider = new BoxCollider3D((Vector3)min + offset, (Vector3)max + offset);
+            var tableNet = new TableNet
+            {
+                Normal = Vector3.Left
+            };
             net.GameObject.AddComponent(collider);
+            net.GameObject.AddComponent(tableNet);
+            net.GameObject.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
             net.Transform.Move(offset);
             net1.Transform.Move(offset);
             net.Transform.SetRotation(new Vector3(0, -90, 0));
             net1.Transform.SetRotation(new Vector3(0, -90, 0));
+            return tableNet;
         }
 
-        private void CreateTableTop(List<MeshComponent> allMeshes)
+        private TableTopPart CreateTableTop(List<MeshComponent> allMeshes)
         {
             var top = allMeshes[2];
+            var tableTop = new TableTopPart
+            {
+                Normal = Vector3.Up
+            };
             top.GameObject.AddComponent(CreateTopCollider(top));
-            top.GameObject.AddComponent(new RigidBody3D(Vector3.Zero));
+            top.GameObject.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
+            top.GameObject.AddComponent(tableTop);
             top.GameObject.Name = "TopTable";
+            return tableTop;
         }
 
         private BoxCollider3D CreateTopCollider(MeshComponent top)
@@ -89,7 +105,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             Swap(ref corner1, -2.5f);
             var corner2 = top.MeshObjectData.Vertices[5].position;
             Swap(ref corner2, 2.5f);
-            corner2.Y = -0.3f;
+            corner2.Y = -1f;
             var boxCollider = new BoxCollider3D((Vector3)corner1, (Vector3)corner2);
             return boxCollider;
         }

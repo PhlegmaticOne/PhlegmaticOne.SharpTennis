@@ -1,4 +1,6 @@
-﻿namespace PhlegmaticOne.SharpTennis.Game.Common.Base
+﻿using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
+
+namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 {
     public class BehaviorObject : Component
     {
@@ -12,7 +14,9 @@
             }
         }
 
-        public virtual void OnCollisionEnter() { }
+        public virtual void OnCollisionEnter(Collider other) { }
+        public virtual void OnCollisionStay(Collider other) { }
+        public virtual void OnCollisionExit(Collider other) { }
         public virtual void Start() { }
         public virtual void OnDestroy() { }
         protected virtual void Update() { }

@@ -71,7 +71,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
 
             var ball = _ballFactory.Create(new Transform(
-                new Vector3(-50, 2, 20), Vector3.Zero, Vector3.One));
+                new Vector3(-50, 20, 20), Vector3.Zero, Vector3.One));
             scene.AddGameObject(ball.Mesh.GameObject);
             scene.AddGameObject(ball.GameObject);
         }

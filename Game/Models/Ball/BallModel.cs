@@ -16,6 +16,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
         {
             Mesh = mesh;
         }
+
+        public float Bounciness => _rigidBody3D.Bounciness;
+
         public MeshComponent Mesh { get; }
 
         public override void Start()
@@ -25,17 +28,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
             Transform.Moved += TransformOnMoved;
         }
 
+        public Vector3 GetSpeed() => _rigidBody3D.Speed;
+
+        public void SetSpeed(Vector3 speed) => _rigidBody3D.Speed = speed;
+
         private void TransformOnMoved(Vector3 obj)
         {
             Mesh.Transform.Move(obj);
         }
 
-        public override void OnCollisionEnter()
+        public override void OnCollisionEnter(Collider collider)
         {
+            if (collider.GameObject.HasComponent<Racket.Racket>() == false)
+            {
+                return;
+            }
+
             _sphereCollider.ChangeEnabled(false);
             Task.Run(async () =>
             {
-                await Task.Delay(1000);
+                await Task.Delay(200);
                 _sphereCollider.ChangeEnabled(true);
             });
         }
