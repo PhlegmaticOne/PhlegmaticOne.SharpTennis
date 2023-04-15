@@ -96,21 +96,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
                 }
 
                 var vertices = GetVertices().ToArray();
+                var r = new Vector3(-2 * sphereCollider.BoundingSphere.Radius, 0, 0);
+                var center = sphereCollider.BoundingSphere.Center;
+                var maxPoint = center + r;
+                //var minPoint = center - r;
+
+                if (maxPoint.X > vertices[1].X || maxPoint.X < vertices[3].X)
+                {
+                    return false;
+                }
 
                 var frontFace = vertices
                     .SelectAtIndexesInOrder(1, 2, 6, 5)
                     .Select(x => new Vector2(x.Z, x.Y))
                     .ToArray();
-
-                var r = new Vector3(-2 * sphereCollider.BoundingSphere.Radius, 0, 0);
-                var center = sphereCollider.BoundingSphere.Center;
-                var maxPoint = center + r;
-                var minPoint = center - r;
-
-                if (maxPoint.X > vertices[1].X || minPoint.X < vertices[3].X)
-                {
-                    return false;
-                }
 
                 return OnPolygonCollision.CheckOnPolygon(frontFace, new Vector2(maxPoint.Z, maxPoint.Y));
             }

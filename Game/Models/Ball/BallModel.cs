@@ -47,7 +47,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
             _sphereCollider.ChangeEnabled(false);
             Task.Run(async () =>
             {
-                await Task.Delay(200);
+                await Task.Delay(100);
                 _sphereCollider.ChangeEnabled(true);
             });
         }

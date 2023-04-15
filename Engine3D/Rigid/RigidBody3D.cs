@@ -39,6 +39,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid
             Acceleration = new Vector3(0, GlobalAcceleration, 0);
         }
 
+        public void DisableGravity()
+        {
+            Acceleration = new Vector3(0, 0, 0);
+        }
+
         public bool IsDynamic => RigidBodyType == RigidBodyType.Dynamic;
 
         protected override void Update()

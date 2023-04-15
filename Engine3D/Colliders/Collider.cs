@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using SharpDX;
 
@@ -6,7 +7,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 {
     public abstract class Collider : BehaviorObject
     {
-        private const float MinSpeed = 4f;
+        private const float MinSpeed = 6f;
         protected RigidBody3D RigidBody;
         public bool IsColliding { get; private set; }
 
@@ -87,12 +88,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
                 return;
             }
 
-            var length = RigidBody.Speed.Length();
-
-            if (RigidBody.RigidBodyType == RigidBodyType.Dynamic && length < MinSpeed)
+            if (RigidBody.RigidBodyType == RigidBodyType.Dynamic)
             {
-                ChangeEnabled(false);
-                RigidBody.Stop();
+                var length = RigidBody.Speed.Length();
+
+                if (Math.Abs(RigidBody.Speed.Y) < MinSpeed)
+                {
+                    RigidBody.DisableGravity();
+                }
+
+                if (length < MinSpeed)
+                {
+                    ChangeEnabled(false);
+                    RigidBody.Stop();
+                }
             }
         }
     }

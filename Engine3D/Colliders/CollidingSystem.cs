@@ -1,19 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 {
     public class CollidingSystem : BehaviorObject
     {
-        //private string File = "C:\\Users\\lolol\\OneDrive\\Рабочий стол\\TEST.txt";
-        //private StreamWriter _fileStream;
-
-        //public CollidingSystem()
-        //{
-        //    var s = new FileStream(File, FileMode.OpenOrCreate);
-        //    _fileStream = new StreamWriter(s);
-        //}
-
         protected override void Update()
         {
             var allColliders = Scene.Current.GetComponents<Collider>().ToList();

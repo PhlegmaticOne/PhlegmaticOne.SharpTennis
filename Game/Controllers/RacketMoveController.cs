@@ -1,4 +1,5 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Engine3D;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
@@ -37,6 +38,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             var deltaMove = GetMouseDeltaMove();
             _racket.Transform.Move(deltaMove);
+            _racket.UpdateSpeed(deltaMove / Time.DeltaT);
             Rotate();
 
             if (TryMoveBackRacket(deltaMove))

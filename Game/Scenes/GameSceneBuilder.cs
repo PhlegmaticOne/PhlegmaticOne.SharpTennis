@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
-using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
@@ -23,6 +21,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly TennisTableFactory _tennisTableFactory;
         private readonly RacketFactory _racketFactory;
         private readonly BallFactory _ballFactory;
+        private readonly FloorFactory _floorFactory;
 
         public GameSceneBuilder(TextureMaterialsProvider textureMaterialsProvider,
             MeshLoader meshLoader)
@@ -32,6 +31,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _tennisTableFactory = new TennisTableFactory(meshLoader, textureMaterialsProvider);
             _racketFactory = new RacketFactory(_meshLoader, _textureMaterialsProvider);
             _ballFactory = new BallFactory(_meshLoader, textureMaterialsProvider);
+            _floorFactory = new FloorFactory(_meshLoader, textureMaterialsProvider);
         }
 
         public Scene BuildScene()
@@ -58,7 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             }
 
             var racket = _racketFactory.Create(new Transform(
-                new Vector3(-70, 2, 0),
+                new Vector3(-70, 10, 0),
                 new Vector3(90, -180, -90),
                 new Vector3(1, 1, 1)));
             racket.Color(Color.Red);
@@ -74,6 +74,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
                 new Vector3(-50, 20, 20), Vector3.Zero, Vector3.One));
             scene.AddGameObject(ball.Mesh.GameObject);
             scene.AddGameObject(ball.GameObject);
+
+            var floor = _floorFactory.Create(new Transform(
+                new Vector3(50, -30, 0),
+                new Vector3(0, -90, 0),
+                new Vector3(6, 3, 1f)));
+
+            scene.AddGameObject(floor.Mesh.GameObject);
+            scene.AddGameObject(floor.GameObject);
         }
 
         private List<MeshComponent> DrawCollider(Scene scene, BoxCollider3D boxCollider)
@@ -108,22 +116,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
             _textureMaterialsProvider.SetDefaultMaterial(defaultMaterial);
             _textureMaterialsProvider.SetDefaultTexture(texture);
-        }
-
-        private void Swap(ref Vector4 a, float increaseZBy)
-        {
-            var z = a.Z;
-            a.Z = a.Y;
-            a.Z += increaseZBy;
-            a.X += increaseZBy;
-            a.Y = z;
-        }
-
-        private void Swap(ref Vector4 a)
-        {
-            var z = a.Z;
-            a.Z = a.Y;
-            a.Y = z;
         }
     }
 }

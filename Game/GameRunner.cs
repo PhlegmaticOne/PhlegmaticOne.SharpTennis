@@ -11,6 +11,7 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes;
 using SharpDX;
@@ -37,6 +38,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         private readonly RigidBodiesSystem _rigidBodiesSystem;
         private readonly CollidingSystem _collisionSystem;
         private RacketMoveController _racketMoveController;
+        private BallFloorCollisionController _ballFloorCollisionController;
 
         public GameRunner(RenderForm renderForm)
         {
@@ -53,9 +55,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             //var factory = new MenuCanvasFactory(new MenuCanvasViewModel
             //{
             //    ExitButtonCommand = new ExitGameCommand(_renderForm),
-            //    PlayButtonCommand = new StartGameCommand(canvasManager, 
+            //    PlayButtonCommand = new StartGameCommand(canvasManager,
             //        new GameSceneBuilder(new TextureMaterialsProvider(),
-            //            new MeshLoader(_directX3DGraphics, meshRenderer)), this)
+            //            new MeshLoader(_directX3DGraphics, _meshRenderer.PointSampler)), this)
             //});
             //canvasManager.AddCanvas(factory.CreateCanvas());
 
@@ -105,6 +107,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                     .BuildScene();
 
                 _racket = scene.GetComponent<Racket>();
+                var floor = scene.GetComponent<FloorModel>();
+                _ballFloorCollisionController = new BallFloorCollisionController(floor);
                 _racketMoveController = new RacketMoveController(_racket, scene.Camera, _inputController);
                 scene.Start();
                 RenderFormResizedCallback(this, EventArgs.Empty);
@@ -126,7 +130,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 GameEvents.OnMouseClicked();
             }
 
-            foreach (var s in _racket.Boxes.Zip(_racket.BoxCollider.GetVertices(), 
+            foreach (var s in _racket.Boxes.Zip(_racket.BoxCollider.GetVertices(),
                          (component, vector3) => new { component, vector3 }))
             {
                 s.component.Transform.SetPosition(s.vector3);

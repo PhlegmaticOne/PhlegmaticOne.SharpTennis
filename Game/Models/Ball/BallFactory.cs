@@ -27,9 +27,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
             var go = new GameObject("Ball");
             var model = new BallModel(ball);
+            go.Transform.SetPosition(transform.Position);
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Dynamic)
             {
-                Bounciness = 0.9f
+                Bounciness = 0.99f
             });
             go.AddComponent(new SphereCollider(transform.Position, radius));
             go.AddComponent(model);

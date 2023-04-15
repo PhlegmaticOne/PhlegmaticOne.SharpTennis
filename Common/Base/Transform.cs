@@ -49,7 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 
         public void SetPosition(Vector3 position)
         {
-            var diff = Diff(ref _position, ref position);
+            var diff = Diff(ref position, ref _position);
             _position = position;
             OnMoved(diff);
         }

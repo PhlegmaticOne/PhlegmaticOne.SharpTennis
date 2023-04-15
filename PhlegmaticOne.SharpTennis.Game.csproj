@@ -164,6 +164,7 @@
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
+    <Compile Include="Game\Controllers\BallFloorCollisionController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
@@ -181,6 +182,8 @@
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Base\IFactory.cs" />
+    <Compile Include="Game\Models\Floor\FloorFactory.cs" />
+    <Compile Include="Game\Models\Floor\FloorModel.cs" />
     <Compile Include="Game\Models\Racket\Racket.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />
     <Compile Include="Game\Models\Table\TableNet.cs" />
@@ -210,6 +213,9 @@
     <None Include="Assets\models\ball.fbx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\models\floor.fbx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\models\racket.fbx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -234,6 +240,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\textures\130.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\textures\sky-2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
