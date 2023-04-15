@@ -31,7 +31,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
                 var ballSpeed = ball.GetSpeed();
-                ball.SetSpeed(Vector3.Reflect(ballSpeed, GetNormal(ball)));
+                var reflected = Collider.Reflect(ballSpeed, GetNormal(ball), 0.2f);
+                ball.SetSpeed(reflected);
             }
         }
     }

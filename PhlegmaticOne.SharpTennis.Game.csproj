@@ -116,6 +116,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Base\VectorExtensions.cs" />
     <Compile Include="Common\Commands\ICommand.cs" />
     <Compile Include="Common\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Infrastructure\GameEvents.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Engine3D\Colliders\BoxCollider3D.cs" />
     <Compile Include="Engine3D\Colliders\Collider.cs" />
     <Compile Include="Engine3D\Colliders\CollidingSystem.cs" />
+    <Compile Include="Engine3D\Colliders\CollisionContainer.cs" />
     <Compile Include="Engine3D\Colliders\SphereCollider.cs" />
     <Compile Include="Engine3D\Mesh\MeshLoader.cs" />
     <Compile Include="Engine3D\Mesh\MeshRendererData.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="Game\Models\Table\TableTopPart.cs" />
     <Compile Include="Game\Models\Table\TennisTable.cs" />
     <Compile Include="Game\Models\Table\TennisTableFactory.cs" />
+    <Compile Include="Game\Models\Wall\WallModel.cs" />
     <Compile Include="Game\Scenes\Base\ISceneBuilder.cs" />
     <Compile Include="Game\Scenes\GameSceneBuilder.cs" />
     <Compile Include="Program.cs" />

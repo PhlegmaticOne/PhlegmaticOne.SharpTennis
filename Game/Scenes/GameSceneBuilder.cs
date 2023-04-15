@@ -1,16 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Assimp;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Wall;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 using SharpDX;
+using SharpDX.Direct2D1;
+using SharpDX.Direct2D1.Effects;
 using Camera = PhlegmaticOne.SharpTennis.Game.Engine3D.Camera;
 using Material = PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Material;
 using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
+using Transform = PhlegmaticOne.SharpTennis.Game.Common.Base.Transform;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 {
@@ -57,18 +64,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
                 scene.AddGameObject(mesh.GameObject);
             }
 
-            var racket = _racketFactory.Create(new Transform(
+            AddRacket(scene, new Transform(
                 new Vector3(-70, 10, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)));
-            racket.Color(Color.Red);
-            scene.AddGameObject(racket.GameObject);
-            foreach (var meshComponent in racket.Meshes)
-            {
-                scene.AddGameObject(meshComponent.GameObject);
-            }
+                new Vector3(1, 1, 1)), Color.Red, Vector3.Right);
 
-            racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
+            //AddRacket(scene, new Transform(
+            //    new Vector3(70, 10, 0),
+            //    new Vector3(90, -180, -90),
+            //    new Vector3(1, 1, 1)), Color.Black, Vector3.Left);
 
             var ball = _ballFactory.Create(new Transform(
                 new Vector3(-50, 20, 20), Vector3.Zero, Vector3.One));
@@ -78,25 +82,65 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             var floor = _floorFactory.Create(new Transform(
                 new Vector3(50, -30, 0),
                 new Vector3(0, -90, 0),
-                new Vector3(6, 3, 1f)));
+                new Vector3(8, 5, 1f)));
 
             scene.AddGameObject(floor.Mesh.GameObject);
             scene.AddGameObject(floor.GameObject);
+
+            AddWall(scene, new Transform(
+                new Vector3(50, 0, 0), new Vector3(90, 180, 180), Vector3.One));
         }
 
-        private List<MeshComponent> DrawCollider(Scene scene, BoxCollider3D boxCollider)
+        private void AddWall(Scene scene, Transform transform)
         {
-            var list = new List<MeshComponent>();
-            var corners = boxCollider.BoundingBox.GetCorners();
-            foreach (var corner in corners)
-            {
-                var ball = _meshLoader.LoadFbx("assets\\models\\ball.fbx", _textureMaterialsProvider.DefaultTexture)[0];
-                ball.Transform.SetPosition(corner);
-                scene.AddGameObject(ball.GameObject);
-                list.Add(ball);
-            }
-            return list;
+            var wall = _meshLoader.LoadFbx("assets\\models\\floor.fbx", _textureMaterialsProvider.DefaultTexture)[0];
+
+            wall.Transform.SetRotation(transform.Rotation);
+            wall.Transform.SetPosition(transform.Position);
+
+            var go = new GameObject();
+            go.Transform.SetPosition(transform.Position);
+            go.Transform.SetRotation(transform.Rotation);
+            go.AddComponent(new WallModel(wall));
+            go.AddComponent(new RigidBody3D(Vector3.Zero));
+            go.AddComponent(CreateCollider(wall.MeshObjectData, transform.Position));
+
+            scene.AddGameObject(wall.GameObject);
+            scene.AddGameObject(go);
+            DrawCollider(scene, go.GetComponent<BoxCollider3D>());
         }
+
+        private BoxCollider3D CreateCollider(MeshObjectData mesh, Vector3 position)
+        {
+            var halfWidth = mesh.Vertices.Max(x => x.position.X);
+            var halfHeight = mesh.Vertices.Max(x => x.position.Y);
+
+            var width = halfWidth * 2;
+            var height = halfHeight * 2;
+            var depth = 5;
+
+            var a = position - new Vector3(0, halfHeight, halfWidth);
+            var b = a + new Vector3(depth, height, width);
+
+            return new BoxCollider3D(a, b)
+            {
+                IsStatic = true
+            };
+        }
+
+
+        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal)
+        {
+            var racket = _racketFactory.Create(transform);
+            racket.Color(color);
+            scene.AddGameObject(racket.GameObject);
+            foreach (var meshComponent in racket.Meshes)
+            {
+                scene.AddGameObject(meshComponent.GameObject);
+            }
+            racket.Normal = normal;
+        }
+
 
         private Camera BuildCamera()
         {
@@ -116,6 +160,22 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
             _textureMaterialsProvider.SetDefaultMaterial(defaultMaterial);
             _textureMaterialsProvider.SetDefaultTexture(texture);
+        }
+
+
+
+        private List<MeshComponent> DrawCollider(Scene scene, BoxCollider3D boxCollider)
+        {
+            var list = new List<MeshComponent>();
+            var corners = boxCollider.BoundingBox.GetCorners();
+            foreach (var corner in corners)
+            {
+                var ball = _meshLoader.LoadFbx("assets\\models\\ball.fbx", _textureMaterialsProvider.DefaultTexture)[0];
+                ball.Transform.SetPosition(corner);
+                scene.AddGameObject(ball.GameObject);
+                list.Add(ball);
+            }
+            return list;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             {
                 Offset = new Vector3(0, 3, 1),
                 RotationDivider = -60,
-                IsStatic = true
+                IsStatic = false
             };
             return collider;
         }

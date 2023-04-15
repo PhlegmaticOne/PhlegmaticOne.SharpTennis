@@ -4,6 +4,7 @@ using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Engine3D;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using SharpDX;
+using SharpDX.DirectInput;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
@@ -13,6 +14,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly float _maxX = -84;
         private readonly float _minZ = -40;
         private readonly float _maxZ = 40;
+        private readonly float _minY = 7;
+        private readonly float _maxY = 13;
 
 
         private readonly Racket _racket;
@@ -37,14 +40,33 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             }
 
             var deltaMove = GetMouseDeltaMove();
+            deltaMove.Y = MoveDownOrUp();
             _racket.Transform.Move(deltaMove);
             _racket.UpdateSpeed(deltaMove / Time.DeltaT);
             Rotate();
 
             if (TryMoveBackRacket(deltaMove))
             {
-                MoveCamera(deltaMove.Z, deltaMove.X);
+                MoveCamera(deltaMove.Z, deltaMove.Y, deltaMove.X);
             }
+        }
+
+        private float MoveDownOrUp()
+        {
+            var delta = 0.1f;
+
+            if (_inputController.MouseRight)
+            {
+                return -1 * delta;
+            }
+
+
+            if (_inputController.MouseLeft)
+            {
+                return delta;
+            }
+
+            return 0;
         }
 
         private Vector3 GetMouseDeltaMove()
@@ -58,6 +80,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         {
             var pos = _racket.Transform.Position;
             var moveCamera = true;
+
+            if (pos.Y > _maxY || pos.Y < _minY)
+            {
+                _racket.Transform.Move(new Vector3(0, -mouseDeltaMove.Y, 0));
+                moveCamera = false;
+            }
 
             if (pos.X > _minX || pos.X < _maxX)
             {
@@ -83,7 +111,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         }
 
 
-        private void MoveCamera(float deltaX, float deltaZ)
+        private void MoveCamera(float deltaX, float deltaZ, float deltaY)
         {
             _camera.Transform.Move(new Vector3(deltaZ, 0, deltaX) / 10);
         }

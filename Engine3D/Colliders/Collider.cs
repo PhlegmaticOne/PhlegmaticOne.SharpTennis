@@ -1,5 +1,4 @@
-﻿using System;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using SharpDX;
 
@@ -31,7 +30,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
             }
 
             IsColliding = true;
-            ResolveOnCollisionSpeed();
+            //ResolveOnCollisionSpeed();
             RaiseOnCollisionEnterInCurrentObject(other);
         }
 
@@ -88,21 +87,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
                 return;
             }
 
-            if (RigidBody.RigidBodyType == RigidBodyType.Dynamic)
-            {
-                var length = RigidBody.Speed.Length();
+            //if (RigidBody.RigidBodyType == RigidBodyType.Dynamic)
+            //{
+            //    var length = RigidBody.Speed.Length();
 
-                if (Math.Abs(RigidBody.Speed.Y) < MinSpeed)
-                {
-                    RigidBody.DisableGravity();
-                }
+            //    if (Math.Abs(RigidBody.Speed.Y) < MinSpeed)
+            //    {
+            //        RigidBody.DisableGravity();
+            //    }
 
-                if (length < MinSpeed)
-                {
-                    ChangeEnabled(false);
-                    RigidBody.Stop();
-                }
-            }
+            //    if (length < MinSpeed)
+            //    {
+            //        ChangeEnabled(false);
+            //        RigidBody.Stop();
+            //    }
+            //}
         }
     }
 }

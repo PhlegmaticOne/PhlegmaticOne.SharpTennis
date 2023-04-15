@@ -119,6 +119,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             Time.Update();
 
             MoveCamera();
+            _inputController.UpdateKeyboardState();
+            _inputController.UpdateMouseState();
             _racketMoveController.UpdateBehavior();
             _collisionSystem.UpdateBehavior();
             _rigidBodiesSystem.UpdateBehavior();
@@ -130,10 +132,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 GameEvents.OnMouseClicked();
             }
 
-            foreach (var s in _racket.Boxes.Zip(_racket.BoxCollider.GetVertices(),
-                         (component, vector3) => new { component, vector3 }))
+            if (_inputController.IsPressed(Key.R))
             {
-                s.component.Transform.SetPosition(s.vector3);
+                _ballFloorCollisionController.ReturnToStatPositionRandom();
             }
 
             _renderSequence.UpdateBehavior();
@@ -142,18 +143,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         private void MoveCamera()
         {
             var camera = Scene.Current.Camera;
-            _inputController.UpdateKeyboardState();
-            _inputController.UpdateMouseState();
-
-            if (_inputController.IsPressed(Key.S))
-            {
-                camera.Transform.Move(Vector3.UnitX / -5);
-            }
-
-            if (_inputController.IsPressed(Key.W))
-            {
-                camera.Transform.Move(Vector3.UnitX / 5);
-            }
+            
 
             if (_inputController.IsPressed(Key.Q))
             {

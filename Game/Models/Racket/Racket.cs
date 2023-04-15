@@ -53,9 +53,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
+                var s = _rigidBody3D.Speed.Normalized();
+                var force = 100;
                 var speed = ball.GetSpeed();
-                var reflected = Collider.Reflect(speed, Normal, 1.1f) + _rigidBody3D.Speed;
-                ball.SetSpeed(new Vector3(-30, speed.Y, 0));
+                var reflected = force * s;
+                reflected.Y = 50;
+                ball.SetSpeed(reflected);
             }
         }
 

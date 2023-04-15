@@ -1,16 +1,25 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
-using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 {
     public class CollidingSystem : BehaviorObject
     {
+        private readonly List<CollisionContainer> _collisions;
+
+        public CollidingSystem() => _collisions = new List<CollisionContainer>();
+
         protected override void Update()
         {
+            TryAddNewCollisions();
+            TryRemoveExistingCollisions();
+        }
+
+        private void TryAddNewCollisions()
+        {
             var allColliders = Scene.Current.GetComponents<Collider>().ToList();
-            
+
             for (var i = 0; i < allColliders.Count; i++)
             {
                 for (var j = i + 1; j < allColliders.Count; j++)
@@ -20,20 +29,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 
                     if (a.Intersects(b))
                     {
-                        if (a.IsColliding == false)
+                        var container = new CollisionContainer(a, b);
+                        if (_collisions.Contains(container) == false)
                         {
-                            a.Collision(b);
-                            b.Collision(a);
+                            _collisions.Add(container);
+                            container.CollideObjects();
                         }
                     }
-                    else
-                    {
-                        if (a.IsColliding)
-                        {
-                            a.CollisionExit(b);
-                            b.CollisionExit(a);
-                        }
-                    }
+                }
+            }
+        }
+
+        private void TryRemoveExistingCollisions()
+        {
+            for (var i = _collisions.Count - 1; i >= 0; i--)
+            {
+                var collision = _collisions[i];
+
+                if (collision.DontCollideAnymore())
+                {
+                    _collisions.Remove(collision);
                 }
             }
         }

@@ -59,6 +59,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
             }
         }
 
+        public bool MouseRight
+        {
+            get
+            {
+                if (!_mousePressed && _mouseButtons[1])
+                {
+                    _mousePressed = true;
+                    return true;
+                }
+
+                if (_mousePressed && !_mouseButtons[1])
+                {
+                    _mousePressed = false;
+                    return false;
+                }
+
+                return false;
+            }
+        }
+
         public InputController(RenderForm renderForm)
         {
             _directInput = new DirectInput();
