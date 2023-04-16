@@ -109,7 +109,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
         public void Render()
         {
             _canvasRenderer.Render();
-            _canvasRenderer.RenderComponent(_interfaceCursor.Image);
+            //_canvasRenderer.RenderComponent(_interfaceCursor.Image);
         }
 
         public void EndRender()

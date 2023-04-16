@@ -10,7 +10,10 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
+using PhlegmaticOne.SharpTennis.Game.Game.Commands;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes;
@@ -51,17 +54,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 new ShaderInfo("vertex.hlsl", "vertexShader", "vs_5_0"),
                 new ShaderInfo("pixel.hlsl", "pixelShader", "ps_5_0")));
 
-            //var canvasManager = new CanvasManagerFactory(_directX2DGraphics, _directX2DGraphics).CreateCanvasManager();
-            //var factory = new MenuCanvasFactory(new MenuCanvasViewModel
-            //{
-            //    ExitButtonCommand = new ExitGameCommand(_renderForm),
-            //    PlayButtonCommand = new StartGameCommand(canvasManager,
-            //        new GameSceneBuilder(new TextureMaterialsProvider(),
-            //            new MeshLoader(_directX3DGraphics, _meshRenderer.PointSampler)), this)
-            //});
-            //canvasManager.AddCanvas(factory.CreateCanvas());
+            var canvasManager = new CanvasManagerFactory(_directX2DGraphics, _directX2DGraphics).CreateCanvasManager();
+            var factory = new GameCanvasFactory();
+            canvasManager.AddCanvas(factory.CreateCanvas());
 
-            //_canvasManager = canvasManager;
+            _canvasManager = canvasManager;
             _rigidBodiesSystem = new RigidBodiesSystem();
             _collisionSystem = new CollidingSystem();
 
@@ -69,7 +66,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             _renderSequence = new RenderSequence(new IRenderer[]
             {
                 _meshRenderer,
-                //canvasManager
+                _canvasManager
             });
             _renderForm.UserResized += RenderFormResizedCallback;
             _renderForm.Closing += RenderFormOnClosing;
@@ -89,7 +86,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                 var camera = Scene.Current.Camera;
                 camera.Aspect = Screen.Width / Screen.Height;
             }
-            //_canvasManager.Dispose();
+            _canvasManager.Dispose();
             _directX2DGraphics.DisposeOnResizing();
             _directX3DGraphics.Resize();
             _directX2DGraphics.Resize(_directX3DGraphics.BackBuffer.QueryInterface<Surface>());
@@ -108,11 +105,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
 
                 _racket = scene.GetComponent<Racket>();
                 var floor = scene.GetComponent<FloorModel>();
-                _ballFloorCollisionController = new BallFloorCollisionController(floor);
+                var elements = _canvasManager.Current.GetElements().OfType<ScoreText>().ToArray();
+                _ballFloorCollisionController = new BallFloorCollisionController(floor, new ScoreSystem(
+                    elements[0], elements[1]));
                 _racketMoveController = new RacketMoveController(_racket, scene.Camera, _inputController);
                 scene.Start();
                 RenderFormResizedCallback(this, EventArgs.Empty);
-                //_canvasManager.Start();
+                _canvasManager.Start();
                 _firstRun = false;
             }
 

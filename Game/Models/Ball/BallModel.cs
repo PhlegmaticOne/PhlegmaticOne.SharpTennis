@@ -7,6 +7,12 @@ using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 {
+    public enum BallBounceType
+    {
+        Player,
+        Enemy
+    }
+
     public class BallModel : BehaviorObject
     {
         private SphereCollider _sphereCollider;
@@ -20,6 +26,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
         public MeshComponent Mesh { get; }
         public RigidBody3D RigidBody { get; private set; }
+        public BallBounceType BallBounceType { get; set; }
 
         public override void Start()
         {

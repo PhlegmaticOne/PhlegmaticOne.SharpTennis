@@ -134,6 +134,7 @@
     <Compile Include="Engine2D\CanvasManager.cs" />
     <Compile Include="Engine2D\Components\Base\Colors.cs" />
     <Compile Include="Engine2D\Components\Base\IResizable.cs" />
+    <Compile Include="Engine2D\Components\Base\ResizableComponent.cs" />
     <Compile Include="Engine2D\Components\ButtonComponent.cs" />
     <Compile Include="Engine2D\Components\TextFormatData.cs" />
     <Compile Include="Engine2D\Canvas.cs" />
@@ -170,6 +171,9 @@
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
+    <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
+    <Compile Include="Game\Interface\Elements\ScoreText.cs" />
+    <Compile Include="Game\Interface\GameCanvasFactory.cs" />
     <Compile Include="Game\Interface\MenuCanvasFactory.cs" />
     <Compile Include="Game\Interface\MenuCanvasViewModel.cs" />
     <Compile Include="Common\Sound\SharpAudioDevice.cs" />
