@@ -11,6 +11,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
         private Vector3 _maxPosition;
 
         public Vector3 Normal { get; set; }
+        public Vector2 Size => (Vector2)(_maxPosition - _minPosition);
 
         public override void Start()
         {
@@ -24,9 +25,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
                 SetBounceTypeToBall(ball);
-                var ballSpeed = ball.GetSpeed();
-                var reflected = Collider.Reflect(ballSpeed, Normal, ball.Bounciness);
-                ball.SetSpeed(reflected);
+                ball.Bounce(this, Normal);
             }
         }
 

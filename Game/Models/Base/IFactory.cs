@@ -6,4 +6,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Base
     {
         T Create(Transform transform);
     }
+
+    public interface IFactory<out T, in TData> where T : Component where TData : IFactoryData
+    {
+        T Create(Transform transform, TData data);
+    }
+
+    public interface IFactoryData { }
 }

@@ -14,13 +14,16 @@ using PhlegmaticOne.SharpTennis.Game.Game.Commands;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes;
 using SharpDX;
 using SharpDX.DirectInput;
 using SharpDX.DXGI;
 using SharpDX.Windows;
+using SharpDX.XAudio2;
 using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
 using Screen = PhlegmaticOne.SharpTennis.Game.Common.Infrastructure.Screen;
 
@@ -42,6 +45,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         private readonly CollidingSystem _collisionSystem;
         private RacketMoveController _racketMoveController;
         private BallFloorCollisionController _ballFloorCollisionController;
+        private EnemyRacketController _enemyRacketController;
 
         public GameRunner(RenderForm renderForm)
         {
@@ -93,8 +97,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             GameEvents.OnScreenResized(Screen.Size);
         }
 
-        private Racket _racket;
-
         public void RenderLoopCallback()
         {
             if (_firstRun)
@@ -103,12 +105,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
                         new MeshLoader(_directX3DGraphics, _meshRenderer.PointSampler))
                     .BuildScene();
 
-                _racket = scene.GetComponent<Racket>();
+                var rackets = scene.GetComponents<Racket>().ToArray();
+                var ball = scene.GetComponent<BallModel>();
                 var floor = scene.GetComponent<FloorModel>();
+                var table = scene.GetComponent<TennisTable>();
                 var elements = _canvasManager.Current.GetElements().OfType<ScoreText>().ToArray();
+
                 _ballFloorCollisionController = new BallFloorCollisionController(floor, new ScoreSystem(
                     elements[0], elements[1]));
-                _racketMoveController = new RacketMoveController(_racket, scene.Camera, _inputController);
+                _racketMoveController = new RacketMoveController(rackets[0], scene.Camera, _inputController);
+                _enemyRacketController = new EnemyRacketController(ball, rackets[1], table);
                 scene.Start();
                 RenderFormResizedCallback(this, EventArgs.Empty);
                 _canvasManager.Start();
@@ -116,13 +122,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
             }
 
             Time.Update();
-
+            
             MoveCamera();
             _inputController.UpdateKeyboardState();
             _inputController.UpdateMouseState();
             _racketMoveController.UpdateBehavior();
             _collisionSystem.UpdateBehavior();
             _rigidBodiesSystem.UpdateBehavior();
+            _enemyRacketController.Update();
 
             GameEvents.OnMouseMoved(new Vector2(_inputController.MouseRelativePositionX, _inputController.MouseRelativePositionY));
 

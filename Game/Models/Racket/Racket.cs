@@ -6,6 +6,7 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
+using SharpDX.X3DAudio;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
@@ -15,13 +16,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private readonly MeshComponent _handComponent;
         private RigidBody3D _rigidBody3D;
 
-        public Racket(MeshComponent coloredComponent, MeshComponent handComponent)
+        public Racket(MeshComponent coloredComponent, MeshComponent handComponent, bool isPlayer)
         {
+            IsPlayer = isPlayer;
             _coloredComponent = coloredComponent;
             _handComponent = handComponent;
             Meshes = new List<MeshComponent> { _coloredComponent, _handComponent };
         }
 
+        public bool IsPlayer { get; set; }
         public List<MeshComponent> Meshes { get; }
         public List<MeshComponent> Boxes { get; set; }
         public BoxCollider3D BoxCollider { get; private set; }
@@ -53,13 +56,37 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
+                SetBallBounce(ball);
+
+                if (IsPlayer == false)
+                {
+                    var speed = ball.GetSpeed();
+                    if (speed.X == 0)
+                    {
+                        return;
+                    }
+                    var newSpeed = new Vector3(
+                        -speed.X, speed.Y + 30, speed.Z);
+                    ball.SetSpeed(newSpeed);
+                    return;
+                }
+
                 var s = _rigidBody3D.Speed.Normalized();
+
+                if (s.X == 0)
+                {
+                    s.X = 1;
+                }
                 var force = 100;
-                var speed = ball.GetSpeed();
                 var reflected = force * s;
                 reflected.Y = 50;
-                ball.SetSpeed(reflected);
+                ball.BounceDirect(this, reflected);
             }
+        }
+
+        private void SetBallBounce(BallModel ball)
+        {
+            ball.BallBounceType = IsPlayer ? BallBounceType.Player : BallBounceType.Enemy;
         }
 
         private void TransformOnRotated(Vector3 obj)

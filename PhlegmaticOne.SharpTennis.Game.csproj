@@ -168,9 +168,12 @@
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallFloorCollisionController.cs" />
+    <Compile Include="Game\Controllers\EnemyRacketController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
+    <Compile Include="Game\Interface\Elements\BallFlyView.cs" />
+    <Compile Include="Game\Interface\Elements\BallFlyViewController.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
     <Compile Include="Game\Interface\GameCanvasFactory.cs" />
@@ -185,6 +188,7 @@
     <Compile Include="Engine3D\Shaders\ConstantBuffer.cs" />
     <Compile Include="Engine3D\Shaders\IncludeHandler.cs" />
     <Compile Include="Engine3D\Mesh\Material.cs" />
+    <Compile Include="Game\Models\Ball\BallBounceHelper.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Base\IFactory.cs" />

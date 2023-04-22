@@ -7,7 +7,14 @@ using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
-    public class RacketFactory : IFactory<Racket>
+    public class RacketFactoryData : IFactoryData
+    {
+        public bool IsPlayer { get; set; }
+        public Color Color { get; set; }
+        public Vector3 Normal { get; set; }
+    }
+
+    public class RacketFactory : IFactory<Racket, RacketFactoryData>
     {
         private readonly MeshLoader _meshLoader;
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
@@ -19,7 +26,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         }
 
 
-        public Racket Create(Transform transform)
+        public Racket Create(Transform transform, RacketFactoryData racketFactoryData)
         {
             var racket = _meshLoader.LoadFbx("assets\\models\\racket.fbx", _textureMaterialsProvider.DefaultTexture);
 
@@ -32,27 +39,34 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
             var go = new GameObject("Racket");
-            var model = new Racket(racket[0], racket[1])
+            var model = new Racket(racket[0], racket[1], racketFactoryData.IsPlayer)
             {
-                Normal = Vector3.Right
+                Normal = racketFactoryData.Normal
             };
+            model.Color(racketFactoryData.Color);
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(model);
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
-            go.AddComponent(CreateCollider(transform.Position));
+            go.AddComponent(CreateCollider(transform.Position, racketFactoryData.IsPlayer));
             return model;
         }
 
-        private BoxCollider3D CreateCollider(Vector3 position)
+        private BoxCollider3D CreateCollider(Vector3 position, bool isPlayer)
         {
-            var collider = new BoxCollider3D(position - new Vector3(1f, 0.5f, 1.5f),
-                position + new Vector3(1f, 5, 3.5f))
+            var c1 = isPlayer ? 3 : 0;
+            var c2 = isPlayer ? 0 : 3;
+
+            var collider = new BoxCollider3D(position - new Vector3(c1, 3f, 3f),
+                position + new Vector3(c1, 7, 6f))
             {
                 Offset = new Vector3(0, 3, 1),
                 RotationDivider = -60,
-                IsStatic = false
+                IsStatic = true
             };
             return collider;
         }
+
+
+        //Was : var collider = new BoxCollider3D(position - new Vector3(1f, 0.5f, 1.5f), position + new Vector3(1f, 5, 3.5f))
     }
 }

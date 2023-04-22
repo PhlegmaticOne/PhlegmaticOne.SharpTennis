@@ -6,16 +6,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 {
     public class TennisTable : BehaviorObject
     {
-        private readonly TableTopPart _tableTopPart;
-        private readonly TableNet _tableNet;
         public List<MeshComponent> Meshes { get; }
+        public TableTopPart TableTopPart { get; }
+        public TableNet TableNet { get; }
 
         public TennisTable(List<MeshComponent> meshes, 
             TableTopPart tableTopPart, TableNet tableNet)
         {
-            _tableTopPart = tableTopPart;
-            _tableNet = tableNet;
             Meshes = meshes;
+            TableTopPart = tableTopPart;
+            TableNet = tableNet;
         }
     }
 }

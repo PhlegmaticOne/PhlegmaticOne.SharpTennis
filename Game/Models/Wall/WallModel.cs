@@ -11,18 +11,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Wall
         public MeshComponent Mesh { get; }
         public Vector3 Normal { get; set; } = Vector3.Left;
 
-        public WallModel(MeshComponent mesh)
-        {
-            Mesh = mesh;
-        }
+        public WallModel(MeshComponent mesh) => Mesh = mesh;
 
         public override void OnCollisionEnter(Collider other)
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
-                var speed = ball.GetSpeed();
-                var reflected = Collider.Reflect(speed, Normal, ball.Bounciness);
-                ball.SetSpeed(reflected);
+                ball.Bounce(this, Normal);
             }
         }
     }

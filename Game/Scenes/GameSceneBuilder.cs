@@ -2,6 +2,7 @@
 using System.Linq;
 using Assimp;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
@@ -63,16 +64,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             {
                 scene.AddGameObject(mesh.GameObject);
             }
+            scene.AddGameObject(table.GameObject);
 
             AddRacket(scene, new Transform(
                 new Vector3(-70, 10, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), Color.Red, Vector3.Right);
+                new Vector3(1, 1, 1)), Color.Red, Vector3.Right, true);
 
-            //AddRacket(scene, new Transform(
-            //    new Vector3(70, 10, 0),
-            //    new Vector3(90, -180, -90),
-            //    new Vector3(1, 1, 1)), Color.Black, Vector3.Left);
+            AddRacket(scene, new Transform(
+                new Vector3(70, 10, 0),
+                new Vector3(90, -180, -90),
+                new Vector3(1, 1, 1)), Color.Black, Vector3.Left, false);
 
             var ball = _ballFactory.Create(new Transform(
                 new Vector3(-50, 20, 20), Vector3.Zero, Vector3.One));
@@ -87,9 +89,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             scene.AddGameObject(floor.Mesh.GameObject);
             scene.AddGameObject(floor.GameObject);
 
-            AddWall(scene, new Transform(
-                new Vector3(50, 0, 0), new Vector3(90, 180, 180), Vector3.One));
+            //AddWall(scene, new Transform(
+            //    new Vector3(50, 0, 0), new Vector3(90, 180, 180), Vector3.One));
         }
+
 
         private void AddWall(Scene scene, Transform transform)
         {
@@ -129,16 +132,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         }
 
 
-        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal)
+        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal, bool isPlayer)
         {
-            var racket = _racketFactory.Create(transform);
-            racket.Color(color);
+            var racket = _racketFactory.Create(transform, new RacketFactoryData
+            {
+                Color = color,
+                IsPlayer = isPlayer,
+                Normal = normal
+            });
+
             scene.AddGameObject(racket.GameObject);
             foreach (var meshComponent in racket.Meshes)
             {
                 scene.AddGameObject(meshComponent.GameObject);
             }
-            racket.Normal = normal;
+            //racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
         }
 
 

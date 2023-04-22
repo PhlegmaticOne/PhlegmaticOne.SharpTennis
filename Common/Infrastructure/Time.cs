@@ -34,7 +34,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Infrastructure
 
         public static void Update()
         {
-            long ticks = Stopwatch.ElapsedTicks;
+            var ticks = Stopwatch.ElapsedTicks;
             _time = (float)ticks / TimeSpan.TicksPerSecond;
             _deltaT = (float)(ticks - _previousTicks) / TimeSpan.TicksPerSecond;
             _previousTicks = ticks;
