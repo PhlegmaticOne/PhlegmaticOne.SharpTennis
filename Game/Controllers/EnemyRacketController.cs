@@ -8,42 +8,34 @@ using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
-    public class EnemyRacketController
+    public class EnemyRacketController : BehaviorObject
     {
-        private readonly BallModel _ball;
-        private readonly Racket _enemyRacket;
+        private readonly RacketBase _enemyRacket;
         private readonly TennisTable _tennisTable;
+        private readonly BallBounceProvider _ballBounceProvider;
         private readonly Vector2 _tableSize;
         private readonly float _tableY;
         private readonly TableTopPart _tableTop;
 
         private Vector3 _approximatedPosition;
 
-        public EnemyRacketController(BallModel ball, Racket enemyRacket, TennisTable tennisTable)
+        public EnemyRacketController(RacketBase enemyRacket, TennisTable tennisTable,
+            BallBounceProvider ballBounceProvider)
         {
-            _ball = ball;
             _enemyRacket = enemyRacket;
             _tennisTable = tennisTable;
+            _ballBounceProvider = ballBounceProvider;
             _tableSize = tennisTable.TableTopPart.Size;
             _tableY = tennisTable.TableTopPart.Transform.Position.Y;
             _tableTop = tennisTable.TableTopPart;
-            _ball.Bounced += BallOnBounced;
+            _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
 
-        public void Update()
-        {
-            if (_approximatedPosition == Vector3.Zero)
-            {
-                return;
-            }
+        private const float Coeff = -150f;
 
-            var lerp = Vector3.Lerp(_enemyRacket.Transform.Position, _approximatedPosition, 0.03f);
-            _enemyRacket.Transform.SetPosition(lerp);
-        }
-
-        private void BallOnBounced(Component bouncedFrom, BallModel ball)
+        private void BallBounceProviderOnBallBounced(Component from, BallModel ball)
         {
-            if (ball.BallBounceType == BallBounceType.Enemy || ball.BallBounceType == BallBounceType.None)
+            if (ball.BouncedFrom == BallBouncedFromType.Enemy || ball.BouncedFrom == BallBouncedFromType.None)
             {
                 return;
             }
@@ -59,6 +51,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             _approximatedPosition = approximatedPosition;
         }
+
+        protected override void Update()
+        {
+            if (_approximatedPosition == Vector3.Zero)
+            {
+                return;
+            }
+
+            var lerp = Vector3.Lerp(_enemyRacket.Transform.Position, _approximatedPosition, 0.03f);
+            _enemyRacket.Transform.SetPosition(lerp);
+        }
+
 
         private Vector3 ApproximatePositionWhenYWillBeZero(Vector3 speed, Vector3 initialPosition)
         {
@@ -78,7 +82,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             return (float)(2 * speedLength * sine) / Coeff * RigidBody3D.GlobalAcceleration;
         }
 
-        private const float Coeff = -150f;
 
         private float CalculateMaxHeight(Vector3 speed)
         {

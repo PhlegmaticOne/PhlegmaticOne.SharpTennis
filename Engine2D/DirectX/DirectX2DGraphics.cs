@@ -1,4 +1,5 @@
 ﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using SharpDX;
@@ -79,6 +80,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
 
         public void RenderText(TextComponent textComponent)
         {
+            if (IsDisposed.Instance)
+            {
+                return;
+            }
+
             _renderTarget.Transform = textComponent.RectTransform.GetTransformMatrix();
             _renderTarget.DrawText(textComponent.Text, textComponent.TextFormat, 
                 textComponent.RectTransform.RawBounds, textComponent.Brush);
@@ -86,6 +92,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
 
         public void RenderImage(ImageComponent imageComponent)
         {
+            if (IsDisposed.Instance)
+            {
+                return;
+            }
+
             _renderTarget.Transform = imageComponent.RectTransform.GetTransformMatrix();
             _renderTarget.DrawBitmap(imageComponent.Bitmap, imageComponent.Opacity, imageComponent.InterpolationMode);
         }

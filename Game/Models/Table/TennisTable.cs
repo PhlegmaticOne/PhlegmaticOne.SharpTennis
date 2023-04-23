@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
+﻿using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 {
-    public class TennisTable : BehaviorObject
+    public class TennisTable : MeshableObject
     {
-        public List<MeshComponent> Meshes { get; }
         public TableTopPart TableTopPart { get; }
         public TableNet TableNet { get; }
 
-        public TennisTable(List<MeshComponent> meshes, 
-            TableTopPart tableTopPart, TableNet tableNet)
+        public TennisTable(TableTopPart tableTopPart, TableNet tableNet)
         {
-            Meshes = meshes;
             TableTopPart = tableTopPart;
             TableNet = tableNet;
         }

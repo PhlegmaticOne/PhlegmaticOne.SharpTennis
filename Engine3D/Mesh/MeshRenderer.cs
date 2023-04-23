@@ -12,8 +12,9 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Shaders;
 using Assimp;
+using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using LightSourceType = PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh.Structs.LightSourceType;
-using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scene;
+using Scene = PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes.Scene;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 {
@@ -30,6 +31,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
         };
 
         private readonly DirectX3DGraphics _directX3DGraphics;
+        private readonly SceneProvider _sceneProvider;
         private readonly Device11 _device;
         private readonly DeviceContext _deviceContext;
         private readonly int[] _lightVariableOffsets = new int[MaxLights];
@@ -54,12 +56,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public SamplerState PointSampler { get; }
 
-        public MeshRenderer(DirectX3DGraphics directX3DGraphics, MeshRendererData meshRendererData)
+        public MeshRenderer(DirectX3DGraphics directX3DGraphics, MeshRendererData meshRendererData,
+            SceneProvider sceneProvider)
         {
             var pixelData = meshRendererData.PixelShaderInfo;
             var vertexData = meshRendererData.VertexShaderInfo;
 
             _directX3DGraphics = directX3DGraphics;
+            _sceneProvider = sceneProvider;
             _device = _directX3DGraphics.Device;
             _deviceContext = _directX3DGraphics.DeviceContext;
 
@@ -166,12 +170,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public void PreRender()
         {
-            if (Scene.Current == null)
+            var scene = _sceneProvider.Scene;
+
+            if (scene?.Camera == null)
             {
                 return;
             }
 
-            var camera = Scene.Current.Camera;
+            var camera = scene.Camera;
             UpdatePerFrameConstantBuffers(Time.PassedTime);
             _illuminationProperties.eyePosition = (Vector4)camera.Transform.Position;
             UpdateIllumination();
@@ -180,16 +186,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh
 
         public void Render()
         {
-            if (Scene.Current == null)
+            var scene = _sceneProvider.Scene;
+
+            if (scene?.Camera == null)
             {
                 return;
             }
 
-            var camera = Scene.Current.Camera;
+            var camera = scene.Camera;
             var viewMatrix = camera.GetViewMatrix();
             var projectionMatrix = camera.GetProjectionMatrix();
 
-            foreach (var meshComponent in Scene.Current.GetComponents<MeshComponent>())
+            foreach (var meshComponent in scene.GetComponents<MeshComponent>())
             {
                 UpdatePerObjectConstantBuffers(meshComponent.Transform.GetWorldMatrix(),
                     viewMatrix, projectionMatrix, 0);

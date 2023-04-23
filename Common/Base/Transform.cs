@@ -17,7 +17,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 
         public event Action<Vector3> Moved;
         public event Action<Vector3> Scaled;
-        public event Action<Vector3> Rotated; 
+        public event Action<Vector3> Rotated;
+
+        public void InitializeFromTransform(Transform transform)
+        {
+            SetPosition(transform.Position);
+            SetRotation(transform.Rotation);
+            SetScale(transform.Scale);
+        }
 
         public static Transform Identity(GameObject keeper)
         {
@@ -30,12 +37,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         public static Transform EmptyIdentity => new Transform(Vector3.Zero, Vector3.Zero, Vector3.One);
 
 
-        public Transform(Vector3 position, Vector3 rotation, Vector3 scale)
+        public Transform(Vector3 position = new Vector3(), Vector3 rotation = new Vector3(), Vector3 scale = new Vector3())
         {
+            if (scale == Vector3.Zero)
+            {
+                scale = Vector3.One;
+            }
+
             _position = position;
             _rotation = rotation;
             _scale = scale;
         }
+
 
         public void Move(Vector3 position, bool invokeEvent = true)
         {

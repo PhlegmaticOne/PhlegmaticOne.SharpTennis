@@ -9,34 +9,40 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
     public class BallFloorCollisionController : BehaviorObject
     {
-        private readonly FloorModel _floorModel;
         private readonly ScoreSystem _scoreSystem;
 
-        public BallFloorCollisionController(FloorModel floorModel, ScoreSystem scoreSystem)
+        public BallFloorCollisionController(ScoreSystem scoreSystem, BallBounceProvider ballBounceProvider)
         {
-            _floorModel = floorModel;
             _scoreSystem = scoreSystem;
-            _floorModel.BallHit += FloorModelOnBallHit;
+            ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
 
-        public void ReturnToStatPositionRandom()
+        private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
+        {
+            if (bouncedFrom.GameObject.HasComponent<FloorModel>())
+            {
+                AddScore(ball);
+                ReturnToStatPositionRandom(ball);
+            }
+        }
+
+        public void Setup(ScoreText playerText, ScoreText enemyText)
+        {
+            _scoreSystem.EnemyText = enemyText;
+            _scoreSystem.PlayerText = playerText;
+        }
+
+        public void ReturnToStatPositionRandom(BallModel ball)
         {
             var z = new Random().Next(-20, 20);
-            var ball = Scene.Current.GetComponent<BallModel>();
             ball.RigidBody.EnableGravity();
             ball.SetSpeed(Vector3.Zero);
             ball.Transform.SetPosition(new Vector3(-50, 20, z));
         }
 
-        private void FloorModelOnBallHit(BallModel obj)
-        {
-            AddScore(obj);
-            ReturnToStatPositionRandom();
-        }
-
         private void AddScore(BallModel ball)
         {
-            if (ball.BallBounceType == BallBounceType.Player)
+            if (ball.BouncedFrom == BallBouncedFromType.Player)
             {
                 _scoreSystem.AddScoreToPlayer(1);
             }

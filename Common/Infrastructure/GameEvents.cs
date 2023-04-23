@@ -4,7 +4,7 @@ using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Common.Infrastructure
 {
-    public static class GameEvents
+    public static class GlobalEvents
     {
         public static event Action<SizeF> ScreenResized;
         public static event Action MouseClicked;

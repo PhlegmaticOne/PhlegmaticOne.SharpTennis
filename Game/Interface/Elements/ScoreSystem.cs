@@ -2,23 +2,17 @@
 {
     public class ScoreSystem
     {
-        private readonly ScoreText _playerText;
-        private readonly ScoreText _enemyText;
-
-        public ScoreSystem(ScoreText playerText, ScoreText enemyText)
-        {
-            _playerText = playerText;
-            _enemyText = enemyText;
-        }
+        public ScoreText PlayerText { get; set; }
+        public ScoreText EnemyText { get; set; }
 
         public void AddScoreToPlayer(int score)
         {
-            _playerText.AddScore(score);
+            PlayerText.AddScore(score);
         }
 
         public void AddScoreToEnemy(int score)
         {
-            _enemyText.AddScore(score);
+            EnemyText.AddScore(score);
         }
     }
 }

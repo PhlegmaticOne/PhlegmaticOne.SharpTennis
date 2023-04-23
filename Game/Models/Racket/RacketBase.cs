@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System.Collections.Generic;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using SharpDX;
-using SharpDX.X3DAudio;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
-    public class Racket : BehaviorObject
+    public abstract class RacketBase : MeshableObject
     {
+        private readonly float _minZ = -40;
+        private readonly float _maxZ = 40;
         private readonly MeshComponent _coloredComponent;
         private readonly MeshComponent _handComponent;
-        private RigidBody3D _rigidBody3D;
+        protected RigidBody3D RigidBody3D;
 
-        public Racket(MeshComponent coloredComponent, MeshComponent handComponent, bool isPlayer)
+        protected RacketBase(MeshComponent coloredComponent, MeshComponent handComponent)
         {
-            IsPlayer = isPlayer;
             _coloredComponent = coloredComponent;
             _handComponent = handComponent;
-            Meshes = new List<MeshComponent> { _coloredComponent, _handComponent };
+            AddMeshes(_coloredComponent, _handComponent);
         }
 
-        public bool IsPlayer { get; set; }
-        public List<MeshComponent> Meshes { get; }
         public List<MeshComponent> Boxes { get; set; }
         public BoxCollider3D BoxCollider { get; private set; }
         public Vector3 Normal { get; set; }
@@ -34,7 +31,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             Transform.SetPosition(_handComponent.Transform.Position);
             BoxCollider = GameObject.GetComponent<BoxCollider3D>();
-            _rigidBody3D = GameObject.GetComponent<RigidBody3D>();
+            RigidBody3D = GameObject.GetComponent<RigidBody3D>();
             Transform.Moved += TransformOnMoved;
             Transform.Rotated += TransformOnRotated;
         }
@@ -47,46 +44,24 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             _coloredComponent.MeshObjectData.Material.MaterialProperties = properties;
         }
 
-        public void UpdateSpeed(Vector3 speed)
-        {
-            _rigidBody3D.Speed = speed;
-        }
+        public void UpdateSpeed(Vector3 speed) => RigidBody3D.Speed = speed;
 
         public override void OnCollisionEnter(Collider other)
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
                 SetBallBounce(ball);
-
-                if (IsPlayer == false)
-                {
-                    var speed = ball.GetSpeed();
-                    if (speed.X == 0)
-                    {
-                        return;
-                    }
-                    var newSpeed = new Vector3(
-                        -speed.X, speed.Y + 30, speed.Z);
-                    ball.SetSpeed(newSpeed);
-                    return;
-                }
-
-                var s = _rigidBody3D.Speed.Normalized();
-
-                if (s.X == 0)
-                {
-                    s.X = 1;
-                }
-                var force = 100;
-                var reflected = force * s;
-                reflected.Y = 50;
-                ball.BounceDirect(this, reflected);
+                OnCollisionWithBall(ball);
             }
         }
 
+        protected abstract BallBouncedFromType BallBounceType { get; }
+        protected abstract void OnCollisionWithBall(BallModel ballModel);
+
         private void SetBallBounce(BallModel ball)
         {
-            ball.BallBounceType = IsPlayer ? BallBounceType.Player : BallBounceType.Enemy;
+            ball.BouncedFrom = BallBounceType;
+            ball.BouncedFromTableTimes = 0;
         }
 
         private void TransformOnRotated(Vector3 obj)
@@ -100,6 +75,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             _coloredComponent.Transform.Move(obj);
             _handComponent.Transform.Move(obj);
+            Rotate();
+        }
+
+        private void Rotate()
+        {
+            var z = Transform.Position.Z;
+            var r = Transform.Rotation;
+            var angle = 180 * (_minZ - z) / (_maxZ - _minZ);
+            Transform.SetRotation(new Vector3(r.X, r.Y, -angle - 90));
         }
     }
 }

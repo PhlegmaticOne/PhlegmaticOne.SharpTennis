@@ -61,6 +61,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
                 component.GameObject = null;
                 component.Transform = null;
 
+                if (component is BehaviorObject behavior)
+                {
+                    behavior.OnDestroy();
+                }
+
                 if (component is IDisposable disposable)
                 {
                     disposable.Dispose();

@@ -70,6 +70,15 @@
     <Reference Include="AssimpNet, Version=5.0.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>packages\AssimpNet.5.0.0-beta1\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.7.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.7.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.Abstractions.7.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -102,6 +111,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -116,10 +131,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Base\Scenes\ISceneBuilderFactory.cs" />
+    <Compile Include="Common\Base\Scenes\SceneProvider.cs" />
     <Compile Include="Common\Base\VectorExtensions.cs" />
     <Compile Include="Common\Commands\ICommand.cs" />
     <Compile Include="Common\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Infrastructure\GameEvents.cs" />
+    <Compile Include="Common\Infrastructure\IsDisposed.cs" />
     <Compile Include="Common\Infrastructure\Screen.cs" />
     <Compile Include="Common\Render\IRenderer.cs" />
     <Compile Include="Common\Render\RenderSequence.cs" />
@@ -127,7 +145,7 @@
     <Compile Include="Common\Base\BehaviorObject.cs" />
     <Compile Include="Common\Base\GameObject.cs" />
     <Compile Include="Common\Base\Component.cs" />
-    <Compile Include="Common\Base\Scene.cs" />
+    <Compile Include="Common\Base\Scenes\Scene.cs" />
     <Compile Include="Engine2D\Base\IElementsCreator.cs" />
     <Compile Include="Engine2D\Base\IElementsRenderer.cs" />
     <Compile Include="Engine2D\Base\RectComponent.cs" />
@@ -163,22 +181,20 @@
     <Compile Include="Common\Infrastructure\Time.cs" />
     <Compile Include="Common\Base\Transform.cs" />
     <Compile Include="Engine3D\Mesh\TextureMaterialsProvider.cs" />
-    <Compile Include="Engine3D\Rigid\RigidBodiesSystem.cs" />
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallFloorCollisionController.cs" />
     <Compile Include="Game\Controllers\EnemyRacketController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
+    <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
-    <Compile Include="Game\Interface\Elements\BallFlyView.cs" />
-    <Compile Include="Game\Interface\Elements\BallFlyViewController.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
-    <Compile Include="Game\Interface\GameCanvasFactory.cs" />
-    <Compile Include="Game\Interface\MenuCanvasFactory.cs" />
-    <Compile Include="Game\Interface\MenuCanvasViewModel.cs" />
+    <Compile Include="Game\Interface\Game\GameCanvasFactory.cs" />
+    <Compile Include="Game\Interface\Menu\MenuCanvasFactory.cs" />
+    <Compile Include="Game\Interface\Menu\MenuCanvasViewModel.cs" />
     <Compile Include="Common\Sound\SharpAudioDevice.cs" />
     <Compile Include="Common\Sound\SharpAudioVoice.cs" />
     <Compile Include="Engine2D\DirectX\DirectX2DGraphics.cs" />
@@ -191,18 +207,31 @@
     <Compile Include="Game\Models\Ball\BallBounceHelper.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
+    <Compile Include="Game\Models\Ball\BallBounceProvider.cs" />
     <Compile Include="Game\Models\Base\IFactory.cs" />
+    <Compile Include="Game\Models\Base\MeshableObject.cs" />
     <Compile Include="Game\Models\Floor\FloorFactory.cs" />
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
-    <Compile Include="Game\Models\Racket\Racket.cs" />
+    <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
+    <Compile Include="Game\Models\Racket\PlayerRacket.cs" />
+    <Compile Include="Game\Models\Racket\RacketBase.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />
+    <Compile Include="Game\Models\Racket\States\EnemyRacketStates.cs" />
+    <Compile Include="Game\Models\Sky\SkyModel.cs" />
+    <Compile Include="Game\Models\Sky\SkyFactory.cs" />
     <Compile Include="Game\Models\Table\TableNet.cs" />
     <Compile Include="Game\Models\Table\TableTopPart.cs" />
     <Compile Include="Game\Models\Table\TennisTable.cs" />
     <Compile Include="Game\Models\Table\TennisTableFactory.cs" />
     <Compile Include="Game\Models\Wall\WallModel.cs" />
-    <Compile Include="Game\Scenes\Base\ISceneBuilder.cs" />
+    <Compile Include="Common\Base\Scenes\ISceneBuilder.cs" />
+    <Compile Include="Game\Scenes\Base\SceneBuilderFactory.cs" />
     <Compile Include="Game\Scenes\GameSceneBuilder.cs" />
+    <Compile Include="Game\Scenes\MenuSceneBuilder.cs" />
+    <Compile Include="Common\StateMachine\IStateCollection.cs" />
+    <Compile Include="Common\StateMachine\IStateHandler.cs" />
+    <Compile Include="Common\StateMachine\State.cs" />
+    <Compile Include="Common\StateMachine\States.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine3D\Mesh\Texture.cs" />

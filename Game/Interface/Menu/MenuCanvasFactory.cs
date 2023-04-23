@@ -4,19 +4,17 @@ using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
-using SharpDX.DirectWrite;
 using SharpDX;
+using SharpDX.DirectWrite;
 
-namespace PhlegmaticOne.SharpTennis.Game.Game.Interface
+namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu
 {
     public class MenuCanvasFactory : ICanvasFactory
     {
         private readonly MenuCanvasViewModel _menuCanvasViewModel;
 
-        public MenuCanvasFactory(MenuCanvasViewModel menuCanvasViewModel)
-        {
+        public MenuCanvasFactory(MenuCanvasViewModel menuCanvasViewModel) => 
             _menuCanvasViewModel = menuCanvasViewModel;
-        }
 
         public Canvas CreateCanvas()
         {

@@ -21,20 +21,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
 
         public FloorModel Create(Transform transform)
         {
-            var floor = _meshLoader.LoadFbx("assets\\models\\floor.fbx", _textureMaterialsProvider.DefaultTexture);
-
-            foreach (var meshComponent in floor)
-            {
-                meshComponent.Transform.SetRotation(transform.Rotation);
-                meshComponent.Transform.SetPosition(transform.Position);
-                meshComponent.Transform.SetScale(transform.Scale);
-            }
+            var floor = _meshLoader.LoadFbx("assets\\models\\floor.fbx", _textureMaterialsProvider.DefaultTexture)[0];
+            floor.Transform.InitializeFromTransform(transform);
 
             var go = new GameObject();
-            var floorModel = new FloorModel(floor[0]);
+            var floorModel = new FloorModel(floor);
             go.AddComponent(floorModel);
             go.AddComponent(new RigidBody3D(Vector3.Zero));
-            go.AddComponent(CreateCollider(floor[0].MeshObjectData, transform.Position, transform.Scale));
+            go.AddComponent(CreateCollider(floor.MeshObjectData, transform.Position, transform.Scale));
             return floorModel;
         }
 

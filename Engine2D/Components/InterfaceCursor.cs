@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using SharpDX;
 

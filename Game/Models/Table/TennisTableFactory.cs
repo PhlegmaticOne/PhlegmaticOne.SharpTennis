@@ -33,7 +33,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             }
 
             var go = new GameObject("TennisTable");
-            var tennisTable = new TennisTable(table, top, net);
+            var tennisTable = new TennisTable(top, net);
+            tennisTable.AddMeshes(table);
             go.AddComponent(tennisTable);
             return tennisTable;
         }

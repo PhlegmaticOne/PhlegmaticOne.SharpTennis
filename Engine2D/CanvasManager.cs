@@ -28,9 +28,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
         {
             _canvasRenderer = GameObject.GetComponent<CanvasRenderer>();
             _canvasScaler = GameObject.GetComponent<CanvasScaler>();
-            GameEvents.ScreenResized += GameEventsOnScreenResized;
-            GameEvents.MouseClicked += GameEventsOnMouseClicked;
-            GameEvents.MouseMoved += GameEventsOnMouseMoved;
+            GlobalEvents.ScreenResized += GameEventsOnScreenResized;
+            GlobalEvents.MouseClicked += GameEventsOnMouseClicked;
+            GlobalEvents.MouseMoved += GameEventsOnMouseMoved;
             GameEventsOnScreenResized(SizeF.Empty);
 
             foreach (var canvas in _canvases)
@@ -39,24 +39,25 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
             }
         }
 
-        public void AddCanvas(Canvas canvas)
+        public void ChangeCursorEnabled(bool enabled)
         {
-            _interfaceCursor.ChangeEnabled(true);
+            _interfaceCursor.ChangeEnabled(enabled);
+        }
+
+        public void AddCanvas(Canvas canvas, bool setCursorEnabled = true)
+        {
+            ChangeCursorEnabled(setCursorEnabled);
             _canvases.Add(canvas);
             _canvasRenderer?.AddCanvas(canvas);
         }
 
-        public void RemoveLast(bool hideCursor = false)
+        public void RemoveLast(bool setCursorEnabled = true)
         {
             var last = _canvases.LastOrDefault();
             _canvases.Remove(last);
             _canvasRenderer?.RemoveCanvas(last);
             last?.Dispose();
-
-            if (hideCursor)
-            {
-                _interfaceCursor.ChangeEnabled(false);
-            }
+            ChangeCursorEnabled(setCursorEnabled);
         }
 
         private void GameEventsOnMouseMoved(Vector2 obj)
@@ -78,6 +79,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
 
         private void GameEventsOnScreenResized(SizeF obj)
         {
+            Dispose();
+
             foreach (var canvas in _canvases)
             {
                 _canvasRenderer.ReinitializeElementsComponents(canvas);
@@ -96,6 +99,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
             _interfaceCursor?.Dispose();
         }
 
+        public override void OnDestroy()
+        {
+            foreach (var canvas in _canvases)
+            {
+                canvas.Dispose();
+            }
+        }
+
         public void PreRender()
         {
             _canvasRenderer.PreRender();
@@ -109,7 +120,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
         public void Render()
         {
             _canvasRenderer.Render();
-            //_canvasRenderer.RenderComponent(_interfaceCursor.Image);
+            _canvasRenderer.RenderComponent(_interfaceCursor.Image);
         }
 
         public void EndRender()

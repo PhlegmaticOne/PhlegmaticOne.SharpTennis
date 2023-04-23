@@ -12,11 +12,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
     {
         private readonly MeshLoader _meshLoader;
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
+        private readonly BallBounceProvider _ballBounceProvider;
 
-        public BallFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider)
+        public BallFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider,
+            BallBounceProvider ballBounceProvider)
         {
             _meshLoader = meshLoader;
             _textureMaterialsProvider = textureMaterialsProvider;
+            _ballBounceProvider = ballBounceProvider;
         }
 
         public BallModel Create(Transform transform)
@@ -26,7 +29,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
             ball.Transform.SetPosition(transform.Position);
 
             var go = new GameObject("Ball");
-            var model = new BallModel(ball);
+            var model = new BallModel(ball, _ballBounceProvider);
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Dynamic)
             {

@@ -2,43 +2,49 @@
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Engine3D;
 
-namespace PhlegmaticOne.SharpTennis.Game.Common.Base
+namespace PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes
 {
     public class Scene : BehaviorObject
     {
         private readonly List<GameObject> _gameObjects;
 
-        public static Scene Current { get; private set; }
         public Camera Camera { get; set; }
+
         public IReadOnlyList<GameObject> GameObjects => _gameObjects;
 
         public Scene() : this(new List<GameObject>()) { }
+
+        public Scene(params GameObject[] gameObjects)
+        {
+            _gameObjects = new List<GameObject>();
+            _gameObjects.AddRange(gameObjects);
+        }
 
         public Scene(IEnumerable<GameObject> gameObjects)
         {
             _gameObjects = new List<GameObject>();
             _gameObjects.AddRange(gameObjects);
-            Current = this;
         }
 
         public override void Start()
         {
-            var behaviorObjects = _gameObjects.SelectMany(x => x.GetComponents<BehaviorObject>());
-            foreach (var behaviorObject in behaviorObjects)
+            foreach (var behaviorObject in GetBehaviors())
             {
                 behaviorObject.Start();
             }
         }
 
-        public void AddGameObject(GameObject gameObject)
+        protected override void Update()
         {
-            _gameObjects.Add(gameObject);
+            foreach (var behaviorObject in GetBehaviors())
+            {
+                behaviorObject.UpdateBehavior();
+            }
         }
 
-        public void AddGameObjects(IEnumerable<GameObject> gameObjects)
-        {
-            _gameObjects.AddRange(gameObjects);
-        }
+        public void AddGameObject(GameObject gameObject) => _gameObjects.Add(gameObject);
+
+        public void AddGameObjects(IEnumerable<GameObject> gameObjects) => _gameObjects.AddRange(gameObjects);
 
         public T GetComponent<T>() where T : Component => 
             _gameObjects.First(x => x.HasComponent<T>()).GetComponent<T>();
@@ -55,5 +61,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 
             _gameObjects.Clear();
         }
+
+        private IEnumerable<BehaviorObject> GetBehaviors() =>
+            _gameObjects.SelectMany(x => x.GetComponents<BehaviorObject>());
     }
 }

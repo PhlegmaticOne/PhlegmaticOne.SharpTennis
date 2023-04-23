@@ -1,5 +1,8 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Commands;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+using PhlegmaticOne.SharpTennis.Game.Common.Commands;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
@@ -7,14 +10,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
     internal class StartGameCommand : ICommand
     {
         private readonly CanvasManager _canvasManager;
-        private readonly ISceneBuilder _sceneBuilder;
-        private readonly GameRunner _gameRunner;
+        private readonly SceneProvider _sceneProvider;
+        private readonly GameCanvasFactory _gameRunnerFactory;
+        private readonly ISceneBuilderFactory<TennisGameScenes> _sceneBuilder;
+        private readonly GameRunner<TennisGameScenes> _gameRunner;
 
         public StartGameCommand(CanvasManager canvasManager, 
-            ISceneBuilder sceneBuilder,
-            GameRunner gameRunner)
+            SceneProvider sceneProvider,
+            GameCanvasFactory gameRunnerFactory,
+            ISceneBuilderFactory<TennisGameScenes> sceneBuilder,
+            GameRunner<TennisGameScenes> gameRunner)
         {
             _canvasManager = canvasManager;
+            _sceneProvider = sceneProvider;
+            _gameRunnerFactory = gameRunnerFactory;
             _sceneBuilder = sceneBuilder;
             _gameRunner = gameRunner;
         }
@@ -23,9 +32,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
 
         public void Execute(object parameter)
         {
-            _canvasManager.RemoveLast(true);
-            _sceneBuilder.BuildScene();
-            _gameRunner.RenderFormResizedCallback(null, null);
+            _canvasManager.RemoveLast();
+
+            var sceneBuilder = _sceneBuilder.CreateSceneBuilder(_sceneBuilder.Scenes.Game);
+            var scene = sceneBuilder.BuildScene();
+            var canvas = _gameRunnerFactory.CreateCanvas();
+            sceneBuilder.SetupSceneCanvas(scene, canvas);
+
+            _canvasManager.AddCanvas(canvas, false);
+            _sceneProvider.ChangeScene(scene);
+            _gameRunner.ForceResize();
         }
     }
 }

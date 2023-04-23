@@ -1,21 +1,21 @@
 ﻿using System;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
 {
-    public class FloorModel : BehaviorObject
+    public class FloorModel : MeshableObject
     {
-        public MeshComponent Mesh { get; }
         public BoxCollider3D Collider { get; private set; }
 
         public event Action<BallModel> BallHit; 
 
         public FloorModel(MeshComponent mesh)
         {
-            Mesh = mesh;
+            AddMeshes(mesh);
         }
 
         public override void Start()
@@ -27,7 +27,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
-                BallHit?.Invoke(ball);
+                ball.BounceDirect(this, Vector3.Zero);
+                ball.IsInGame = false;
+                //BallHit?.Invoke(ball);
             }
         }
     }

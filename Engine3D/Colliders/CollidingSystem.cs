@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 {
     public class CollidingSystem : BehaviorObject
     {
+        private readonly SceneProvider _sceneProvider;
         private readonly List<CollisionContainer> _collisions;
 
-        public CollidingSystem() => _collisions = new List<CollisionContainer>();
+        public CollidingSystem(SceneProvider sceneProvider)
+        {
+            _sceneProvider = sceneProvider;
+            _collisions = new List<CollisionContainer>();
+        }
 
         protected override void Update()
         {
@@ -18,7 +24,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 
         private void TryAddNewCollisions()
         {
-            var allColliders = Scene.Current.GetComponents<Collider>().ToList();
+            var allColliders = _sceneProvider.Scene.GetComponents<Collider>().ToList();
 
             for (var i = 0; i < allColliders.Count; i++)
             {

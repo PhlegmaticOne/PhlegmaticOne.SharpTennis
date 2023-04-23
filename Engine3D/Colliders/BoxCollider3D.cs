@@ -54,10 +54,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
             var rotation = Quaternion.RotationAxis(Vector3.UnitX, _rotation.Z / RotationDivider);
             return aroundZero.GetCorners()
                 .Select(x =>
-            {
-                var result = Rotate(rotation, x);
-                return result + center;
-            });
+                {
+                    var result = Rotate(rotation, x);
+                    return result + center;
+                });
         }
 
         public static Vector3 Rotate(Quaternion rotation, Vector3 point)
@@ -117,93 +117,93 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
             return false;
         }
     }
-}
 
-public static class OnPolygonCollision
-{
-    static int OnLine(Line l1, Vector2 p)
+    public static class OnPolygonCollision
     {
-        if (p.X <= Math.Max(l1.p1.X, l1.p2.X)
-            && p.X <= Math.Min(l1.p1.X, l1.p2.X)
-            && (p.Y <= Math.Max(l1.p1.Y, l1.p2.Y)
-                && p.Y <= Math.Min(l1.p1.Y, l1.p2.Y)))
-            return 1;
-
-        return 0;
-    }
-
-    static int Direction(Vector2 a, Vector2 b, Vector2 c)
-    {
-        var val = (b.Y - a.Y) * (c.X - b.X) - (b.X - a.X) * (c.Y - b.Y);
-
-        if (val == 0)
+        static int OnLine(Line l1, Vector2 p)
         {
+            if (p.X <= Math.Max(l1.p1.X, l1.p2.X)
+                && p.X <= Math.Min(l1.p1.X, l1.p2.X)
+                && (p.Y <= Math.Max(l1.p1.Y, l1.p2.Y)
+                    && p.Y <= Math.Min(l1.p1.Y, l1.p2.Y)))
+                return 1;
+
             return 0;
         }
 
-        if (val < 0)
+        static int Direction(Vector2 a, Vector2 b, Vector2 c)
         {
-            return 2;
+            var val = (b.Y - a.Y) * (c.X - b.X) - (b.X - a.X) * (c.Y - b.Y);
+
+            if (val == 0)
+            {
+                return 0;
+            }
+
+            if (val < 0)
+            {
+                return 2;
+            }
+
+            return 1;
         }
 
-        return 1;
-    }
-
-    static int IsIntersect(Line l1, Line l2)
-    {
-        var dir1 = Direction(l1.p1, l1.p2, l2.p1);
-        var dir2 = Direction(l1.p1, l1.p2, l2.p2);
-        var dir3 = Direction(l2.p1, l2.p2, l1.p1);
-        var dir4 = Direction(l2.p1, l2.p2, l1.p2);
-
-        if (dir1 != dir2 && dir3 != dir4)
-            return 1;
-
-        if (dir1 == 0 && OnLine(l1, l2.p1) == 1)
-            return 1;
-
-        if (dir2 == 0 && OnLine(l1, l2.p2) == 1)
-            return 1;
-
-        if (dir3 == 0 && OnLine(l2, l1.p1) == 1)
-            return 1;
-
-        if (dir4 == 0 && OnLine(l2, l1.p2) == 1)
-            return 1;
-
-        return 0;
-    }
-
-    public static bool CheckOnPolygon(Vector2[] poly, Vector2 p)
-    {
-        var n = poly.Length;
-        var pt = new Vector2(-9999, p.Y);
-
-        var exline = new Line(p, pt);
-        var count = 0;
-        var i = 0;
-        do
+        static int IsIntersect(Line l1, Line l2)
         {
-            var side = new Line(poly[i], poly[(i + 1) % n]);
-            if (IsIntersect(side, exline) == 1)
+            var dir1 = Direction(l1.p1, l1.p2, l2.p1);
+            var dir2 = Direction(l1.p1, l1.p2, l2.p2);
+            var dir3 = Direction(l2.p1, l2.p2, l1.p1);
+            var dir4 = Direction(l2.p1, l2.p2, l1.p2);
+
+            if (dir1 != dir2 && dir3 != dir4)
+                return 1;
+
+            if (dir1 == 0 && OnLine(l1, l2.p1) == 1)
+                return 1;
+
+            if (dir2 == 0 && OnLine(l1, l2.p2) == 1)
+                return 1;
+
+            if (dir3 == 0 && OnLine(l2, l1.p1) == 1)
+                return 1;
+
+            if (dir4 == 0 && OnLine(l2, l1.p2) == 1)
+                return 1;
+
+            return 0;
+        }
+
+        public static bool CheckOnPolygon(Vector2[] poly, Vector2 p)
+        {
+            var n = poly.Length;
+            var pt = new Vector2(-9999, p.Y);
+
+            var exline = new Line(p, pt);
+            var count = 0;
+            var i = 0;
+            do
             {
-                if (Direction(side.p1, p, side.p2) == 0)
-                    return OnLine(side, p) == 1;
-                count++;
-            }
-            i = (i + 1) % n;
-        } while (i != 0);
+                var side = new Line(poly[i], poly[(i + 1) % n]);
+                if (IsIntersect(side, exline) == 1)
+                {
+                    if (Direction(side.p1, p, side.p2) == 0)
+                        return OnLine(side, p) == 1;
+                    count++;
+                }
+                i = (i + 1) % n;
+            } while (i != 0);
 
-        return count == 1;
-    }
+            return count == 1;
+        }
 
-    private struct Line
-    {
-        public Vector2 p1, p2;
-        public Line(Vector2 p1, Vector2 p2)
+        private struct Line
         {
-            this.p1 = p1;
-            this.p2 = p2;
+            public Vector2 p1, p2;
+            public Line(Vector2 p1, Vector2 p2)
+            {
+                this.p1 = p1;
+                this.p2 = p2;
+            }
         }
     }
 }
