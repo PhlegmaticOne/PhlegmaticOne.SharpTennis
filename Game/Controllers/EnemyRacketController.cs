@@ -35,7 +35,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private void BallBounceProviderOnBallBounced(Component from, BallModel ball)
         {
-            if (ball.BouncedFrom == BallBouncedFromType.Enemy || ball.BouncedFrom == BallBouncedFromType.None)
+            if (ball.BouncedFromTablePart == BallBouncedFromType.Enemy || ball.BouncedFromTablePart == BallBouncedFromType.None)
             {
                 return;
             }

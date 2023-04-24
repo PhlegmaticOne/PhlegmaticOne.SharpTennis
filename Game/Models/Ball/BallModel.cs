@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
@@ -34,7 +33,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
         public RigidBody3D RigidBody { get; private set; }
 
-        public BallBouncedFromType BouncedFrom
+        public BallBouncedFromType BouncedFromTablePart
         { 
             get => _currentBallBouncedFromType;
             set
@@ -43,6 +42,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
                 _currentBallBouncedFromType = value;
             }
         }
+
+        public BallBouncedFromType BouncedFromRacket { get; set; }
 
         public bool IsPreviousBounceTypeDifferent { get; private set; }
         public bool IsInGame { get; set; }
@@ -84,11 +85,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
             }
 
             _sphereCollider.ChangeEnabled(false);
-            Task.Run(async () =>
-            {
-                await Task.Delay(400);
-                _sphereCollider.ChangeEnabled(true);
-            });
+            Invoke(0.3f, () => _sphereCollider.ChangeEnabled(true));
         }
     }
 }

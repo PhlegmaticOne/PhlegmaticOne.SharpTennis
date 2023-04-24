@@ -10,11 +10,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
     public class RacketMoveController : BehaviorObject
     {
         private readonly float _minX = -30;
-        private readonly float _maxX = -84;
+        private readonly float _maxX = -94;
         private readonly float _minZ = -40;
         private readonly float _maxZ = 40;
-        private readonly float _minY = 7;
-        private readonly float _maxY = 13;
+        private readonly float _minY = 6;
+        private readonly float _maxY = 12;
 
 
         private readonly RacketBase _racket;
@@ -79,11 +79,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             var pos = _racket.Transform.Position;
             var moveCamera = true;
 
-            //if (pos.Y > _maxY || pos.Y < _minY)
-            //{
-            //    _racket.Transform.Move(new Vector3(0, -mouseDeltaMove.Y, 0));
-            //    moveCamera = false;
-            //}
+            if (pos.Y > _maxY || pos.Y < _minY)
+            {
+                _racket.Transform.Move(new Vector3(0, -mouseDeltaMove.Y, 0));
+                moveCamera = false;
+            }
 
             if (pos.X > _minX || pos.X < _maxX)
             {

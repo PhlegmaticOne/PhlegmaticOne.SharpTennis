@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
@@ -10,8 +11,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public abstract class RacketBase : MeshableObject
     {
-        private readonly float _minZ = -40;
-        private readonly float _maxZ = 40;
+        protected static readonly Random Random = new Random();
+        private const float MinZ = -40;
+        private const float MaxZ = 40;
+
         private readonly MeshComponent _coloredComponent;
         private readonly MeshComponent _handComponent;
         protected RigidBody3D RigidBody3D;
@@ -60,7 +63,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         private void SetBallBounce(BallModel ball)
         {
-            ball.BouncedFrom = BallBounceType;
+            ball.BouncedFromRacket = BallBounceType;
             ball.BouncedFromTableTimes = 0;
         }
 
@@ -82,7 +85,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             var z = Transform.Position.Z;
             var r = Transform.Rotation;
-            var angle = 180 * (_minZ - z) / (_maxZ - _minZ);
+            var angle = 180 * (MinZ - z) / (MaxZ - MinZ);
             Transform.SetRotation(new Vector3(r.X, r.Y, -angle - 90));
         }
     }

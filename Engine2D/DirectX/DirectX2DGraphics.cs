@@ -80,7 +80,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
 
         public void RenderText(TextComponent textComponent)
         {
-            if (IsDisposed.Instance)
+            if (GlobalVariables.IsDisposed)
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
 
         public void RenderImage(ImageComponent imageComponent)
         {
-            if (IsDisposed.Instance)
+            if (GlobalVariables.IsDisposed)
             {
                 return;
             }

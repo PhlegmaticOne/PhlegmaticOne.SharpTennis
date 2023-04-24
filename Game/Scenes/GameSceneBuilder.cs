@@ -3,10 +3,10 @@ using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
+using PhlegmaticOne.SharpTennis.Game.Common.Tween;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
@@ -85,12 +85,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddMeshableObject(scene, table);
 
             AddRacket(scene, new Transform(
-                new Vector3(-70, 6, 0),
+                new Vector3(-70, 9, 0),
                 new Vector3(90, -180, -90),
                 new Vector3(1, 1, 1)), Color.Red, Vector3.Right, true);
 
             AddRacket(scene, new Transform(
-                new Vector3(70, 6, 0),
+                new Vector3(70, 9, 0),
                 new Vector3(90, -180, -90),
                 new Vector3(1, 1, 1)), Color.Black, Vector3.Left, false);
 
@@ -106,9 +106,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         private void BuildControllers(Scene scene)
         {
+            AddDoTween(scene);
             AddFloorCollisionController(scene);
             AddPlayerRacketMoveController(scene);
             AddPhysicSystems(scene);
+        }
+
+        private void AddDoTween(Scene scene)
+        {
+            scene.AddGameObject(DoTweenManager.Instance.GameObject);
         }
 
         private void AddPhysicSystems(Scene scene)
@@ -167,7 +173,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             var cameraObject = new GameObject("MainCamera");
             var camera = new Camera(farClipPlane:2000, fovY:0.9f);
             cameraObject.AddComponent(camera);
-            camera.Transform.SetPosition(new Vector3(-110, 37, 0));
+            camera.Transform.SetPosition(new Vector3(-120, 37, 0));
             camera.Transform.SetRotation(new Vector3(90, 25, 0));
             return camera;
         }

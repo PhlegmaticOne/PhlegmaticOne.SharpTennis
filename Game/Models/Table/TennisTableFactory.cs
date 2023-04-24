@@ -107,7 +107,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
             var corner2 = top.MeshObjectData.Vertices[5].position;
             Swap(ref corner2, 2.5f);
             corner2.Y = -5f;
-            var boxCollider = new BoxCollider3D((Vector3)corner1, (Vector3)corner2);
+            var boxCollider = new BoxCollider3D((Vector3)corner1, (Vector3)corner2)
+            {
+                Normal = Vector3.Up
+            };
             return boxCollider;
         }
 

@@ -23,8 +23,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
         private readonly ISceneBuilderFactory<TScenes> _sceneBuilderFactory;
         private readonly RenderSequence _renderSequence;
 
-        private bool _firstRun = true;
-
         public GameRunner(RenderForm renderForm,
             DirectX2DGraphics directX2DGraphics,
             DirectX3DGraphics directX3DGraphics,
@@ -59,15 +57,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
 
         private void RenderLoopCallback()
         {
-            if (IsDisposed.Instance)
+            if (GlobalVariables.IsDisposed)
             {
                 return;
             }
 
-            if (_firstRun)
+            if (GlobalVariables.IsFirstRun)
             {
                 StartGameFromDefaultScene();
-                _firstRun = false;
+                GlobalVariables.IsFirstRun = false;
             }
 
             UpdateGame();
@@ -101,7 +99,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game
 
         private void RenderFormOnClosing(object sender, CancelEventArgs e)
         {
-            IsDisposed.Instance = true;
+            GlobalVariables.IsDisposed = true;
             _sceneProvider.Scene?.OnDestroy();
         }
 

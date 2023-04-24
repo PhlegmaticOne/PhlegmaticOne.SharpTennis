@@ -35,12 +35,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 
             if (position.X > _minPosition.X && position.X < 0)
             {
-                ball.BouncedFrom = BallBouncedFromType.Player;
+                ball.BouncedFromTablePart = BallBouncedFromType.Player;
             }
 
             if (position.X < _maxPosition.X && position.X > 0)
             {
-                ball.BouncedFrom = BallBouncedFromType.Enemy;
+                ball.BouncedFromTablePart = BallBouncedFromType.Enemy;
             }
 
             ball.BouncedFromTableTimes++;

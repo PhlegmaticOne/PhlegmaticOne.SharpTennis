@@ -42,7 +42,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private void AddScore(BallModel ball)
         {
-            if (ball.BouncedFrom == BallBouncedFromType.Player)
+            if (ball.BouncedFromTablePart == BallBouncedFromType.Player)
             {
                 _scoreSystem.AddScoreToPlayer(1);
             }

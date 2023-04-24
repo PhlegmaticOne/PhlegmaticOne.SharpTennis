@@ -1,4 +1,6 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Tween;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 
 namespace PhlegmaticOne.SharpTennis.Game.Common.Base
 {
@@ -20,6 +22,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         public virtual void Start() { }
         public virtual void OnDestroy() { }
         protected virtual void Update() { }
+        protected static void Invoke(float time, Action action) => DoTween.ExecuteAfterTime(time, action);
 
         public void ChangeEnabled(bool enabled)
         {

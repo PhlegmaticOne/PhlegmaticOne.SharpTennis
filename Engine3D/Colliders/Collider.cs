@@ -6,9 +6,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
 {
     public abstract class Collider : BehaviorObject
     {
-        private const float MinSpeed = 6f;
         protected RigidBody3D RigidBody;
         public bool IsColliding { get; private set; }
+        public Vector3 Normal { get; set; }
 
         public abstract bool Intersects(Collider other);
         public override void Start()

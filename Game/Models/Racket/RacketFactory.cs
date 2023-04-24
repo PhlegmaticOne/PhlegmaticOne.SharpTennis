@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
@@ -42,6 +43,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
             var go = new GameObject("Racket: { " + (racketFactoryData.IsPlayer ? "Player" : "Enemy") + " }");
+            if (racketFactoryData.IsPlayer == false)
+            {
+                go.AddComponent(new StateComponent());
+            }
             var model = CreateRacket(racketFactoryData.IsPlayer, racket);
             model.Normal = racketFactoryData.Normal;
             model.Color(racketFactoryData.Color);
@@ -65,7 +70,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             var c2 = isPlayer ? 0 : 3;
 
             var collider = new BoxCollider3D(position - new Vector3(c1, 3f, 3f),
-                position + new Vector3(c1, 7f, 6f))
+                position + new Vector3(c2, 7f, 6f))
             {
                 Offset = new Vector3(0, 3, 1),
                 RotationDivider = -60,

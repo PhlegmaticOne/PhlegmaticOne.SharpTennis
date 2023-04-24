@@ -137,7 +137,7 @@
     <Compile Include="Common\Commands\ICommand.cs" />
     <Compile Include="Common\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Infrastructure\GameEvents.cs" />
-    <Compile Include="Common\Infrastructure\IsDisposed.cs" />
+    <Compile Include="Common\Infrastructure\GlobalVariables.cs" />
     <Compile Include="Common\Infrastructure\Screen.cs" />
     <Compile Include="Common\Render\IRenderer.cs" />
     <Compile Include="Common\Render\RenderSequence.cs" />
@@ -146,6 +146,16 @@
     <Compile Include="Common\Base\GameObject.cs" />
     <Compile Include="Common\Base\Component.cs" />
     <Compile Include="Common\Base\Scenes\Scene.cs" />
+    <Compile Include="Common\StateMachine\EmptyState.cs" />
+    <Compile Include="Common\StateMachine\IStateBehavior.cs" />
+    <Compile Include="Common\StateMachine\StateComponent.cs" />
+    <Compile Include="Common\Tween\Actions\Base\TimedTweenAction.cs" />
+    <Compile Include="Common\Tween\Actions\DelayedAction.cs" />
+    <Compile Include="Common\Tween\Actions\ShakeBackAndToFinalPositionAction.cs" />
+    <Compile Include="Common\Tween\DoTween.cs" />
+    <Compile Include="Common\Tween\DoTweenExtensions.cs" />
+    <Compile Include="Common\Tween\DoTweenManager.cs" />
+    <Compile Include="Common\Tween\ITweenAction.cs" />
     <Compile Include="Engine2D\Base\IElementsCreator.cs" />
     <Compile Include="Engine2D\Base\IElementsRenderer.cs" />
     <Compile Include="Engine2D\Base\RectComponent.cs" />
@@ -213,10 +223,12 @@
     <Compile Include="Game\Models\Floor\FloorFactory.cs" />
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
+    <Compile Include="Game\Models\Racket\MathHelpers\PhysicMathHelper.cs" />
     <Compile Include="Game\Models\Racket\PlayerRacket.cs" />
     <Compile Include="Game\Models\Racket\RacketBase.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />
     <Compile Include="Game\Models\Racket\States\EnemyRacketStates.cs" />
+    <Compile Include="Game\Models\Racket\States\FollowingObjectState.cs" />
     <Compile Include="Game\Models\Sky\SkyModel.cs" />
     <Compile Include="Game\Models\Sky\SkyFactory.cs" />
     <Compile Include="Game\Models\Table\TableNet.cs" />
@@ -229,7 +241,6 @@
     <Compile Include="Game\Scenes\GameSceneBuilder.cs" />
     <Compile Include="Game\Scenes\MenuSceneBuilder.cs" />
     <Compile Include="Common\StateMachine\IStateCollection.cs" />
-    <Compile Include="Common\StateMachine\IStateHandler.cs" />
     <Compile Include="Common\StateMachine\State.cs" />
     <Compile Include="Common\StateMachine\States.cs" />
     <Compile Include="Program.cs" />
