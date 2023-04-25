@@ -7,15 +7,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 {
     public class TableTopPart : BehaviorObject
     {
-        private Vector3 _minPosition;
-        private Vector3 _maxPosition;
+        private readonly Vector3 _minPosition;
+        private readonly Vector3 _maxPosition;
 
         public Vector3 Normal { get; set; }
         public Vector2 Size => (Vector2)(_maxPosition - _minPosition);
 
-        public override void Start()
+        public TableTopPart(BoxCollider3D collider)
         {
-            var collider = GameObject.GetComponent<BoxCollider3D>();
             _minPosition = collider.BoundingBox.Minimum;
             _maxPosition = collider.BoundingBox.Maximum;
         }

@@ -1,58 +1,65 @@
-﻿using System;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public class PlayerRacket : RacketBase
     {
+        private KnockComponent _knockComponent;
+        private KickComponent _kickComponent;
+        private BoxCollider3D _boxCollider;
         public PlayerRacket(MeshComponent coloredComponent, MeshComponent handComponent) : 
             base(coloredComponent, handComponent) { }
 
         protected override BallBouncedFromType BallBounceType => BallBouncedFromType.Player;
 
+        public override void Start()
+        {
+            _knockComponent = GameObject.GetComponent<KnockComponent>();
+            _kickComponent = GameObject.GetComponent<KickComponent>();
+            _boxCollider = GameObject.GetComponent<BoxCollider3D>();
+            base.Start();
+        }
+
         protected override void OnCollisionWithBall(BallModel ballModel)
         {
+            _boxCollider.DisableOnTime(0.3f);
+
             if (ballModel.IsInGame == false)
             {
                 KnockBall(ballModel);
                 return;
             }
 
-            var racketSpeed = RigidBody3D.Speed.Normalized();
-            var ballSpeed = ballModel.GetSpeed();
-
-            if (racketSpeed == Vector3.Zero)
-            {
-                var newSpeed = Collider.Reflect(ballSpeed, Normal, ballModel.Bounciness);
-                ballModel.BounceDirect(this, newSpeed);
-                return;
-            }
-
-            var force = 100;
-            var reflected = RigidBody3D.Speed;
-            reflected.Y = GetY();
-            ballModel.BounceDirect(this, reflected);
+            KickBall(ballModel);
         }
-
-        private float GetY() => Random.Next(30, 50);
 
         private void KnockBall(BallModel ballModel)
         {
             ballModel.BouncedFromRacket = BallBounceType;
             ballModel.IsInGame = true;
+            var direction = RigidBody3D.Speed.Normalized();
+            var force = RigidBody3D.Speed.Length();
+            _knockComponent.KnockBall(ballModel, direction, force);
+        }
 
-            var racketSpeed = RigidBody3D.Speed / 1.5f;
+        private void KickBall(BallModel ball)
+        {
+            var direction = RigidBody3D.Speed.Normalized();
+            var force = RigidBody3D.Speed.Length();
 
-            if (racketSpeed.Y > 0)
+            if (direction == Vector3.Zero)
             {
-                racketSpeed.Y *= -1f;
+                var newSpeed = Collider.Reflect(ball.GetSpeed(), Normal, ball.Bounciness);
+                ball.BounceDirect(this, newSpeed);
+                return;
             }
 
-            ballModel.BounceDirect(this, racketSpeed);
+            _kickComponent.KickBall(ball, direction, force);
         }
     }
 }

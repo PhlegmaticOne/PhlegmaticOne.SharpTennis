@@ -89,11 +89,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
         private TableTopPart CreateTableTop(List<MeshComponent> allMeshes)
         {
             var top = allMeshes[2];
-            var tableTop = new TableTopPart
+            var collider = CreateTopCollider(top);
+            var tableTop = new TableTopPart(collider)
             {
-                Normal = Vector3.Up
+                Normal = Vector3.Up,
             };
-            top.GameObject.AddComponent(CreateTopCollider(top));
+            top.GameObject.AddComponent(collider);
             top.GameObject.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
             top.GameObject.AddComponent(tableTop);
             top.GameObject.Name = "TopTable";

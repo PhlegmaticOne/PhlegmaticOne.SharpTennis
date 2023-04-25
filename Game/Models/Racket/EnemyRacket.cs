@@ -2,11 +2,8 @@
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
-using System;
-using System.Threading.Tasks;
 using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States;
@@ -15,14 +12,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public class EnemyRacket : RacketBase
     {
-        private static readonly Vector3 CompareNormal = new Vector3(0, 1, 0);
-        private const float GravityMultiplier = -150f;
         private const float MinX = 0;
         private const float MaxX = 50;
         private const float MinZ = -25;
         private const float MaxZ = 25;
 
         private readonly BallBounceProvider _ballBounceProvider;
+        private readonly Vector3 _tableNormal;
         private StateComponent _stateComponent;
         private float _moveToStartLerp;
         private Vector3 _startPosition;
@@ -30,10 +26,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         public EnemyRacket(MeshComponent coloredComponent,
             MeshComponent handComponent, 
-            BallBounceProvider ballBounceProvider) : 
+            BallBounceProvider ballBounceProvider,
+            Vector3 tableNormal) : 
             base(coloredComponent, handComponent)
         {
             _ballBounceProvider = ballBounceProvider;
+            _tableNormal = tableNormal;
             _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
             _moveToStartLerp = 0.01f;
         }
@@ -59,9 +57,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
             var newSpeed = PhysicMathHelper.CalculateSpeedToPoint(ballModel.Transform.Position,
-                GetRandomPoint(),
-                GetRandomAngle(),
-                GetG());
+                GetRandomPoint(), GetRandomAngle());
 
             ballModel.BounceDirect(this, newSpeed);
         }
@@ -112,7 +108,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             {
                 var animationTime = 0.2f;
                 var ballSpeed = ball.GetSpeed();
-                var flyTime = PhysicMathHelper.CalculateFlyTime(ballSpeed, CompareNormal, GetG());
+                var flyTime = PhysicMathHelper.CalculateFlyTime(ballSpeed, _tableNormal);
                 _approximatedPosition = CalculateApproximatedPosition(ball);
 
                 if (PositionMatches(_approximatedPosition))
@@ -139,12 +135,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         public override void OnDestroy() => _ballBounceProvider.BallBounced -= BallBounceProviderOnBallBounced;
 
-        private static Vector3 CalculateApproximatedPosition(BallModel ball)
+        private Vector3 CalculateApproximatedPosition(BallModel ball)
         {
             var ballPosition = ball.Transform.Position;
             var newBallSpeed = ball.GetSpeed();
-            var approximatedPosition = PhysicMathHelper
-                .ApproximatePosition(newBallSpeed, CompareNormal, ballPosition, GetG());
+            var approximatedPosition = PhysicMathHelper.ApproximatePosition(newBallSpeed, _tableNormal, ballPosition);
 
             if (approximatedPosition.X <= 0)
             {
@@ -157,19 +152,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         private static float GetRandomAngle()
         {
-            var rnd = Random.Next(10, 30);
+            var rnd = Random.Next(15, 20);
             return PhysicMathHelper.ToRadians(rnd);
         }
 
         private static Vector3 GetRandomPoint()
         {
             var x = Random.Next(10, (int)MaxX);
-            var z = Random.Next((int)MinZ, (int)MaxZ);
+            var z = Random.Next((int)MinZ / 2, (int)MaxZ / 2);
             return new Vector3(-x, 1, -z);
         }
 
         private static bool PositionMatches(Vector3 position) => position.X > MinX && position.Z > 2 * MinZ && position.Z < 2 * MaxZ;
-
-        private static float GetG() => RigidBody3D.GlobalAcceleration * GravityMultiplier;
     }
 }

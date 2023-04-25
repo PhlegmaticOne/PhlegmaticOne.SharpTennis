@@ -30,6 +30,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders
             Transform.Moved += TransformOnMoved;
         }
 
+        public void DisableOnTime(float time)
+        {
+            ChangeEnabled(false);
+            Invoke(time, () => ChangeEnabled(true));
+        }
+
         public BoundingBox BoundingBox => _boundingBox;
 
         private void TransformOnMoved(Vector3 obj)

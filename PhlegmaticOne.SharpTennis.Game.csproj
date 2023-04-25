@@ -223,6 +223,8 @@
     <Compile Include="Game\Models\Floor\FloorFactory.cs" />
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
+    <Compile Include="Game\Models\Racket\Kicks\KickComponent.cs" />
+    <Compile Include="Game\Models\Racket\Kicks\KnockComponent.cs" />
     <Compile Include="Game\Models\Racket\MathHelpers\PhysicMathHelper.cs" />
     <Compile Include="Game\Models\Racket\PlayerRacket.cs" />
     <Compile Include="Game\Models\Racket\RacketBase.cs" />

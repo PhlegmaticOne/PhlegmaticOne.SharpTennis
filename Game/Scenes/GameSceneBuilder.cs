@@ -87,12 +87,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddRacket(scene, new Transform(
                 new Vector3(-70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), Color.Red, Vector3.Right, true);
+                new Vector3(1, 1, 1)), Color.Red, Vector3.Right, true, table.TableTopPart);
 
             AddRacket(scene, new Transform(
                 new Vector3(70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), Color.Black, Vector3.Left, false);
+                new Vector3(1, 1, 1)), Color.Black, Vector3.Left, false, table.TableTopPart);
 
             var ball = _ballFactory.Create(new Transform(position: new Vector3(-50, 20, 20)));
             AddMeshableObject(scene, ball);
@@ -144,17 +144,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         }
 
 
-        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal, bool isPlayer)
+        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal, bool isPlayer,
+            TableTopPart tableTopPart)
         {
             var racket = _racketFactory.Create(transform, new RacketFactoryData
             {
                 Color = color,
                 IsPlayer = isPlayer,
-                Normal = normal
+                Normal = normal,
+                TableHeight = tableTopPart.Size.X / 2,
+                TableNormal = tableTopPart.Normal
             });
 
             AddMeshableObject(scene, racket);
             //racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
+        }
+
+        private static RectangleF RetrieveTableRect(BoxCollider3D tableCollider, bool isPlayer)
+        {
+            var box = tableCollider.BoundingBox;
+            return new RectangleF();
         }
 
         private static void AddMeshableObject(Scene scene, MeshableObject meshableObject)

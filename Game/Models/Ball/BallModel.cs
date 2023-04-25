@@ -79,13 +79,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
         public override void OnCollisionEnter(Collider collider)
         {
-            if (collider.GameObject.HasComponent<Racket.RacketBase>() == false)
-            {
-                return;
-            }
+            //if (collider.GameObject.HasComponent<Racket.RacketBase>() == false)
+            //{
+            //    return;
+            //}
 
-            _sphereCollider.ChangeEnabled(false);
-            Invoke(0.3f, () => _sphereCollider.ChangeEnabled(true));
+            //_sphereCollider.ChangeEnabled(false);
+            //Invoke(0.3f, () => _sphereCollider.ChangeEnabled(true));
         }
     }
 }

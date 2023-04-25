@@ -6,6 +6,7 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
@@ -15,6 +16,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public bool IsPlayer { get; set; }
         public Color Color { get; set; }
         public Vector3 Normal { get; set; }
+        public Vector3 TableNormal { get; set; }
+        public float TableHeight { get; set; }
     }
 
     public class RacketFactory : IFactory<RacketBase, RacketFactoryData>
@@ -23,7 +26,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
         private readonly BallBounceProvider _ballBounceProvider;
 
-        public RacketFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider,
+        public RacketFactory(MeshLoader meshLoader,
+            TextureMaterialsProvider textureMaterialsProvider,
             BallBounceProvider ballBounceProvider)
         {
             _meshLoader = meshLoader;
@@ -47,21 +51,23 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             {
                 go.AddComponent(new StateComponent());
             }
-            var model = CreateRacket(racketFactoryData.IsPlayer, racket);
+            var model = CreateRacket(racketFactoryData.IsPlayer, racket, racketFactoryData);
             model.Normal = racketFactoryData.Normal;
             model.Color(racketFactoryData.Color);
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(model);
+            go.AddComponent(new KnockComponent(racketFactoryData.TableHeight));
+            go.AddComponent(new KickComponent(racketFactoryData.TableHeight));
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
             go.AddComponent(CreateCollider(transform.Position, racketFactoryData.IsPlayer));
             return model;
         }
 
-        private RacketBase CreateRacket(bool isPlayer, List<MeshComponent> meshes)
+        private RacketBase CreateRacket(bool isPlayer, List<MeshComponent> meshes, RacketFactoryData data)
         {
             return isPlayer
                 ? (RacketBase)new PlayerRacket(meshes[0], meshes[1])
-                : new EnemyRacket(meshes[0], meshes[1], _ballBounceProvider);
+                : new EnemyRacket(meshes[0], meshes[1], _ballBounceProvider, data.TableNormal);
         }
 
         private BoxCollider3D CreateCollider(Vector3 position, bool isPlayer)
