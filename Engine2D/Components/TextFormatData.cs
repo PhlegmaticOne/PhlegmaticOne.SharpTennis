@@ -11,5 +11,19 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
         public float FontSize { get; set; }
         public TextAlignment TextAlignment { get; set; }
         public ParagraphAlignment ParagraphAlignment { get; set; }
+
+        public TextFormatData Clone()
+        {
+            return new TextFormatData
+            {
+                FontFamily = FontFamily,
+                FontWeight = FontWeight,
+                FontStyle = FontStyle,
+                FontStretch = FontStretch,
+                FontSize = FontSize,
+                TextAlignment = TextAlignment,
+                ParagraphAlignment = ParagraphAlignment
+            };
+        }
     }
 }

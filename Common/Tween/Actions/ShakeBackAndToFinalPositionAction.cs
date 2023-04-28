@@ -14,7 +14,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween.Actions
         private readonly float _halfTime;
 
         public ShakeBackAndToFinalPositionAction(Transform transform, Vector3 shake, Vector3 finalPosition,
-            float duration, Action onComplete) : base(duration, onComplete)
+            float duration, Action onComplete) : base(transform, duration, onComplete)
         {
             _transform = transform;
             _halfTime = duration / 2;

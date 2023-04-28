@@ -1,7 +1,6 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Commands;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
-using PhlegmaticOne.SharpTennis.Game.Game.Interface;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
@@ -33,12 +32,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
         public void Execute(object parameter)
         {
             _canvasManager.RemoveLast();
-
             var sceneBuilder = _sceneBuilder.CreateSceneBuilder(_sceneBuilder.Scenes.Game);
             var scene = sceneBuilder.BuildScene();
-            var canvas = _gameRunnerFactory.CreateCanvas();
-            sceneBuilder.SetupSceneCanvas(scene, canvas);
-
+            var canvas = _gameRunnerFactory.CreateCanvasForScene(scene);
             _canvasManager.AddCanvas(canvas, false);
             _sceneProvider.ChangeScene(scene);
             _gameRunner.ForceResize();

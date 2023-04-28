@@ -4,19 +4,19 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 {
     public static class BallBounceHelper
     {
-        public static BallBouncedFromType GetBallBounceType(BallModel ball, Vector3 minPosition, Vector3 maxPosition)
+        public static RacketType GetBallBounceType(BallModel ball, Vector3 minPosition, Vector3 maxPosition)
         {
             var position = ball.Transform.Position;
-            var result = BallBouncedFromType.None;
+            var result = RacketType.None;
 
             if (position.X > minPosition.X && position.X < 0)
             {
-                result = BallBouncedFromType.Enemy;
+                result = RacketType.Enemy;
             }
 
             if (position.X < maxPosition.X && position.X > 0)
             {
-                result = BallBouncedFromType.Player;
+                result = RacketType.Player;
             }
 
             return result;

@@ -34,15 +34,27 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
 
             if (position.X > _minPosition.X && position.X < 0)
             {
-                ball.BouncedFromTablePart = BallBouncedFromType.Player;
+                SetBounceType(ball, RacketType.Player);
+                return;
             }
 
             if (position.X < _maxPosition.X && position.X > 0)
             {
-                ball.BouncedFromTablePart = BallBouncedFromType.Enemy;
+                SetBounceType(ball, RacketType.Enemy);
             }
+        }
 
-            ball.BouncedFromTableTimes++;
+        private static void SetBounceType(BallModel ball, RacketType ballBouncedFromType)
+        {
+            if (ball.BouncedFromTablePart == ballBouncedFromType)
+            {
+                ball.BouncedFromTableTimes++;
+            }
+            else
+            {
+                ball.BouncedFromTableTimes = 1;
+            }
+            ball.BouncedFromTablePart = ballBouncedFromType;
         }
     }
 }

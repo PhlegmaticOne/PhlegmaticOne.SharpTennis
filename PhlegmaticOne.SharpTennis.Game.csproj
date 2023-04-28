@@ -151,6 +151,7 @@
     <Compile Include="Common\StateMachine\StateComponent.cs" />
     <Compile Include="Common\Tween\Actions\Base\TimedTweenAction.cs" />
     <Compile Include="Common\Tween\Actions\DelayedAction.cs" />
+    <Compile Include="Common\Tween\Actions\ScaleAnimation.cs" />
     <Compile Include="Common\Tween\Actions\ShakeBackAndToFinalPositionAction.cs" />
     <Compile Include="Common\Tween\DoTween.cs" />
     <Compile Include="Common\Tween\DoTweenExtensions.cs" />
@@ -194,12 +195,14 @@
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
+    <Compile Include="Game\Controllers\BallBouncesController.cs" />
     <Compile Include="Game\Controllers\BallFloorCollisionController.cs" />
     <Compile Include="Game\Controllers\EnemyRacketController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
+    <Compile Include="Game\Interface\Elements\GameStateViewController.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
     <Compile Include="Game\Interface\Game\GameCanvasFactory.cs" />

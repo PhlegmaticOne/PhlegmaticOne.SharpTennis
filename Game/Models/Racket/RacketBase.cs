@@ -58,7 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
         }
 
-        protected abstract BallBouncedFromType BallBounceType { get; }
+        protected abstract RacketType BallBounceType { get; }
         protected abstract void OnCollisionWithBall(BallModel ballModel);
 
         private void SetBallBounce(BallModel ball)

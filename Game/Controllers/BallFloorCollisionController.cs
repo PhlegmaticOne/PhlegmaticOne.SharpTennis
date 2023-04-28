@@ -21,8 +21,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         {
             if (bouncedFrom.GameObject.HasComponent<FloorModel>())
             {
-                AddScore(ball);
-                ReturnToStatPositionRandom(ball);
+                ReturnToStartPositionRandom(ball);
             }
         }
 
@@ -32,24 +31,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _scoreSystem.PlayerText = playerText;
         }
 
-        public void ReturnToStatPositionRandom(BallModel ball)
+        public void ReturnToStartPositionRandom(BallModel ball)
         {
             var z = new Random().Next(-20, 20);
             ball.RigidBody.EnableGravity();
             ball.SetSpeed(Vector3.Zero);
             ball.Transform.SetPosition(new Vector3(-50, 20, z));
-        }
-
-        private void AddScore(BallModel ball)
-        {
-            if (ball.BouncedFromTablePart == BallBouncedFromType.Player)
-            {
-                _scoreSystem.AddScoreToPlayer(1);
-            }
-            else
-            {
-                _scoreSystem.AddScoreToEnemy(1);
-            }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             _moveToStartLerp = 0.01f;
         }
 
-        protected override BallBouncedFromType BallBounceType => BallBouncedFromType.Enemy;
+        protected override RacketType BallBounceType => RacketType.Enemy;
 
 
         public override void Start()
@@ -58,13 +58,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
             var newSpeed = PhysicMathHelper.CalculateSpeedToPoint(ballModel.Transform.Position,
                 GetRandomPoint(), GetRandomAngle());
-
+            ballModel.BallGameState = BallGameState.InPlay;
             ballModel.BounceDirect(this, newSpeed);
         }
 
         private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
         {
-            if (ball.BouncedFromTablePart == BallBouncedFromType.None || ball.IsInGame == false)
+            if (ball.BouncedFromTablePart == RacketType.None || ball.BallGameState == BallGameState.None)
             {
                 return;
             }
@@ -95,16 +95,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
                 return states.MovingToStartState;
             }
 
-            if (ball.BouncedFromRacket == BallBouncedFromType.Player &&
-                ball.BouncedFromTablePart == BallBouncedFromType.Player)
+            if (ball.BouncedFromRacket == RacketType.Player &&
+                ball.BouncedFromTablePart == RacketType.Player)
             {
                 return states.MovingToStartState;
             }
 
 
-            if ((ball.BouncedFromRacket == BallBouncedFromType.Player &&
-                ball.BouncedFromTablePart == BallBouncedFromType.Enemy) ||
-                ball.BouncedFromRacket == BallBouncedFromType.Player)
+            if ((ball.BouncedFromRacket == RacketType.Player &&
+                ball.BouncedFromTablePart == RacketType.Enemy) ||
+                ball.BouncedFromRacket == RacketType.Player)
             {
                 var animationTime = 0.2f;
                 var ballSpeed = ball.GetSpeed();

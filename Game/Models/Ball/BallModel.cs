@@ -7,55 +7,46 @@ using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 {
-    public enum BallBouncedFromType
+    public enum RacketType
     {
         None,
         Player,
         Enemy
     }
 
+    public enum BallGameState
+    {
+        None,
+        Knocked,
+        InPlay
+    }
+
     public class BallModel : MeshableObject
     {
         private readonly MeshComponent _mesh;
         private readonly BallBounceProvider _ballBounceProvider;
-        private SphereCollider _sphereCollider;
-        private BallBouncedFromType _currentBallBouncedFromType;
 
         public BallModel(MeshComponent mesh, BallBounceProvider ballBounceProvider)
         {
             _mesh = mesh;
             _ballBounceProvider = ballBounceProvider;
-            _currentBallBouncedFromType = BallBouncedFromType.None;
+            BouncedFromTablePart = RacketType.Player;
+            BallGameState = BallGameState.None;
             AddMeshes(mesh);
         }
 
         public float Bounciness => RigidBody.Bounciness;
-
         public RigidBody3D RigidBody { get; private set; }
-
-        public BallBouncedFromType BouncedFromTablePart
-        { 
-            get => _currentBallBouncedFromType;
-            set
-            {
-                IsPreviousBounceTypeDifferent = value != _currentBallBouncedFromType;
-                _currentBallBouncedFromType = value;
-            }
-        }
-
-        public BallBouncedFromType BouncedFromRacket { get; set; }
-
-        public bool IsPreviousBounceTypeDifferent { get; private set; }
-        public bool IsInGame { get; set; }
+        public RacketType BouncedFromTablePart { get; set; }
+        public RacketType BouncedFromRacket { get; set; }
+        public BallGameState BallGameState { get; set; }
         public int BouncedFromTableTimes { get; set; }
 
         public override void Start()
         {
             RigidBody = GameObject.GetComponent<RigidBody3D>();
-            _sphereCollider = GameObject.GetComponent<SphereCollider>();
             Transform.Moved += TransformOnMoved;
         }
-
 
         public void Bounce(Component bouncedFrom, Vector3 normal, float bounciness = 0)
         {
@@ -76,16 +67,5 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
         public void SetSpeed(Vector3 speed) => RigidBody.Speed = speed;
 
         private void TransformOnMoved(Vector3 obj) => _mesh.Transform.Move(obj);
-
-        public override void OnCollisionEnter(Collider collider)
-        {
-            //if (collider.GameObject.HasComponent<Racket.RacketBase>() == false)
-            //{
-            //    return;
-            //}
-
-            //_sphereCollider.ChangeEnabled(false);
-            //Invoke(0.3f, () => _sphereCollider.ChangeEnabled(true));
-        }
     }
 }

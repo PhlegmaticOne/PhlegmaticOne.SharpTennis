@@ -7,7 +7,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween
     {
         public static void ExecuteAfterTime(float time, Action action)
         {
-            DoTweenManager.Instance.AddAction(new DelayedAction(time, action));
+            DoTweenManager.Instance.AddAction(new DelayedAction(null, time, action));
         }
     }
 }

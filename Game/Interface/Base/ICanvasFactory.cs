@@ -1,9 +1,10 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine2D;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+using PhlegmaticOne.SharpTennis.Game.Engine2D;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Base
 {
     public interface ICanvasFactory
     {
-        Canvas CreateCanvas();
+        Canvas CreateCanvasForScene(Scene scene);
     }
 }

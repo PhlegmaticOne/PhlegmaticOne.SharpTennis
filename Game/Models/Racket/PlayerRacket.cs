@@ -15,7 +15,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public PlayerRacket(MeshComponent coloredComponent, MeshComponent handComponent) : 
             base(coloredComponent, handComponent) { }
 
-        protected override BallBouncedFromType BallBounceType => BallBouncedFromType.Player;
+        protected override RacketType BallBounceType => RacketType.Player;
 
         public override void Start()
         {
@@ -29,7 +29,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             _boxCollider.DisableOnTime(0.3f);
 
-            if (ballModel.IsInGame == false)
+            if (ballModel.BallGameState == BallGameState.None)
             {
                 KnockBall(ballModel);
                 return;
@@ -41,7 +41,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private void KnockBall(BallModel ballModel)
         {
             ballModel.BouncedFromRacket = BallBounceType;
-            ballModel.IsInGame = true;
+            ballModel.BallGameState = BallGameState.Knocked;
             var direction = RigidBody3D.Speed.Normalized();
             var force = RigidBody3D.Speed.Length();
             _knockComponent.KnockBall(ballModel, direction, force);
@@ -49,6 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         private void KickBall(BallModel ball)
         {
+            ball.BallGameState = BallGameState.InPlay;
             var direction = RigidBody3D.Speed.Normalized();
             var force = RigidBody3D.Speed.Length();
 

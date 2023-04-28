@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
 
@@ -25,6 +26,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween
         }
 
         private readonly List<ITweenAction> _actions = new List<ITweenAction>();
+
+        public void KillTweensWithTransform(Transform transform, Action onKill)
+        {
+            for (var i = _actions.Count - 1; i >= 0; i--)
+            {
+                var action = _actions[i];
+
+                if (action.Transform == transform)
+                {
+                    action.OnKill(onKill);
+                    _actions.Remove(action);
+                }
+            }
+        }
 
         public void AddAction(ITweenAction action)
         {

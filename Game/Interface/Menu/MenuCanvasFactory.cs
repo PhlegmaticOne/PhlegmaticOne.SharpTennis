@@ -1,4 +1,5 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
@@ -16,7 +17,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu
         public MenuCanvasFactory(MenuCanvasViewModel menuCanvasViewModel) => 
             _menuCanvasViewModel = menuCanvasViewModel;
 
-        public Canvas CreateCanvas()
+        public Canvas CreateCanvasForScene(Scene scene)
         {
             const string name = "MenuCanvas";
             var menuTextFormat = CreateMenuTextFormatData();

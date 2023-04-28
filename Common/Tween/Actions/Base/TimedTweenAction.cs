@@ -1,4 +1,5 @@
 ﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 
 namespace PhlegmaticOne.SharpTennis.Game.Common.Tween.Actions.Base
@@ -10,13 +11,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween.Actions.Base
 
         private float _passedTime;
 
-        protected TimedTweenAction(float time, Action onComplete)
+        protected TimedTweenAction(Transform transform, float time, Action onComplete)
         {
+            Transform = transform;
             ExecutionTime = time;
             _onComplete = onComplete;
         }
 
+        public virtual void OnKill(Action action)
+        {
+            action?.Invoke();
+        }
+
         public bool IsFinished { get; private set; }
+
+        public Transform Transform { get; }
 
         public void Update()
         {
@@ -32,6 +41,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween.Actions.Base
 
             UpdateProtected(delta, _passedTime);
         }
+        protected float GetInterval() => ExecutionTime / Time.DeltaT;
 
         protected abstract void UpdateProtected(float deltaTime, float passedTime);
         protected virtual void OnFinishedProtected() { }

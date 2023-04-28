@@ -19,8 +19,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
-                ball.IsInGame = false;
                 ball.BounceDirect(this, Vector3.Zero);
+                ball.BallGameState = BallGameState.None;
             }
         }
     }

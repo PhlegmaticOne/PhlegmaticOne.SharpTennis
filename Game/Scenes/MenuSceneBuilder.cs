@@ -17,14 +17,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         public Scene BuildScene()
         {
-            var canvas = _canvasFactory.CreateCanvas();
+            var scene = new Scene(_canvasManager.GameObject);
+            var canvas = _canvasFactory.CreateCanvasForScene(scene);
             _canvasManager.AddCanvas(canvas);
-            return new Scene(_canvasManager.GameObject);
-        }
-
-        public void SetupSceneCanvas(Scene scene, Canvas sceneCanvas)
-        {
-            
+            return scene;
         }
     }
 }

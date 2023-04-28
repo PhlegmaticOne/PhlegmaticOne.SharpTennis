@@ -69,13 +69,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             return scene;
         }
 
-        public void SetupSceneCanvas(Scene scene, Canvas sceneCanvas)
-        {
-            var floorController = scene.GetComponent<BallFloorCollisionController>();
-            var scoreTexts = sceneCanvas.GetElements().OfType<ScoreText>().ToArray();
-            floorController.Setup(scoreTexts[0], scoreTexts[1]);
-        }
-
         public void BuildModels(Scene scene)
         {
             var sky = _skyFactory.Create(new Transform(rotation: new Vector3(0, -90, 0)));
@@ -106,10 +99,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         private void BuildControllers(Scene scene)
         {
+            AddViewComponents(scene);
+            AddGameStateChecker(scene);
             AddDoTween(scene);
             AddFloorCollisionController(scene);
             AddPlayerRacketMoveController(scene);
             AddPhysicSystems(scene);
+        }
+
+        private void AddViewComponents(Scene scene)
+        {
+            scene.AddGameObject(CreateGameObjectWithComponent("ScoreSystem", new ScoreSystem()));
+            scene.AddGameObject(CreateGameObjectWithComponent("GameStateView", new GameStateViewController()));
+        }
+
+        private void AddGameStateChecker(Scene scene)
+        {
+            var scoreSystem = scene.GetComponent<ScoreSystem>();
+            var gameStateView = scene.GetComponent<GameStateViewController>();
+            scene.AddGameObject(CreateGameObjectWithComponent("GameStateChecker", new BallBouncesController(
+                _ballBounceProvider, scoreSystem, gameStateView)));
         }
 
         private void AddDoTween(Scene scene)
@@ -132,8 +141,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         private void AddFloorCollisionController(Scene scene)
         {
+            var scoreSystem = scene.GetComponent<ScoreSystem>();
             scene.AddGameObject(CreateGameObjectWithComponent("FloorCollisionController", 
-                new BallFloorCollisionController(new ScoreSystem(), _ballBounceProvider)));
+                new BallFloorCollisionController(scoreSystem, _ballBounceProvider)));
         }
 
         private GameObject CreateGameObjectWithComponent<T>(string name, T component) where T : Component

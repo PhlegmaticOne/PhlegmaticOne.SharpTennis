@@ -21,5 +21,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Extensions
             var all = enumerable.ToList();
             return indexes.Select(index => all[index]).ToList();
         }
+
+        public static List<T> FluentAdd<T>(this List<T> list, T item)
+        {
+            list.Add(item);
+            return list;
+        }
     }
 }
