@@ -50,13 +50,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             if (racketFactoryData.IsPlayer == false)
             {
                 go.AddComponent(new StateComponent());
+                go.AddComponent(new KnockComponent(racketFactoryData.TableHeight, true));
             }
             var model = CreateRacket(racketFactoryData.IsPlayer, racket, racketFactoryData);
             model.Normal = racketFactoryData.Normal;
             model.Color(racketFactoryData.Color);
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(model);
-            go.AddComponent(new KnockComponent(racketFactoryData.TableHeight));
+            go.AddComponent(new KnockComponent(racketFactoryData.TableHeight, false));
             go.AddComponent(new KickComponent(racketFactoryData.TableHeight));
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
             go.AddComponent(CreateCollider(transform.Position, racketFactoryData.IsPlayer));

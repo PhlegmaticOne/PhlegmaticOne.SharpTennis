@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using SharpDX;
@@ -9,15 +10,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
     {
         private const float Lerp = 300;
         private readonly float _tablePartHeight;
+        private readonly bool _inverseX;
 
-        public KnockComponent(float tablePartHeight) => _tablePartHeight = tablePartHeight;
+        public KnockComponent(float tablePartHeight, bool inverseX)
+        {
+            _tablePartHeight = tablePartHeight;
+            _inverseX = inverseX;
+        }
 
-        public void KnockBall(BallModel ball, Vector3 direction, float force)
+        public void KnockBall(BallModel ball, Vector3 direction, float force, float speedY = -20)
         {
             var point = GetPointOnLineInDirection(direction, force);
             var lineFromBallPoint = ball.Transform.Position + point;
             lineFromBallPoint.Y = 1;
-            var speed = PhysicMathHelper.CalculateSpeedToPointAngleZero(ball.Transform.Position, lineFromBallPoint, -20);
+            var speed = PhysicMathHelper.CalculateSpeedToPointAngleZero(ball.Transform.Position, lineFromBallPoint, speedY);
             ball.BounceDirect(this, speed);
         }
 
@@ -25,7 +31,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
         {
             var k = _tablePartHeight / direction.X;
             var maxZ = direction.Z * k;
-            var line = new Vector3(_tablePartHeight, 1, maxZ);
+            var maxX = Math.Abs(k) * direction.X;
+            var line = new Vector3(maxX, 1, maxZ);
             var lerp = MathUtil.Lerp(0f, 1f, force > Lerp ? 1 : force / Lerp);
             return Vector3.Lerp(Vector3.Zero, line, lerp);
         }

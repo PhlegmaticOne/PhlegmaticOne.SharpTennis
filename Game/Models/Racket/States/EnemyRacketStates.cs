@@ -9,10 +9,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States
             StayingState = new State("Staying");
             FollowingBallState = new State("FollowingBallState");
             MovingToStartState = new State("MovingToStartState");
+            KnockState = new State("KnockState");
         }
 
         public State StayingState { get; }
         public State FollowingBallState { get; }
         public State MovingToStartState { get; }
+        public State KnockState { get; }
     }
 }

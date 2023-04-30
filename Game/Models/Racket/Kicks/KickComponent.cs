@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using SharpDX;
@@ -8,9 +9,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
     public class KickComponent : Component
     {
         private const float Lerp = 300;
+        private const float Z = 20f;
         private readonly float _tablePartHeight;
 
-        public KickComponent(float tablePartHeight) => _tablePartHeight = tablePartHeight;
+        public KickComponent(float tablePartHeight)
+        {
+            _tablePartHeight = tablePartHeight;
+        }
 
         public void KickBall(BallModel ball, Vector3 direction, float force)
         {
@@ -25,7 +30,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
         {
             var maxX = _tablePartHeight * 2;
             var k = 2 * maxX / direction.X;
-            var maxZ = direction.Z * k;
+            var maxZ = Math.Sign(direction.Z) * Math.Min(Math.Abs(direction.Z * k), Z);
             var line = new Vector3(maxX, 1, maxZ);
             var lerp = MathUtil.Lerp(0f, 1f, force > Lerp ? 1 : force / Lerp);
             return Vector3.Lerp(line / 2, line, lerp);

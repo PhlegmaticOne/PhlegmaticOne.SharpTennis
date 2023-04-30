@@ -14,7 +14,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         public BallFloorCollisionController(ScoreSystem scoreSystem, BallBounceProvider ballBounceProvider)
         {
             _scoreSystem = scoreSystem;
-            ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
+            //ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
 
         private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)

@@ -34,12 +34,23 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
         {
-            if (ball.BallGameState == BallGameState.None && _knockShowed == false)
+            if (ball.BallGameState == BallGameState.None)
             {
-                _gameStateView.Show(GameState.Knock, RacketType.Player.ToString());
-                _knockShowed = true;
+                if (_knockShowed == false)
+                {
+                    _gameStateView.Show(GameState.Knock, RacketType.Player.ToString());
+                    _knockShowed = true;
+                }
+
+                if (bouncedFrom.GameObject.HasComponent<FloorModel>())
+                {
+                    _scoreSystem.AddScore(1, RacketType.Enemy);
+                    ReturnToStartPositionRandom(ball, RacketType.Player);
+                }
+
                 return;
             }
+
 
             if (ball.BallGameState == BallGameState.Knocked)
             {
@@ -71,6 +82,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
                 ballModel.BouncedFromTableTimes == 0 && fromFloor)
             {
                 _inGameChecked = true;
+                ReturnToStartPositionRandom(ballModel, current);
                 _scoreSystem.AddScore(1, opposite);
                 return;
             }
@@ -81,13 +93,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             {
                 _inGameChecked = true;
                 _scoreSystem.AddScore(1, opposite);
-                ReturnToStartPositionRandom(ballModel);
+                ReturnToStartPositionRandom(ballModel, current);
                 return;
             }
 
             if (ballModel.BouncedFromRacket == current &&
                 ballModel.BouncedFromTablePart == opposite && fromFloor)
             {
+                _inGameChecked = true;
+                ReturnToStartPositionRandom(ballModel, opposite);
                 _scoreSystem.AddScore(1, current);
             }
         }
@@ -104,6 +118,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             if (ball.BouncedFromRacket == current &&
                 (ball.BouncedFromTableTimes == 0 || ball.BouncedFromTableTimes == 1))
             {
+                ReturnToStartPositionRandom(ball, current);
                 _scoreSystem.AddScore(1, opposite);
                 _knockChecked = true;
                 return;
@@ -112,15 +127,22 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             if (ball.BouncedFromTablePart == opposite)
             {
                 _scoreSystem.AddScore(1, current);
+                ReturnToStartPositionRandom(ball, opposite);
             }
         }
 
-        private void ReturnToStartPositionRandom(BallModel ball)
+        private void ReturnToStartPositionRandom(BallModel ball, RacketType racketType)
         {
-            var z = new Random().Next(-20, 20);
+            var isRandom = racketType == RacketType.Player;
+            var position = racketType == RacketType.Player ? -50 : 50;
+            var z = isRandom ? new Random().Next(-20, 20) : 0;
             ball.RigidBody.EnableGravity();
             ball.SetSpeed(Vector3.Zero);
-            ball.Transform.SetPosition(new Vector3(-50, 20, z));
+            ball.BallGameState = BallGameState.None;
+            ball.BouncedFromTableTimes = 0;
+            ball.BouncedFromTablePart = RacketType.None;
+            ball.BouncedFromRacket = RacketType.None;
+            ball.Transform.SetPosition(new Vector3(position, 20, z));
         }
     }
 }

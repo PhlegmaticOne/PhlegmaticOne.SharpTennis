@@ -1,28 +1,33 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
 using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Wall;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public class EnemyRacket : RacketBase
     {
         private const float MinX = 0;
-        private const float MaxX = 50;
+        private const float MaxX = 30;
         private const float MinZ = -25;
         private const float MaxZ = 25;
 
         private readonly BallBounceProvider _ballBounceProvider;
         private readonly Vector3 _tableNormal;
         private StateComponent _stateComponent;
+        private KnockComponent _knockComponent;
         private float _moveToStartLerp;
         private Vector3 _startPosition;
         private Vector3 _approximatedPosition;
+        private BallModel _ballModel;
 
         public EnemyRacket(MeshComponent coloredComponent,
             MeshComponent handComponent, 
@@ -43,9 +48,23 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             _startPosition = Transform.Position;
             _stateComponent = GameObject.GetComponent<StateComponent>();
+            _knockComponent = GameObject.GetComponent<KnockComponent>();
             InitializeStates();
             base.Start();
         }
+
+        public void Knock(BallModel ball)
+        {
+            var direction = (GetKnockRandomPoint() - Transform.Position).Normalized();
+            var force = Random.Next(100, 200);
+            var y = Random.Next(40, 50);
+
+            ball.BouncedFromRacket = BallBounceType;
+            ball.BallGameState = BallGameState.Knocked;
+            _knockComponent.KnockBall(ball, direction, force, -1 * y);
+            _stateComponent.Enter(States<EnemyRacketStates>.Get.MovingToStartState);
+        }
+
 
         protected override void OnCollisionWithBall(BallModel ballModel)
         {
@@ -64,6 +83,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
         {
+            _ballModel = ball;
             if (ball.BouncedFromTablePart == RacketType.None || ball.BallGameState == BallGameState.None)
             {
                 return;
@@ -81,6 +101,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
                 () => new FollowingObjectState(_approximatedPosition, 0.03f, this));
             _stateComponent.AddState(states.MovingToStartState,
                 () => new FollowingObjectState(_startPosition, _moveToStartLerp, this));
+            _stateComponent.AddState(states.KnockState, () => new EnemyKnockState(_startPosition, 0.05f, this, _ballModel));
             _stateComponent.Exit();
         }
 
@@ -91,6 +112,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
             if (bouncedFrom.GameObject.HasComponent<FloorModel>())
             {
+                if (IsKnockState(bouncedFrom, ball))
+                {
+                    return states.KnockState;
+                }
+
                 _moveToStartLerp = 0.05f;
                 return states.MovingToStartState;
             }
@@ -102,6 +128,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
 
+            //Отбивание мяча
             if ((ball.BouncedFromRacket == RacketType.Player &&
                 ball.BouncedFromTablePart == RacketType.Enemy) ||
                 ball.BouncedFromRacket == RacketType.Player)
@@ -124,16 +151,47 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         }
 
 
-        private void ShakeInTime(Vector3 shake, Vector3 finalPosition, float time, float animationTime)
+        public void ShakeInTime(Vector3 shake, Vector3 finalPosition, float time, float animationTime, Action onComplete = null)
         {
             Invoke(time, () =>
             {
                 _stateComponent.ChangeEnabled(false);
-                Transform.DoShake(shake, finalPosition, animationTime, () => _stateComponent.ChangeEnabled(true));
+                Transform.DoShake(shake, finalPosition, animationTime, () =>
+                {
+                    _stateComponent.ChangeEnabled(true);
+                    onComplete?.Invoke();
+                });
             });
         }
 
         public override void OnDestroy() => _ballBounceProvider.BallBounced -= BallBounceProviderOnBallBounced;
+
+        private bool IsKnockState(Component bouncedFrom, BallModel ballModel)
+        {
+            if(ballModel.BallGameState == BallGameState.Knocked && 
+               ballModel.BouncedFromRacket == RacketType.Enemy &&
+               (ballModel.BouncedFromTableTimes == 0 || ballModel.BouncedFromTableTimes == 1))
+            {
+                return true;
+            }
+
+            if (ballModel.BallGameState == BallGameState.InPlay)
+            {
+                if (ballModel.BouncedFromRacket == RacketType.Enemy &&
+                    ballModel.BouncedFromTablePart == RacketType.Enemy &&
+                    ballModel.BouncedFromTableTimes >= 1)
+                {
+                    return true;
+                }
+
+                if (ballModel.BouncedFromRacket == RacketType.Enemy && ballModel.BouncedFromTableTimes == 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         private Vector3 CalculateApproximatedPosition(BallModel ball)
         {
@@ -154,6 +212,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             var rnd = Random.Next(15, 20);
             return PhysicMathHelper.ToRadians(rnd);
+        }
+
+        private static Vector3 GetKnockRandomPoint()
+        {
+            var x = Random.Next(10, 20);
+            var z = Random.Next(-5, 5);
+            return new Vector3(x, 1, z);
         }
 
         private static Vector3 GetRandomPoint()

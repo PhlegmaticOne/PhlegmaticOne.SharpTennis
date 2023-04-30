@@ -232,6 +232,7 @@
     <Compile Include="Game\Models\Racket\PlayerRacket.cs" />
     <Compile Include="Game\Models\Racket\RacketBase.cs" />
     <Compile Include="Game\Models\Racket\RacketFactory.cs" />
+    <Compile Include="Game\Models\Racket\States\EnemyKnockState.cs" />
     <Compile Include="Game\Models\Racket\States\EnemyRacketStates.cs" />
     <Compile Include="Game\Models\Racket\States\FollowingObjectState.cs" />
     <Compile Include="Game\Models\Sky\SkyModel.cs" />
