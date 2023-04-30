@@ -49,10 +49,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 
         private List<GameObject> SetupScoreViews(Scene scene, TextFormatData textFormatData)
         {
-            var floorController = scene.GetComponent<BallFloorCollisionController>();
+            var floorController = scene.GetComponent<ScoreSystem>();
             var playerText = CreateScoreText(textFormatData, Colors.White, Anchor.TopLeft, "You", true);
             var enemyText = CreateScoreText(textFormatData, Colors.White, Anchor.TopRight, "Enemy", false);
-            floorController.Setup(playerText, enemyText);
+            floorController.PlayerText = playerText;
+            floorController.EnemyText = enemyText;
             return new List<GameObject> { playerText.GameObject, enemyText.GameObject };
         }
 

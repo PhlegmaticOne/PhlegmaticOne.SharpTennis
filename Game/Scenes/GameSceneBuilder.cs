@@ -102,7 +102,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddViewComponents(scene);
             AddGameStateChecker(scene);
             AddDoTween(scene);
-            AddFloorCollisionController(scene);
             AddPlayerRacketMoveController(scene);
             AddPhysicSystems(scene);
         }
@@ -117,8 +116,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         {
             var scoreSystem = scene.GetComponent<ScoreSystem>();
             var gameStateView = scene.GetComponent<GameStateViewController>();
+            var player = scene.GetComponent<PlayerRacket>();
+            var enemy = scene.GetComponent<EnemyRacket>();
             scene.AddGameObject(CreateGameObjectWithComponent("GameStateChecker", new BallBouncesController(
-                _ballBounceProvider, scoreSystem, gameStateView)));
+                _ballBounceProvider, scoreSystem, gameStateView, player, enemy)));
         }
 
         private void AddDoTween(Scene scene)
@@ -139,12 +140,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
                 new RacketMoveController(playerRacket, scene.Camera, _inputController)));
         }
 
-        private void AddFloorCollisionController(Scene scene)
-        {
-            var scoreSystem = scene.GetComponent<ScoreSystem>();
-            scene.AddGameObject(CreateGameObjectWithComponent("FloorCollisionController", 
-                new BallFloorCollisionController(scoreSystem, _ballBounceProvider)));
-        }
 
         private GameObject CreateGameObjectWithComponent<T>(string name, T component) where T : Component
         {

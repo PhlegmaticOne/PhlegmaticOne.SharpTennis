@@ -60,6 +60,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         protected abstract RacketType BallBounceType { get; }
         protected abstract void OnCollisionWithBall(BallModel ballModel);
+        public virtual void OnLost(BallModel ball) { }
+        public virtual void OnBallBounced(BallModel ball) { }
 
         private void SetBallBounce(BallModel ball)
         {

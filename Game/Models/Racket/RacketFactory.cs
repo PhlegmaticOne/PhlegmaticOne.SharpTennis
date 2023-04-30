@@ -68,7 +68,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             return isPlayer
                 ? (RacketBase)new PlayerRacket(meshes[0], meshes[1])
-                : new EnemyRacket(meshes[0], meshes[1], _ballBounceProvider, data.TableNormal);
+                : new EnemyRacket(meshes[0], meshes[1], data.TableNormal);
         }
 
         private BoxCollider3D CreateCollider(Vector3 position, bool isPlayer)

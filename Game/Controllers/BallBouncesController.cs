@@ -4,6 +4,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using SharpDX;
 using System;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
@@ -12,18 +13,25 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly BallBounceProvider _ballBounceProvider;
         private readonly ScoreSystem _scoreSystem;
         private readonly GameStateViewController _gameStateView;
+        private readonly PlayerRacket _playerRacket;
+        private readonly EnemyRacket _enemyRacket;
 
         private bool _knockShowed;
         private bool _knockChecked;
         private bool _inGameChecked;
+        private bool _isLose;
 
         public BallBouncesController(BallBounceProvider ballBounceProvider,
             ScoreSystem scoreSystem, 
-            GameStateViewController gameStateView)
+            GameStateViewController gameStateView,
+            PlayerRacket playerRacket,
+            EnemyRacket enemyRacket)
         {
             _ballBounceProvider = ballBounceProvider;
             _scoreSystem = scoreSystem;
             _gameStateView = gameStateView;
+            _playerRacket = playerRacket;
+            _enemyRacket = enemyRacket;
             _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
 
@@ -34,6 +42,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
         {
+            _isLose = false;
+
             if (ball.BallGameState == BallGameState.None)
             {
                 if (_knockShowed == false)
@@ -51,84 +61,128 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
                 return;
             }
 
-
             if (ball.BallGameState == BallGameState.Knocked)
             {
                 _knockChecked = false;
-                CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
-                CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
-                return;
+                _isLose = CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
+                _isLose = CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
             }
 
             if (ball.BallGameState == BallGameState.InPlay)
             {
                 _inGameChecked = false;
-                CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
-                CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
+                _isLose = CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
+                _isLose = CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
+            }
+
+            if (_isLose == false)
+            {
+                GetRacket(RacketType.Enemy).OnBallBounced(ball);
+                GetRacket(RacketType.Player).OnBallBounced(ball);
             }
         }
 
-        private void CheckScoreOnBallInPlay(Component bouncedFrom, BallModel ballModel,
+        private bool CheckScoreOnBallInPlay(Component bouncedFrom, BallModel ballModel,
             RacketType current, RacketType opposite)
         {
             if (_inGameChecked)
             {
-                return;
+                return _isLose;
             }
 
             var fromFloor = bouncedFrom.GameObject.HasComponent<FloorModel>();
 
             if (ballModel.BouncedFromRacket == current &&
-                ballModel.BouncedFromTableTimes == 0 && fromFloor)
+                ballModel.BouncedFromTableTimes == 0 && 
+                fromFloor)
             {
-                _inGameChecked = true;
-                ReturnToStartPositionRandom(ballModel, current);
-                _scoreSystem.AddScore(1, opposite);
-                return;
+                return LoseRacketOnPlay(current, opposite, ballModel);
             }
 
             if (ballModel.BouncedFromRacket == current &&
                 ballModel.BouncedFromTablePart == current &&
                 ballModel.BouncedFromTableTimes >= 1)
             {
-                _inGameChecked = true;
-                _scoreSystem.AddScore(1, opposite);
-                ReturnToStartPositionRandom(ballModel, current);
-                return;
+                return LoseRacketOnPlay(current, opposite, ballModel);
             }
 
             if (ballModel.BouncedFromRacket == current &&
-                ballModel.BouncedFromTablePart == opposite && fromFloor)
+                ballModel.BouncedFromTablePart == opposite &&
+                ballModel.BouncedFromTableTimes >= 2)
             {
-                _inGameChecked = true;
-                ReturnToStartPositionRandom(ballModel, opposite);
-                _scoreSystem.AddScore(1, current);
+                return LoseRacketOnPlay(opposite, current, ballModel);
             }
+
+            if (ballModel.BouncedFromRacket == current &&
+                ballModel.BouncedFromTablePart == opposite &&
+                fromFloor)
+            {
+                return LoseRacketOnPlay(opposite, current, ballModel);
+            }
+
+            return false;
         }
 
 
-        private void CheckScoreOnBallKnocked(Component bouncedFrom, BallModel ball, 
+        private bool CheckScoreOnBallKnocked(Component bouncedFrom, BallModel ball, 
             RacketType current, RacketType opposite)
         {
-            if (_knockChecked || bouncedFrom.GameObject.HasComponent<FloorModel>() == false)
+            if (_knockChecked)
             {
-                return;
+                return _isLose;
+            }
+
+            var fromFloor = bouncedFrom.GameObject.HasComponent<FloorModel>();
+
+            if (ball.BouncedFromRacket == current &&
+                ball.BouncedFromTablePart == current &&
+                (ball.BouncedFromTableTimes == 0 || ball.BouncedFromTableTimes == 1) &&
+                fromFloor)
+            {
+                return LoseRacketOnKnock(current, opposite, ball);
             }
 
             if (ball.BouncedFromRacket == current &&
-                (ball.BouncedFromTableTimes == 0 || ball.BouncedFromTableTimes == 1))
+                ball.BouncedFromTablePart == current &&
+                ball.BouncedFromTableTimes >= 2)
             {
-                ReturnToStartPositionRandom(ball, current);
-                _scoreSystem.AddScore(1, opposite);
-                _knockChecked = true;
-                return;
+                return LoseRacketOnPlay(current, opposite, ball);
             }
 
-            if (ball.BouncedFromTablePart == opposite)
+            if (ball.BouncedFromRacket == current &&
+                ball.BouncedFromTablePart == opposite &&
+                ball.BouncedFromTableTimes >= 2)
             {
-                _scoreSystem.AddScore(1, current);
-                ReturnToStartPositionRandom(ball, opposite);
+                return LoseRacketOnKnock(opposite, current, ball);
             }
+
+            if (ball.BouncedFromTablePart == opposite && fromFloor)
+            {
+                return LoseRacketOnKnock(opposite, current, ball);
+            }
+
+            return false;
+        }
+
+        private bool LoseRacketOnPlay(RacketType lose, RacketType opposite, BallModel ball)
+        {
+            _inGameChecked = true;
+            return Lose(lose, opposite, ball);
+        }
+
+
+        private bool LoseRacketOnKnock(RacketType lose, RacketType opposite, BallModel ball)
+        {
+            _knockChecked = true;
+            return Lose(lose, opposite, ball);
+        }
+
+        private bool Lose(RacketType lose, RacketType opposite, BallModel ball)
+        {
+            _scoreSystem.AddScore(1, opposite);
+            GetRacket(lose).OnLost(ball);
+            ReturnToStartPositionRandom(ball, lose);
+            return true;
         }
 
         private void ReturnToStartPositionRandom(BallModel ball, RacketType racketType)
@@ -144,5 +198,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             ball.BouncedFromRacket = RacketType.None;
             ball.Transform.SetPosition(new Vector3(position, 20, z));
         }
+
+        private RacketBase GetRacket(RacketType racketType) =>
+            racketType == RacketType.Player ? (RacketBase)_playerRacket : _enemyRacket;
     }
 }

@@ -196,8 +196,6 @@
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallBouncesController.cs" />
-    <Compile Include="Game\Controllers\BallFloorCollisionController.cs" />
-    <Compile Include="Game\Controllers\EnemyRacketController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />

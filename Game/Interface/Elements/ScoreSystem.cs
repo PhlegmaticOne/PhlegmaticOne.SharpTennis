@@ -20,15 +20,5 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
                 EnemyText.AddScore(score);
             }
         }
-
-        public void AddScoreToPlayer(int score)
-        {
-            PlayerText.AddScore(score);
-        }
-
-        public void AddScoreToEnemy(int score)
-        {
-            EnemyText.AddScore(score);
-        }
     }
 }

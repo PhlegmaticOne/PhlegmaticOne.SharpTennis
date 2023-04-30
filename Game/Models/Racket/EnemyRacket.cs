@@ -20,7 +20,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private const float MinZ = -25;
         private const float MaxZ = 25;
 
-        private readonly BallBounceProvider _ballBounceProvider;
         private readonly Vector3 _tableNormal;
         private StateComponent _stateComponent;
         private KnockComponent _knockComponent;
@@ -31,13 +30,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         public EnemyRacket(MeshComponent coloredComponent,
             MeshComponent handComponent, 
-            BallBounceProvider ballBounceProvider,
             Vector3 tableNormal) : 
             base(coloredComponent, handComponent)
         {
-            _ballBounceProvider = ballBounceProvider;
             _tableNormal = tableNormal;
-            _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
             _moveToStartLerp = 0.01f;
         }
 
@@ -56,13 +52,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public void Knock(BallModel ball)
         {
             var direction = (GetKnockRandomPoint() - Transform.Position).Normalized();
-            var force = Random.Next(100, 200);
+            var force = Random.Next(150, 200);
             var y = Random.Next(40, 50);
 
             ball.BouncedFromRacket = BallBounceType;
             ball.BallGameState = BallGameState.Knocked;
             _knockComponent.KnockBall(ball, direction, force, -1 * y);
-            _stateComponent.Enter(States<EnemyRacketStates>.Get.MovingToStartState);
         }
 
 
@@ -81,48 +76,48 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             ballModel.BounceDirect(this, newSpeed);
         }
 
-        private void BallBounceProviderOnBallBounced(Component bouncedFrom, BallModel ball)
+        public override void OnBallBounced(BallModel ball)
         {
             _ballModel = ball;
-            if (ball.BouncedFromTablePart == RacketType.None || ball.BallGameState == BallGameState.None)
+
+            if (ball.BouncedFromTablePart == RacketType.None ||
+                ball.BallGameState == BallGameState.None ||
+                ball.BouncedFromRacket == RacketType.None)
             {
                 return;
             }
 
-            var state = FindNewState(bouncedFrom, ball);
+            var state = FindNewState(ball);
             _stateComponent.Enter(state);
         }
+
+        public override void OnLost(BallModel ball)
+        {
+            _stateComponent.Enter(States<EnemyRacketStates>.Get.KnockState);
+        }
+
 
         private void InitializeStates()
         {
             var states = States<EnemyRacketStates>.Get;
             _stateComponent.AddState(states.StayingState, () => new EmptyState());
             _stateComponent.AddState(states.FollowingBallState,
-                () => new FollowingObjectState(_approximatedPosition, 0.03f, this));
+                () => new FollowingObjectState(_approximatedPosition, 0.015f, this));
             _stateComponent.AddState(states.MovingToStartState,
                 () => new FollowingObjectState(_startPosition, _moveToStartLerp, this));
-            _stateComponent.AddState(states.KnockState, () => new EnemyKnockState(_startPosition, 0.05f, this, _ballModel));
+            _stateComponent.AddState(states.KnockState, 
+                () => new EnemyKnockState(_startPosition, 0.05f, this, _ballModel));
             _stateComponent.Exit();
         }
 
-        private State FindNewState(Component bouncedFrom, BallModel ball)
+        private State FindNewState(BallModel ball)
         {
-            _moveToStartLerp = 0.01f;
             var states = States<EnemyRacketStates>.Get;
 
-            if (bouncedFrom.GameObject.HasComponent<FloorModel>())
-            {
-                if (IsKnockState(bouncedFrom, ball))
-                {
-                    return states.KnockState;
-                }
-
-                _moveToStartLerp = 0.05f;
-                return states.MovingToStartState;
-            }
 
             if (ball.BouncedFromRacket == RacketType.Player &&
-                ball.BouncedFromTablePart == RacketType.Player)
+                ball.BouncedFromTablePart == RacketType.Player ||
+                ball.BouncedFromRacket == RacketType.Enemy)
             {
                 return states.MovingToStartState;
             }
@@ -140,7 +135,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
                 if (PositionMatches(_approximatedPosition))
                 {
-                    ShakeInTime(new Vector3(10, 0, 0), _approximatedPosition, flyTime - animationTime, animationTime);
+                    ShakeInTime(true, new Vector3(10, 0, 0), _approximatedPosition, flyTime - animationTime, animationTime);
                     return states.FollowingBallState;
                 }
 
@@ -151,10 +146,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         }
 
 
-        public void ShakeInTime(Vector3 shake, Vector3 finalPosition, float time, float animationTime, Action onComplete = null)
+        public void ShakeInTime(bool comparePosition, Vector3 shake, Vector3 finalPosition, float time, float animationTime, Action onComplete = null)
         {
             Invoke(time, () =>
             {
+                if (comparePosition && (Transform.Position - _approximatedPosition).Length() >= 20)
+                {
+                    return;
+                }
+
                 _stateComponent.ChangeEnabled(false);
                 Transform.DoShake(shake, finalPosition, animationTime, () =>
                 {
@@ -164,34 +164,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             });
         }
 
-        public override void OnDestroy() => _ballBounceProvider.BallBounced -= BallBounceProviderOnBallBounced;
-
-        private bool IsKnockState(Component bouncedFrom, BallModel ballModel)
-        {
-            if(ballModel.BallGameState == BallGameState.Knocked && 
-               ballModel.BouncedFromRacket == RacketType.Enemy &&
-               (ballModel.BouncedFromTableTimes == 0 || ballModel.BouncedFromTableTimes == 1))
-            {
-                return true;
-            }
-
-            if (ballModel.BallGameState == BallGameState.InPlay)
-            {
-                if (ballModel.BouncedFromRacket == RacketType.Enemy &&
-                    ballModel.BouncedFromTablePart == RacketType.Enemy &&
-                    ballModel.BouncedFromTableTimes >= 1)
-                {
-                    return true;
-                }
-
-                if (ballModel.BouncedFromRacket == RacketType.Enemy && ballModel.BouncedFromTableTimes == 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
         private Vector3 CalculateApproximatedPosition(BallModel ball)
         {

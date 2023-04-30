@@ -28,7 +28,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States
             if (!_performed)
             {
                 _performed = true;
-                _racket.ShakeInTime(new Vector3(10, 0, 0), _racket.Transform.Position - new Vector3(30, 0, 0), 1f, 0.3f,
+                _racket.ShakeInTime(false, new Vector3(10, 0, 0), _followToPosition - new Vector3(30, 0, 0), 1f, 0.3f,
                     () =>
                     {
                         _racket.Knock(_ball);
