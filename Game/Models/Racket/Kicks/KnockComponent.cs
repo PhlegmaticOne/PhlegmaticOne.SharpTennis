@@ -10,12 +10,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
     {
         private const float Lerp = 300;
         private readonly float _tablePartHeight;
-        private readonly bool _inverseX;
 
-        public KnockComponent(float tablePartHeight, bool inverseX)
+        public KnockComponent(float tablePartHeight)
         {
             _tablePartHeight = tablePartHeight;
-            _inverseX = inverseX;
         }
 
         public void KnockBall(BallModel ball, Vector3 direction, float force, float speedY = -20)

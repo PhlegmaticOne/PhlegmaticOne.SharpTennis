@@ -1,37 +1,40 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
-using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
-using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
-using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
-using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
-using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
+using System.Drawing;
+using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using FontStyle = SharpDX.DirectWrite.FontStyle;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 {
-    public class GameCanvasFactory : ICanvasFactory
+    public class GamePopupFactory : PopupFactory<GamePopup>
     {
-        public Canvas CreateCanvasForScene(Scene scene)
+        public GamePopupFactory(GamePopup popup) : base(popup) { }
+
+        public override Canvas SetupPopup(GamePopup popup)
         {
             var textFormatData = CreateGameTextFormatData();
-            var scoreTexts = SetupScoreViews(scene, textFormatData);
-            var gameStateView = SetupGameStateView(scene, textFormatData);
+            var scoreSystem = SetupScoreViews(textFormatData);
+            var gameStateView = SetupGameStateView(textFormatData);
 
-            var canvas = Canvas.Create("GameCanvas", scoreTexts
-                .FluentAdd(gameStateView)
+            var canvas = Canvas.Create("GameCanvas", new List<GameObject>()
+                .FluentAdd(gameStateView.GameObject)
+                .FluentAdd(scoreSystem.PlayerText.GameObject)
+                .FluentAdd(scoreSystem.EnemyText.GameObject)
                 .ToArray());
 
+            popup.Setup(scoreSystem, gameStateView);
             return canvas;
         }
 
-        private GameObject SetupGameStateView(Scene scene, TextFormatData textFormatData)
+        private GameStateViewController SetupGameStateView(TextFormatData textFormatData)
         {
             var data = textFormatData.Clone();
             data.FontSize = 40;
@@ -39,22 +42,22 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var text = TextComponent.Create(Colors.White, string.Empty, data);
             text.RectTransform.Anchor = Anchor.Top;
             text.RectTransform.Size = new SizeF(400, data.FontSize);
-            var gameStateView = scene.GetComponent<GameStateViewController>();
-            gameStateView.SetTextComponent(text);
-            go.AddComponent(gameStateView, false);
+            var gameStateSwitcher = new GameStateViewController();
+            gameStateSwitcher.SetTextComponent(text);
+            go.AddComponent(gameStateSwitcher, false);
             go.AddComponent(new ResizableComponent(text.RectTransform), false);
             go.AddComponent(text, false);
-            return go;
+            return gameStateSwitcher;
         }
 
-        private List<GameObject> SetupScoreViews(Scene scene, TextFormatData textFormatData)
+        private ScoreSystem SetupScoreViews(TextFormatData textFormatData)
         {
-            var floorController = scene.GetComponent<ScoreSystem>();
+            var scoreSystem = new ScoreSystem();
             var playerText = CreateScoreText(textFormatData, Colors.White, Anchor.TopLeft, "You", true);
             var enemyText = CreateScoreText(textFormatData, Colors.White, Anchor.TopRight, "Enemy", false);
-            floorController.PlayerText = playerText;
-            floorController.EnemyText = enemyText;
-            return new List<GameObject> { playerText.GameObject, enemyText.GameObject };
+            scoreSystem.PlayerText = playerText;
+            scoreSystem.EnemyText = enemyText;
+            return scoreSystem;
         }
 
 
@@ -63,9 +66,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var go = new GameObject();
             var playerScoreText = TextComponent.Create(color, string.Empty, textFormatData);
             playerScoreText.RectTransform.Anchor = anchor;
-            go.AddComponent(playerScoreText, false);
             var playerScore = new ScoreText(playerScoreText, text, isPlayer);
             go.AddComponent(playerScore, false);
+            go.AddComponent(playerScoreText, false);
             go.AddComponent(new ResizableComponent(playerScoreText.RectTransform), false);
             return playerScore;
         }

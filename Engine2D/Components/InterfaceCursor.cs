@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
+﻿using System.Linq;
+using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using SharpDX;
 
@@ -51,7 +52,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
 
         public void ClickOn(Canvas canvas)
         {
-            foreach (var rectComponent in canvas.GetElements())
+            foreach (var rectComponent in canvas.GetElements().ToList())
             {
                 if (rectComponent.RectTransform.RectBounds.Contains(RectTransform.Position2))
                 {

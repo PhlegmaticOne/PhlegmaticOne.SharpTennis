@@ -1,6 +1,6 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Commands;
-using PhlegmaticOne.SharpTennis.Game.Engine2D;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
@@ -8,21 +8,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
 {
     internal class StartGameCommand : ICommand
     {
-        private readonly CanvasManager _canvasManager;
+        private readonly PopupSystem _popupSystem;
         private readonly SceneProvider _sceneProvider;
-        private readonly GameCanvasFactory _gameRunnerFactory;
         private readonly ISceneBuilderFactory<TennisGameScenes> _sceneBuilder;
         private readonly GameRunner<TennisGameScenes> _gameRunner;
 
-        public StartGameCommand(CanvasManager canvasManager, 
+        public StartGameCommand(PopupSystem popupSystem, 
             SceneProvider sceneProvider,
-            GameCanvasFactory gameRunnerFactory,
             ISceneBuilderFactory<TennisGameScenes> sceneBuilder,
             GameRunner<TennisGameScenes> gameRunner)
         {
-            _canvasManager = canvasManager;
+            _popupSystem = popupSystem;
             _sceneProvider = sceneProvider;
-            _gameRunnerFactory = gameRunnerFactory;
             _sceneBuilder = sceneBuilder;
             _gameRunner = gameRunner;
         }
@@ -31,12 +28,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
 
         public void Execute(object parameter)
         {
-            _canvasManager.RemoveLast();
+            _popupSystem.CloseAll();
             var sceneBuilder = _sceneBuilder.CreateSceneBuilder(_sceneBuilder.Scenes.Game);
             var scene = sceneBuilder.BuildScene();
-            var canvas = _gameRunnerFactory.CreateCanvasForScene(scene);
-            _canvasManager.AddCanvas(canvas, false);
             _sceneProvider.ChangeScene(scene);
+            var popup = _popupSystem.SpawnPopup<GamePopup>();
             _gameRunner.ForceResize();
         }
     }

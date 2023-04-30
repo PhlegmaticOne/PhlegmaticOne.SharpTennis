@@ -34,6 +34,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface
             manager.AddComponent(new CanvasScaler(new SizeF(1920, 1080)));
             manager.AddComponent(new CanvasRenderer(_elementsCreator, _elementsRenderer));
 
+            canvasManager.Initialize();
             return canvasManager;
         }
     }

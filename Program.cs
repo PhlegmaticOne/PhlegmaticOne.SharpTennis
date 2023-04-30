@@ -8,15 +8,19 @@ using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Commands;
+using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Win;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
@@ -67,14 +71,18 @@ namespace PhlegmaticOne.SharpTennis.Game
         {
             serviceCollection.AddSingleton<ExitGameCommand>();
             serviceCollection.AddSingleton<StartGameCommand>();
-            serviceCollection.AddSingleton<ICanvasFactory, MenuCanvasFactory>(x =>
+            serviceCollection.AddSingleton(x =>
             {
                 var exit = x.GetRequiredService<ExitGameCommand>();
                 var start = x.GetRequiredService<StartGameCommand>();
-                return new MenuCanvasFactory(new MenuCanvasViewModel(start, exit));
+                return new MenuCanvasViewModel(start, exit);
             });
-            serviceCollection.AddSingleton<GameCanvasFactory>();
             serviceCollection.AddSingleton<MenuSceneBuilder>();
+            serviceCollection.AddSingleton(x =>
+            {
+                var canvasManager = x.GetRequiredService<CanvasManager>();
+                return new PopupSystem(x, canvasManager);
+            });
 
             serviceCollection.AddSingleton<GameSceneBuilder>();
 
@@ -86,6 +94,20 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<IFactory<FloorModel>, FloorFactory>();
             serviceCollection.AddSingleton<IFactory<SkyModel>, SkyFactory>();
             serviceCollection.AddSingleton<BallBounceProvider>();
+            serviceCollection.AddSingleton<WinController>();
+            serviceCollection.AddSingleton<BallBouncesController>();
+
+            AddPopup<WinPopup, WinPopupFactory>(serviceCollection);
+            AddPopup<MenuPopup, MenuPopupFactory>(serviceCollection);
+            AddPopup<GamePopup, GamePopupFactory>(serviceCollection);
+        }
+
+        private static void AddPopup<TPopup, TFactory>(IServiceCollection serviceCollection) 
+            where TPopup : PopupBase
+            where TFactory : PopupFactory<TPopup>
+        {
+            serviceCollection.AddTransient<TPopup>();
+            serviceCollection.AddSingleton<PopupFactory<TPopup>, TFactory>();
         }
 
         private static void RegisterInfrastructure(IServiceCollection serviceCollection)

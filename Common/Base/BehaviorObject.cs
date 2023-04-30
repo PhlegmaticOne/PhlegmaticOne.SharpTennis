@@ -24,6 +24,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         protected virtual void Update() { }
         protected static void Invoke(float time, Action action) => DoTween.ExecuteAfterTime(time, action);
 
+        protected void DontDestroyOnLoad(GameObject gameObject) => gameObject.DestroyOnLoad = false;
+
         public void ChangeEnabled(bool enabled)
         {
             Enabled = enabled;

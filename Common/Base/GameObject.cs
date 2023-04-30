@@ -8,6 +8,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
     {
         private static int Id;
         private readonly List<Component> _components;
+        public bool DestroyOnLoad { get; set; } = true;
 
         public GameObject(string name = null)
         {
@@ -58,8 +59,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         {
             foreach (var component in _components)
             {
-                component.GameObject = null;
-                component.Transform = null;
+                //component.GameObject = null;
+                //component.Transform = null;
 
                 if (component is BehaviorObject behavior)
                 {

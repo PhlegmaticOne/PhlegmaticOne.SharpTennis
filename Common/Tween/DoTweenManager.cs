@@ -18,11 +18,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween
                 }
 
                 var go = new GameObject("DoTweenManager");
-                var manager = new DoTweenManager();
+                var manager = new DoTweenManager(go);
                 go.AddComponent(manager);
                 _instance = manager;
                 return _instance;
             }
+        }
+
+        private DoTweenManager(GameObject gameObject)
+        {
+            DontDestroyOnLoad(gameObject);
         }
 
         private readonly List<ITweenAction> _actions = new List<ITweenAction>();

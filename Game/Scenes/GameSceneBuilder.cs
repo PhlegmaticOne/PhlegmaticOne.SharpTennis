@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
-using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
-using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
-using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
@@ -31,9 +26,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly IFactory<SkyModel> _skyFactory;
         private readonly InputController _inputController;
         private readonly SceneProvider _sceneProvider;
-        private readonly BallBounceProvider _ballBounceProvider;
-        private readonly MeshLoader _meshLoader;
-        private readonly TextureMaterialsProvider _textureMaterialsProvider;
+        private readonly WinController _winController;
+        private readonly BallBouncesController _ballBouncesController;
 
         public GameSceneBuilder(IFactory<TennisTable> tennisTableFactory,
             IFactory<RacketBase, RacketFactoryData> racketFactory,
@@ -42,9 +36,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             IFactory<SkyModel> skyFactory,
             InputController inputController,
             SceneProvider sceneProvider,
-            BallBounceProvider ballBounceProvider,
-            MeshLoader meshLoader,
-            TextureMaterialsProvider textureMaterialsProvider)
+            WinController winController,
+            BallBouncesController ballBouncesController)
         {
             _tennisTableFactory = tennisTableFactory;
             _racketFactory = racketFactory;
@@ -53,9 +46,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _skyFactory = skyFactory;
             _inputController = inputController;
             _sceneProvider = sceneProvider;
-            _ballBounceProvider = ballBounceProvider;
-            _meshLoader = meshLoader;
-            _textureMaterialsProvider = textureMaterialsProvider;
+            _winController = winController;
+            _ballBouncesController = ballBouncesController;
         }
 
         public Scene BuildScene()
@@ -99,27 +91,28 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         private void BuildControllers(Scene scene)
         {
-            AddViewComponents(scene);
             AddGameStateChecker(scene);
             AddDoTween(scene);
             AddPlayerRacketMoveController(scene);
             AddPhysicSystems(scene);
+            AddWinController(scene);
         }
 
-        private void AddViewComponents(Scene scene)
+        private void AddWinController(Scene scene)
         {
-            scene.AddGameObject(CreateGameObjectWithComponent("ScoreSystem", new ScoreSystem()));
-            scene.AddGameObject(CreateGameObjectWithComponent("GameStateView", new GameStateViewController()));
+            var ballController = scene.GetComponent<BallBouncesController>();
+            var racketMoveController = scene.GetComponent<RacketMoveController>();
+            _winController.Setup(ballController, racketMoveController);
+            scene.AddGameObject(CreateGameObjectWithComponent("WinController", _winController));
         }
+
 
         private void AddGameStateChecker(Scene scene)
         {
-            var scoreSystem = scene.GetComponent<ScoreSystem>();
-            var gameStateView = scene.GetComponent<GameStateViewController>();
             var player = scene.GetComponent<PlayerRacket>();
             var enemy = scene.GetComponent<EnemyRacket>();
-            scene.AddGameObject(CreateGameObjectWithComponent("GameStateChecker", new BallBouncesController(
-                _ballBounceProvider, scoreSystem, gameStateView, player, enemy)));
+            _ballBouncesController.SetupRackets(player, enemy);
+            scene.AddGameObject(CreateGameObjectWithComponent("GameStateChecker", _ballBouncesController));
         }
 
         private void AddDoTween(Scene scene)
@@ -162,13 +155,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             });
 
             AddMeshableObject(scene, racket);
-            //racket.Boxes = DrawCollider(scene, racket.GameObject.GetComponent<BoxCollider3D>());
-        }
-
-        private static RectangleF RetrieveTableRect(BoxCollider3D tableCollider, bool isPlayer)
-        {
-            var box = tableCollider.BoundingBox;
-            return new RectangleF();
         }
 
         private static void AddMeshableObject(Scene scene, MeshableObject meshableObject)
@@ -190,21 +176,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             camera.Transform.SetPosition(new Vector3(-120, 37, 0));
             camera.Transform.SetRotation(new Vector3(90, 25, 0));
             return camera;
-        }
-
-
-        private List<MeshComponent> DrawCollider(Scene scene, BoxCollider3D boxCollider)
-        {
-            var list = new List<MeshComponent>();
-            var corners = boxCollider.BoundingBox.GetCorners();
-            foreach (var corner in corners)
-            {
-                var ball = _meshLoader.LoadFbx("assets\\models\\ball.fbx", _textureMaterialsProvider.DefaultTexture)[0];
-                ball.Transform.SetPosition(corner);
-                scene.AddGameObject(ball.GameObject);
-                list.Add(ball);
-            }
-            return list;
         }
     }
 }

@@ -172,6 +172,9 @@
     <Compile Include="Engine2D\Components\TextComponent.cs" />
     <Compile Include="Engine2D\Components\ImageComponent.cs" />
     <Compile Include="Engine2D\Components\InterfaceCursor.cs" />
+    <Compile Include="Engine2D\Popups\PopupBase.cs" />
+    <Compile Include="Engine2D\Popups\PopupFactory.cs" />
+    <Compile Include="Engine2D\Popups\PopupSystem.cs" />
     <Compile Include="Engine2D\Transform\Anchor.cs" />
     <Compile Include="Engine2D\Transform\RectTransform.cs" />
     <Compile Include="Engine3D\Camera.cs" />
@@ -197,14 +200,15 @@
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallBouncesController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
+    <Compile Include="Game\Controllers\WinController.cs" />
     <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
     <Compile Include="Game\Interface\Elements\GameStateViewController.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
-    <Compile Include="Game\Interface\Game\GameCanvasFactory.cs" />
-    <Compile Include="Game\Interface\Menu\MenuCanvasFactory.cs" />
+    <Compile Include="Game\Interface\Game\GamePopup.cs" />
+    <Compile Include="Game\Interface\Game\GamePopupFactory.cs" />
     <Compile Include="Game\Interface\Menu\MenuCanvasViewModel.cs" />
     <Compile Include="Common\Sound\SharpAudioDevice.cs" />
     <Compile Include="Common\Sound\SharpAudioVoice.cs" />
@@ -215,7 +219,10 @@
     <Compile Include="Engine3D\Shaders\ConstantBuffer.cs" />
     <Compile Include="Engine3D\Shaders\IncludeHandler.cs" />
     <Compile Include="Engine3D\Mesh\Material.cs" />
-    <Compile Include="Game\Models\Ball\BallBounceHelper.cs" />
+    <Compile Include="Game\Interface\Menu\MenuPopup.cs" />
+    <Compile Include="Game\Interface\Menu\MenuPopupFactory.cs" />
+    <Compile Include="Game\Interface\Win\WinPopup.cs" />
+    <Compile Include="Game\Interface\Win\WinPopupFactory.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Ball\BallBounceProvider.cs" />
@@ -304,6 +311,9 @@
     <Content Include="Assets\textures\tennis_racket_hand.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\textures\ui\cancel_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\textures\ui\play.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -314,6 +324,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\cursor.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\close_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\accept_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\win_popup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\white.png">

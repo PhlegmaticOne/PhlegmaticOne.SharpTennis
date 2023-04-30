@@ -21,6 +21,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly Camera _camera;
         private readonly InputController _inputController;
 
+
         public RacketMoveController(RacketBase racket, Camera camera, InputController inputController)
         {
             _racket = racket;

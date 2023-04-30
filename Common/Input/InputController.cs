@@ -79,6 +79,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
             }
         }
 
+
         public InputController(RenderForm renderForm)
         {
             _directInput = new DirectInput();

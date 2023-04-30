@@ -85,6 +85,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
                 return;
             }
 
+            if (textComponent.Brush == null || textComponent.Brush.IsDisposed)
+            {
+                return;
+            }
+
             _renderTarget.Transform = textComponent.RectTransform.GetTransformMatrix();
             _renderTarget.DrawText(textComponent.Text, textComponent.TextFormat, 
                 textComponent.RectTransform.RawBounds, textComponent.Brush);
@@ -93,6 +98,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
         public void RenderImage(ImageComponent imageComponent)
         {
             if (GlobalVariables.IsDisposed)
+            {
+                return;
+            }
+
+            if (imageComponent.Bitmap == null || imageComponent.Bitmap.IsDisposed)
             {
                 return;
             }

@@ -5,11 +5,9 @@ using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
 using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
-using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States;
-using PhlegmaticOne.SharpTennis.Game.Game.Models.Wall;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
@@ -123,7 +121,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
 
-            //Отбивание мяча
             if ((ball.BouncedFromRacket == RacketType.Player &&
                 ball.BouncedFromTablePart == RacketType.Enemy) ||
                 ball.BouncedFromRacket == RacketType.Player)
@@ -150,7 +147,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             Invoke(time, () =>
             {
-                if (comparePosition && (Transform.Position - _approximatedPosition).Length() >= 20)
+                if (comparePosition && (Transform.Position - _approximatedPosition).Length() >= 25)
                 {
                     return;
                 }

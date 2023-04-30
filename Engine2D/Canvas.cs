@@ -40,6 +40,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
             {
                 rectComponent.Dispose();
             }
+
+            _elements.Clear();
+            _objects.Clear();
         }
     }
 }
