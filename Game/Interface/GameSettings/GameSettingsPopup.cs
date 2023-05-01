@@ -1,12 +1,14 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 {
-    public class GameSettingsPopup : PopupBase
+    public class GameSettingsPopup : GamePopupBase
     {
         private readonly GameDataProvider _gameDataProvider;
         private readonly GameSettingsViewModel _viewModel;
@@ -18,7 +20,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
         private ButtonComponent _submitButton;
 
 
-        public GameSettingsPopup(GameDataProvider gameDataProvider, GameSettingsViewModel viewModel)
+        public GameSettingsPopup(GameDataProvider gameDataProvider, GameSettingsViewModel viewModel,
+            ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
             _gameDataProvider = gameDataProvider;
             _viewModel = viewModel;

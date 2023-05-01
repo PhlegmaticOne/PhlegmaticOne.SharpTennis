@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX;
@@ -78,7 +81,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             {
                 var exit = x.GetRequiredService<ExitGameCommand>();
                 var start = x.GetRequiredService<ShowGameSettingsPopupCommand>();
-                return new MenuCanvasViewModel(start, exit);
+                return new MenuPopupViewModel(start, exit);
             });
             serviceCollection.AddSingleton(x =>
             {
@@ -92,6 +95,21 @@ namespace PhlegmaticOne.SharpTennis.Game
             {
                 var canvasManager = x.GetRequiredService<CanvasManager>();
                 return new PopupSystem(x, canvasManager);
+            });
+
+            serviceCollection.AddSingleton<ISoundManager<GameSounds>, SoundManager<GameSounds>>(x =>
+            {
+                var factory = x.GetRequiredService<SharpAudioVoiceFactory>();
+                return new SoundManager<GameSounds>(new Dictionary<GameSounds, SharpAudioVoice>
+                {
+                    { GameSounds.PopupIn, factory.CreateVoice(@"assets\sounds\popup_in.wav") },
+                    { GameSounds.PopupOut, factory.CreateVoice(@"assets\sounds\popup_out.wav") },
+                    { GameSounds.TableBounce, factory.CreateVoice(@"assets\sounds\table_bounce.wav") },
+                    { GameSounds.RacketBounce, factory.CreateVoice(@"assets\sounds\racket_bounce.wav") },
+                    { GameSounds.FloorBounce, factory.CreateVoice(@"assets\sounds\floor_bounce.wav") },
+                    { GameSounds.Lose, factory.CreateVoice(@"assets\sounds\lose.wav") },
+                    { GameSounds.Win, factory.CreateVoice(@"assets\sounds\win.wav") },
+                });
             });
 
             serviceCollection.AddSingleton<GameSceneBuilder>();
@@ -161,6 +179,8 @@ namespace PhlegmaticOne.SharpTennis.Game
             });
             serviceCollection.AddSingleton(x => x.GetRequiredService<MeshRenderer>().PointSampler);
             serviceCollection.AddSingleton<SceneProvider>();
+            serviceCollection.AddSingleton<SharpAudioDevice>();
+            serviceCollection.AddSingleton<SharpAudioVoiceFactory>();
 
             serviceCollection.AddSingleton<GameRunner<TennisGameScenes>>();
         }

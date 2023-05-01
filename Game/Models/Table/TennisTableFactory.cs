@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
@@ -13,11 +15,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
     {
         private readonly MeshLoader _meshLoader;
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
+        private readonly ISoundManager<GameSounds> _soundManager;
 
-        public TennisTableFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider)
+        public TennisTableFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider,
+            ISoundManager<GameSounds> soundManager)
         {
             _meshLoader = meshLoader;
             _textureMaterialsProvider = textureMaterialsProvider;
+            _soundManager = soundManager;
         }
 
         public TennisTable Create(Transform transform)
@@ -90,7 +95,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Table
         {
             var top = allMeshes[2];
             var collider = CreateTopCollider(top);
-            var tableTop = new TableTopPart(collider)
+            var tableTop = new TableTopPart(collider, _soundManager)
             {
                 Normal = Vector3.Up,
             };

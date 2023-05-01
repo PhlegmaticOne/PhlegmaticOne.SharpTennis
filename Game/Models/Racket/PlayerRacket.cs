@@ -1,7 +1,9 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using SharpDX;
 
@@ -12,8 +14,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private KnockComponent _knockComponent;
         private KickComponent _kickComponent;
         private BoxCollider3D _boxCollider;
-        public PlayerRacket(MeshComponent coloredComponent, MeshComponent handComponent) : 
-            base(coloredComponent, handComponent) { }
+        public PlayerRacket(MeshComponent coloredComponent, MeshComponent handComponent,
+            ISoundManager<GameSounds> soundManager) : 
+            base(coloredComponent, handComponent, soundManager) { }
 
         protected override RacketType BallBounceType => RacketType.Player;
 

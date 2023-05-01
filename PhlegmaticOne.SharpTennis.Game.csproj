@@ -146,6 +146,9 @@
     <Compile Include="Common\Base\GameObject.cs" />
     <Compile Include="Common\Base\Component.cs" />
     <Compile Include="Common\Base\Scenes\Scene.cs" />
+    <Compile Include="Common\Sound\Base\ISoundManager.cs" />
+    <Compile Include="Common\Sound\Base\SharpAudioVoiceFactory.cs" />
+    <Compile Include="Common\Sound\SoundManager.cs" />
     <Compile Include="Common\StateMachine\EmptyState.cs" />
     <Compile Include="Common\StateMachine\IStateBehavior.cs" />
     <Compile Include="Common\StateMachine\StateComponent.cs" />
@@ -205,7 +208,7 @@
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Controllers\WinController.cs" />
     <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
-    <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
+    <Compile Include="Game\Interface\Base\GamePopupBase.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
     <Compile Include="Game\Interface\Elements\GameStateViewController.cs" />
     <Compile Include="Game\Interface\Elements\InputNumberSelectableElement.cs" />
@@ -218,7 +221,7 @@
     <Compile Include="Game\Interface\GameSettings\GameSettingsViewModel.cs" />
     <Compile Include="Game\Interface\Game\GamePopup.cs" />
     <Compile Include="Game\Interface\Game\GamePopupFactory.cs" />
-    <Compile Include="Game\Interface\Menu\MenuCanvasViewModel.cs" />
+    <Compile Include="Game\Interface\Menu\MenuPopupViewModel.cs" />
     <Compile Include="Common\Sound\SharpAudioDevice.cs" />
     <Compile Include="Common\Sound\SharpAudioVoice.cs" />
     <Compile Include="Engine2D\DirectX\DirectX2DGraphics.cs" />
@@ -230,6 +233,11 @@
     <Compile Include="Engine3D\Mesh\Material.cs" />
     <Compile Include="Game\Interface\Menu\MenuPopup.cs" />
     <Compile Include="Game\Interface\Menu\MenuPopupFactory.cs" />
+    <Compile Include="Game\Interface\Pause\PausePopup.cs" />
+    <Compile Include="Game\Interface\Pause\PausePopupFactory.cs" />
+    <Compile Include="Game\Interface\Pause\PausePopupViewModel.cs" />
+    <Compile Include="Game\Interface\Settings\SettingsPopup.cs" />
+    <Compile Include="Game\Interface\Settings\SettingsPopupFactory.cs" />
     <Compile Include="Game\Interface\Win\WinPopup.cs" />
     <Compile Include="Game\Interface\Win\WinPopupFactory.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
@@ -243,6 +251,7 @@
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
     <Compile Include="Game\Models\Game\GameData.cs" />
     <Compile Include="Game\Models\Game\GameDataProvider.cs" />
+    <Compile Include="Game\Models\Game\GameSounds.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KickComponent.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KnockComponent.cs" />
@@ -315,6 +324,27 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\sounds\floor_bounce.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\lose.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\racket_bounce.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\popup_in.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\popup_out.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\win.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\sounds\table_bounce.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\textures\130.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -372,6 +402,7 @@
     <Content Include="Assets\textures\ui\accept_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\textures\ui\Settings\settings.png" />
     <Content Include="Assets\textures\ui\win_popup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -381,9 +412,7 @@
     <Content Include="pixel.hlsl" />
     <Content Include="vertex.hlsl" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\sounds\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>PowerShell -Command "&amp; {Get-Item -Path \"$(ProjectDir)Shaders\*\" -Filter \"*.h\" | ForEach-Object { $_.Name } | ForEach-Object { Get-Content -Raw -Path \"$(ProjectDir)Shaders\$_\" | Out-File -FilePath \"$(TargetDir)Shaders\$_\" -Encoding ASCII }}"</PostBuildEvent>

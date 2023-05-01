@@ -29,7 +29,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
             var difficultyPanel = CreateSelectDifficultyPanel();
             var colorsPanel = CreateSelectColorPanel();
 
-            _inputNumberSelectableElement.Setup(@"assets\textures\ui\GameSettings\rounds.png", 80, "1");
+            _inputNumberSelectableElement.Setup(@"assets\textures\ui\GameSettings\rounds.png", 80, "5");
             _inputNumberSelectableElement.RectTransform.Offset = new Vector2(0, 220);
 
             var closeButton = CreateCloseButton();

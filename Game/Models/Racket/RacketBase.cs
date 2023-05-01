@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
@@ -17,12 +19,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         private readonly MeshComponent _coloredComponent;
         private readonly MeshComponent _handComponent;
+        private readonly ISoundManager<GameSounds> _soundManager;
         protected RigidBody3D RigidBody3D;
 
-        protected RacketBase(MeshComponent coloredComponent, MeshComponent handComponent)
+        protected RacketBase(MeshComponent coloredComponent, MeshComponent handComponent,
+            ISoundManager<GameSounds> soundManager)
         {
             _coloredComponent = coloredComponent;
             _handComponent = handComponent;
+            _soundManager = soundManager;
             AddMeshes(_coloredComponent, _handComponent);
         }
 
@@ -53,6 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             if (other.GameObject.TryGetComponent<BallModel>(out var ball))
             {
+                _soundManager.Play(GameSounds.RacketBounce);
                 SetBallBounce(ball);
                 OnCollisionWithBall(ball);
             }

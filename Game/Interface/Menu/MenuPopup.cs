@@ -1,16 +1,19 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
-using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu
 {
-    public class MenuPopup : PopupBase
+    public class MenuPopup : GamePopupBase
     {
-        private readonly MenuCanvasViewModel _menuCanvasViewModel;
+        private readonly MenuPopupViewModel _menuCanvasViewModel;
 
         private ButtonComponent _playButton;
         private ButtonComponent _exitButton;
 
-        public MenuPopup(MenuCanvasViewModel menuCanvasViewModel)
+        public MenuPopup(MenuPopupViewModel menuCanvasViewModel,
+            ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
             _menuCanvasViewModel = menuCanvasViewModel;
         }

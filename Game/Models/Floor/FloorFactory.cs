@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
@@ -12,11 +14,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
     {
         private readonly MeshLoader _meshLoader;
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
+        private readonly ISoundManager<GameSounds> _soundManager;
 
-        public FloorFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider)
+        public FloorFactory(MeshLoader meshLoader, TextureMaterialsProvider textureMaterialsProvider,
+            ISoundManager<GameSounds> soundManager)
         {
             _meshLoader = meshLoader;
             _textureMaterialsProvider = textureMaterialsProvider;
+            _soundManager = soundManager;
         }
 
         public FloorModel Create(Transform transform)
@@ -25,7 +30,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
             floor.Transform.InitializeFromTransform(transform);
 
             var go = new GameObject();
-            var floorModel = new FloorModel(floor);
+            var floorModel = new FloorModel(floor, _soundManager);
             go.AddComponent(floorModel);
             go.AddComponent(new RigidBody3D(Vector3.Zero));
             go.AddComponent(CreateCollider(floor.MeshObjectData, transform.Position, transform.Scale));

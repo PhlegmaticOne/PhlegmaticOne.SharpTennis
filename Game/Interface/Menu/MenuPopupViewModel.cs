@@ -2,9 +2,9 @@
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu
 {
-    public class MenuCanvasViewModel
+    public class MenuPopupViewModel
     {
-        public MenuCanvasViewModel(ICommand playButtonCommand, ICommand exitButtonCommand)
+        public MenuPopupViewModel(ICommand playButtonCommand, ICommand exitButtonCommand)
         {
             PlayButtonCommand = playButtonCommand;
             ExitButtonCommand = exitButtonCommand;

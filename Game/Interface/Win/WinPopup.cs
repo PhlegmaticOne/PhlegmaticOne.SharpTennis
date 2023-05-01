@@ -1,15 +1,18 @@
 ﻿using System.Windows.Forms;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
 {
-    public class WinPopup : PopupBase
+    public class WinPopup : GamePopupBase
     {
         private readonly PopupSystem _popupSystem;
         private readonly ISceneBuilderFactory<TennisGameScenes> _sceneBuilderFactory;
@@ -22,7 +25,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
         public WinPopup(PopupSystem popupSystem,
             ISceneBuilderFactory<TennisGameScenes> sceneBuilderFactory,
             SceneProvider sceneProvider,
-            GameRunner<TennisGameScenes> gameRunner)
+            GameRunner<TennisGameScenes> gameRunner,
+            ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
             _popupSystem = popupSystem;
             _sceneBuilderFactory = sceneBuilderFactory;

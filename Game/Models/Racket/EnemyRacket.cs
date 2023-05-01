@@ -1,10 +1,12 @@
 ﻿using System;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
 using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States;
@@ -27,9 +29,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private BallModel _ballModel;
 
         public EnemyRacket(MeshComponent coloredComponent,
-            MeshComponent handComponent, 
+            MeshComponent handComponent,
+            ISoundManager<GameSounds> soundManager,
             Vector3 tableNormal) : 
-            base(coloredComponent, handComponent)
+            base(coloredComponent, handComponent, soundManager)
         {
             _tableNormal = tableNormal;
             _moveToStartLerp = 0.01f;

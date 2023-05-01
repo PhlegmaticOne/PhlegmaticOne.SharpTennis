@@ -1,14 +1,15 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine2D;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
-using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 {
-    public class GamePopup : PopupBase
+    public class GamePopup : GamePopupBase
     {
         private readonly BallBouncesController _ballBouncesController;
         private readonly CanvasManager _canvasManager;
@@ -16,7 +17,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         private GameStateViewController _gameStateViewController;
         private TextComponent _infoText;
 
-        public GamePopup(BallBouncesController ballBouncesController, CanvasManager canvasManager)
+        public GamePopup(BallBouncesController ballBouncesController, CanvasManager canvasManager,
+            ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
             _ballBouncesController = ballBouncesController;
             _canvasManager = canvasManager;
