@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound;
@@ -17,19 +18,23 @@ using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Commands;
+using PhlegmaticOne.SharpTennis.Game.Game.Commands.Global;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Global;
 using PhlegmaticOne.SharpTennis.Game.Game.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Pause;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Win;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Sky;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
@@ -79,6 +84,10 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<StartGameCommand>();
             serviceCollection.AddSingleton<CloseLastPopupCommand>();
             serviceCollection.AddSingleton<SaveSoundSettingsCommand>();
+            serviceCollection.AddSingleton<PauseGameCommand>();
+            serviceCollection.AddSingleton<ContinueGameCommand>();
+            serviceCollection.AddSingleton<ExitToMenuCommand>();
+            serviceCollection.AddSingleton<RestartGameCommand>();
             serviceCollection.AddSingleton(x =>
             {
                 var exit = x.GetRequiredService<ExitGameCommand>();
@@ -98,6 +107,22 @@ namespace PhlegmaticOne.SharpTennis.Game
                 var close = x.GetRequiredService<CloseLastPopupCommand>();
                 var save = x.GetRequiredService<SaveSoundSettingsCommand>();
                 return new SettingsPopupViewModel(close, save);
+            });
+            serviceCollection.AddSingleton(x =>
+            {
+                var continueCommand = x.GetRequiredService<RestartGameCommand>();
+                var exitToMenu = x.GetRequiredService<ExitToMenuCommand>();
+                return new WinPopupViewModel(continueCommand, exitToMenu);
+            });
+            serviceCollection.AddSingleton(x =>
+            {
+                var popup = x.GetRequiredService<PopupSystem>();
+                var onShow = x.GetRequiredService<PauseGameCommand>();
+                var continueCommand = x.GetRequiredService<ContinueGameCommand>();
+                var settingsCommand = new SpawnPopupCommand<SettingsPopup>(popup);
+                var exitCommand = x.GetRequiredService<ExitToMenuCommand>();
+                var restart = x.GetRequiredService<RestartGameCommand>();
+                return new PausePopupViewModel(onShow, continueCommand, exitCommand, settingsCommand, restart);
             });
 
             serviceCollection.AddSingleton<MenuSceneBuilder>();
@@ -139,11 +164,22 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<GameDataProvider>();
             serviceCollection.AddSingleton<ISoundSettingsProvider, JsonSoundSettingsProvider>();
 
+            serviceCollection.AddSingleton<MenuEscapeButtonHandler>();
+            serviceCollection.AddSingleton<GameEscapeButtonHandler>();
+            serviceCollection.AddSingleton<MenuListenerInitializer>();
+            serviceCollection.AddSingleton<GameListenerInitializer>();
+
+            serviceCollection.AddSingleton<IGamePauseFacade>(x => x.GetRequiredService<GamePauseFacade>());
+            serviceCollection.AddSingleton<IGameRestartFacade>(x => x.GetRequiredService<GameRestartFacade>());
+            serviceCollection.AddSingleton<GamePauseFacade>();
+            serviceCollection.AddSingleton<GameRestartFacade>();
+
             AddPopup<WinPopup, WinPopupFactory>(serviceCollection);
             AddPopup<MenuPopup, MenuPopupFactory>(serviceCollection);
             AddPopup<GamePopup, GamePopupFactory>(serviceCollection);
             AddPopup<GameSettingsPopup, GameSettingPopupFactory>(serviceCollection);
             AddPopup<SettingsPopup, SettingsPopupFactory>(serviceCollection);
+            AddPopup<PausePopup, PausePopupFactory>(serviceCollection);
         }
 
         private static void AddPopup<TPopup, TFactory>(IServiceCollection serviceCollection) 
@@ -195,6 +231,11 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<SharpAudioVoiceFactory>();
 
             serviceCollection.AddSingleton<GameRunner<TennisGameScenes>>();
+            serviceCollection.AddSingleton(x =>
+            {
+                var input = x.GetRequiredService<InputController>();
+                return new GlobalInputListener(input).WrapWithGameObject();
+            });
         }
 
         private static bool TryStartGame()

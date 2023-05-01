@@ -14,6 +14,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
     public abstract class RacketBase : MeshableObject
     {
         protected static readonly Random Random = new Random();
+        private Vector3 _startPosition;
         private const float MinZ = -40;
         private const float MaxZ = 40;
 
@@ -42,7 +43,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             RigidBody3D = GameObject.GetComponent<RigidBody3D>();
             Transform.Moved += TransformOnMoved;
             Transform.Rotated += TransformOnRotated;
+            _startPosition = Transform.Position;
         }
+
+        public void Reset() => Transform.SetPosition(_startPosition);
 
         public void Color(Color color)
         {

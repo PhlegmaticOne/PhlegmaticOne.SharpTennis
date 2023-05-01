@@ -138,10 +138,12 @@
     <Compile Include="Common\Base\Scenes\SceneProvider.cs" />
     <Compile Include="Common\Base\VectorExtensions.cs" />
     <Compile Include="Common\Commands\ICommand.cs" />
+    <Compile Include="Common\Extensions\ComponentExtensions.cs" />
     <Compile Include="Common\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Infrastructure\GameEvents.cs" />
     <Compile Include="Common\Infrastructure\GlobalVariables.cs" />
     <Compile Include="Common\Infrastructure\Screen.cs" />
+    <Compile Include="Common\Input\GlobalInputListener.cs" />
     <Compile Include="Common\Render\IRenderer.cs" />
     <Compile Include="Common\Render\RenderSequence.cs" />
     <Compile Include="Common\Base\BaseObject.cs" />
@@ -208,13 +210,22 @@
     <Compile Include="Engine3D\Mesh\TextureMaterialsProvider.cs" />
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\CloseLastPopupCommand.cs" />
+    <Compile Include="Game\Commands\ContinueGameCommand.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
+    <Compile Include="Game\Commands\ExitToMenuCommand.cs" />
+    <Compile Include="Game\Commands\Global\GameEscapeButtonHandler.cs" />
+    <Compile Include="Game\Commands\Global\MenuEscapeButtonHandler.cs" />
+    <Compile Include="Game\Commands\PauseGameCommand.cs" />
+    <Compile Include="Game\Commands\RestartGameCommand.cs" />
     <Compile Include="Game\Commands\SaveSoundSettingsCommand.cs" />
     <Compile Include="Game\Commands\SpawnPopupCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallBouncesController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Controllers\WinController.cs" />
+    <Compile Include="Game\Global\Base\ListenerInitializer.cs" />
+    <Compile Include="Game\Global\GameListenerInitializer.cs" />
+    <Compile Include="Game\Global\MenuListenerInitializer.cs" />
     <Compile Include="Game\Infrastructure\TextureProviderFactory.cs" />
     <Compile Include="Game\Interface\Base\GamePopupBase.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
@@ -249,6 +260,7 @@
     <Compile Include="Game\Interface\Settings\SettingsPopupViewModel.cs" />
     <Compile Include="Game\Interface\Win\WinPopup.cs" />
     <Compile Include="Game\Interface\Win\WinPopupFactory.cs" />
+    <Compile Include="Game\Interface\Win\WinPopupViewModel.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Ball\BallBounceProvider.cs" />
@@ -258,8 +270,12 @@
     <Compile Include="Game\Models\Base\MeshableObject.cs" />
     <Compile Include="Game\Models\Floor\FloorFactory.cs" />
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
+    <Compile Include="Game\Models\Game\Base\IGamePauseFacade.cs" />
+    <Compile Include="Game\Models\Game\Base\IGameRestartFacade.cs" />
     <Compile Include="Game\Models\Game\GameData.cs" />
     <Compile Include="Game\Models\Game\GameDataProvider.cs" />
+    <Compile Include="Game\Models\Game\GamePauseFacade.cs" />
+    <Compile Include="Game\Models\Game\GameRestartFacade.cs" />
     <Compile Include="Game\Models\Game\GameSounds.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KickComponent.cs" />
@@ -361,6 +377,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\tennis_racket_hand.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\restart_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\settings_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\cancel_button.png">

@@ -5,6 +5,7 @@ using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Win;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
@@ -13,25 +14,30 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private int _winScore;
         private readonly PopupSystem _popupSystem;
         private readonly ISoundManager<GameSounds> _soundManager;
+        private readonly IGamePauseFacade _gamePauseFacade;
 
         private Dictionary<RacketType, int> _loses;
         private BallBouncesController _ballBouncesController;
-        private RacketMoveController _moveController;
 
-
-        public WinController(PopupSystem popupSystem, ISoundManager<GameSounds> soundManager)
+        public WinController(PopupSystem popupSystem, ISoundManager<GameSounds> soundManager,
+            IGamePauseFacade gamePauseFacade)
         {
             _popupSystem = popupSystem;
             _soundManager = soundManager;
+            _gamePauseFacade = gamePauseFacade;
             _loses = InitLoses();
         }
 
-        public void Setup(BallBouncesController ballBouncesController,
-            RacketMoveController racketMoveController)
+        public void Setup(BallBouncesController ballBouncesController)
         {
             _ballBouncesController = ballBouncesController;
-            _moveController = racketMoveController;
             _ballBouncesController.Losed += BallBouncesControllerOnLosed;
+            _ballBouncesController.Restarted += BallBouncesControllerOnRestarted;
+        }
+
+        private void BallBouncesControllerOnRestarted()
+        {
+            _loses = InitLoses();
         }
 
         public void SetupPlayToScore(int score) => _winScore = score;
@@ -57,7 +63,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             if (_loses[obj] == _winScore)
             {
-                _moveController.ChangeEnabled(false);
+                _gamePauseFacade.Pause();
                 SpawnWinPopup(winner);
             }
         }

@@ -1,34 +1,21 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
-using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
-using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
-using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
 {
     public class WinPopup : GamePopupBase
     {
-        private readonly PopupSystem _popupSystem;
-        private readonly ISceneBuilderFactory<TennisGameScenes> _sceneBuilderFactory;
-        private readonly SceneProvider _sceneProvider;
-        private readonly GameRunner<TennisGameScenes> _gameRunner;
+        private readonly WinPopupViewModel _winPopupViewModel;
         private ButtonComponent _continueButton;
         private ButtonComponent _exitButton;
         private TextComponent _winText;
 
-        public WinPopup(PopupSystem popupSystem,
-            ISceneBuilderFactory<TennisGameScenes> sceneBuilderFactory,
-            SceneProvider sceneProvider,
-            GameRunner<TennisGameScenes> gameRunner,
-            ISoundManager<GameSounds> soundManager) : base(soundManager)
+        public WinPopup(WinPopupViewModel winPopupViewModel, ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
-            _popupSystem = popupSystem;
-            _sceneBuilderFactory = sceneBuilderFactory;
-            _sceneProvider = sceneProvider;
-            _gameRunner = gameRunner;
+            _winPopupViewModel = winPopupViewModel;
         }
 
 
@@ -38,27 +25,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
             _exitButton = exitButton;
             _winText = winText;
 
-            _continueButton.OnClick.Add(ContinueGame);
-            _exitButton.OnClick.Add(ExitGame);
+            _continueButton.OnClick.Add(() => _winPopupViewModel.ContinueGameCommand.Execute(null));
+            _exitButton.OnClick.Add(() => _winPopupViewModel.ExitGameCommand.Execute(null));
         }
 
-        public void SetWinner(RacketType racket)
-        {
-            _winText.Text = "Winner: " + racket;
-        }
-
-        private void ExitGame()
-        {
-            _popupSystem.CloseAll();
-            var sceneBuilder = _sceneBuilderFactory.CreateSceneBuilder(_sceneBuilderFactory.Scenes.Menu);
-            var scene = sceneBuilder.BuildScene();
-            _sceneProvider.ChangeScene(scene);
-            //_gameRunner.ForceResize();
-        }
-
-        private void ContinueGame()
-        {
-
-        }
+        public void SetWinner(RacketType racket) => _winText.Text = "Winner: " + racket;
     }
 }

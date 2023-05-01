@@ -23,6 +23,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
     public class BallModel : MeshableObject
     {
+        private Vector3 _lastSpeed;
+        private Vector3 _startPosition;
+
         private readonly MeshComponent _mesh;
         private readonly BallBounceProvider _ballBounceProvider;
 
@@ -42,10 +45,33 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
         public BallGameState BallGameState { get; set; }
         public int BouncedFromTableTimes { get; set; }
 
+
         public override void Start()
         {
             RigidBody = GameObject.GetComponent<RigidBody3D>();
+            _startPosition = Transform.Position;
             Transform.Moved += TransformOnMoved;
+        }
+
+        public void Reset()
+        {
+            SetSpeed(Vector3.Zero);
+            Transform.SetPosition(_startPosition);
+        }
+
+        public void ChangeActive(bool active)
+        {
+            if (active == false)
+            {
+                _lastSpeed = GetSpeed();
+                SetSpeed(Vector3.Zero);
+                RigidBody.DisableGravity();
+            }
+            else
+            {
+                SetSpeed(_lastSpeed);
+                RigidBody.EnableGravity();
+            }
         }
 
         public void Bounce(Component bouncedFrom, Vector3 normal, float bounciness = 0)

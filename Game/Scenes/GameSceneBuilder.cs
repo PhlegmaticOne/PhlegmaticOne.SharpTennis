@@ -1,9 +1,11 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Global;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
@@ -30,6 +32,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly WinController _winController;
         private readonly BallBouncesController _ballBouncesController;
         private readonly GameDataProvider _gameDataProvider;
+        private readonly GameListenerInitializer _gameListenerInitializer;
+        private readonly GamePauseFacade _gameDynamicFacade;
+        private readonly GameRestartFacade _gameRestartFacade;
 
         public GameSceneBuilder(IFactory<TennisTable> tennisTableFactory,
             IFactory<RacketBase, RacketFactoryData> racketFactory,
@@ -40,7 +45,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             SceneProvider sceneProvider,
             WinController winController,
             BallBouncesController ballBouncesController,
-            GameDataProvider gameDataProvider)
+            GameDataProvider gameDataProvider,
+            GameListenerInitializer gameListenerInitializer,
+            GamePauseFacade gameDynamicFacade,
+            GameRestartFacade gameRestartFacade)
         {
             _tennisTableFactory = tennisTableFactory;
             _racketFactory = racketFactory;
@@ -52,6 +60,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _winController = winController;
             _ballBouncesController = ballBouncesController;
             _gameDataProvider = gameDataProvider;
+            _gameListenerInitializer = gameListenerInitializer;
+            _gameDynamicFacade = gameDynamicFacade;
+            _gameRestartFacade = gameRestartFacade;
         }
 
         public Scene BuildScene()
@@ -104,13 +115,35 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddPlayerRacketMoveController(scene);
             AddPhysicSystems(scene);
             AddWinController(scene);
+            AddGameListenerInitializer(scene);
+
+            InitializeGameFacades(scene);
+        }
+
+        private void InitializeGameFacades(Scene scene)
+        {
+            _gameDynamicFacade.Setup(
+                scene.GetComponent<BallModel>(),
+                scene.GetComponent<RacketMoveController>(),
+                scene.GetComponent<EnemyRacket>());
+
+            _gameRestartFacade.Setup(
+                scene.GetComponent<BallModel>(),
+                scene.GetComponent<PlayerRacket>(),
+                scene.GetComponent<EnemyRacket>());
+        }
+
+        private void AddGameListenerInitializer(Scene scene)
+        {
+            var initializer = _gameListenerInitializer.WrapWithGameObject();
+            initializer.Initialize();
+            scene.AddGameObject(initializer.GameObject);
         }
 
         private void AddWinController(Scene scene)
         {
             var ballController = scene.GetComponent<BallBouncesController>();
-            var racketMoveController = scene.GetComponent<RacketMoveController>();
-            _winController.Setup(ballController, racketMoveController);
+            _winController.Setup(ballController);
             _winController.SetupPlayToScore(_gameDataProvider.GameData.PlayToScore);
             scene.AddGameObject(CreateGameObjectWithComponent("WinController", _winController));
         }

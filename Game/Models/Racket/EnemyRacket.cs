@@ -40,6 +40,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         protected override RacketType BallBounceType => RacketType.Enemy;
 
+        public void ChangeActive(bool active)
+        {
+            _stateComponent.ChangeEnabled(active);
+        }
 
         public override void Start()
         {

@@ -20,13 +20,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private bool _isLose;
 
         public event Action<RacketType> Losed;
-        public event Action<GameState, string> StateChanged; 
+        public event Action<GameState, string> StateChanged;
+        public event Action Restarted;
 
         public BallBouncesController(BallBounceProvider ballBounceProvider)
         {
             _ballBounceProvider = ballBounceProvider;
             _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
+
+        public void Restart() => Restarted?.Invoke();
 
         public void SetupRackets(PlayerRacket playerRacket, EnemyRacket enemyRacket)
         {

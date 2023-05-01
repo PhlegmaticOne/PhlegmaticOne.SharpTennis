@@ -24,6 +24,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             _canvasManager = canvasManager;
             _ballBouncesController.Losed += BallBouncesControllerOnLosed;
             _ballBouncesController.StateChanged += BallBouncesControllerOnStateChanged;
+            _ballBouncesController.Restarted += BallBouncesControllerOnRestarted;
+        }
+
+        private void BallBouncesControllerOnRestarted()
+        {
+            _scoreSystem.EnemyText.ResetScore();
+            _scoreSystem.PlayerText.ResetScore();
         }
 
         public void SetupViews(ScoreSystem scoreSystem, GameStateViewController gameStateViewController, TextComponent infoText)

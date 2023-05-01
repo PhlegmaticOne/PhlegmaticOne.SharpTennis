@@ -29,18 +29,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Base
         public void ChangeEnabled(bool enabled)
         {
             Enabled = enabled;
-
-            if (enabled)
-            {
-                OnEnable();
-            }
-            else
-            {
-                OnDisable();
-            }
         }
-
-        protected virtual void OnEnable() { }
-        protected virtual void OnDisable() { }
     }
 }
