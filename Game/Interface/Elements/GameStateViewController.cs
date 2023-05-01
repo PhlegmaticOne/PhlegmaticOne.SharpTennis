@@ -9,7 +9,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
     public enum GameState
     {
         None,
-        Knock
+        Knock,
+        DidntKnock,
+        DidntHitTable,
+        DidntHitOppositeTable,
+        TooManyBouncesFromTable,
+        KnockSucceed,
+        Kicked,
+        KickSucceed
     }
 
     public class GameStateViewController : RectComponent
@@ -42,7 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
             var value = _gameStates[gameState];
             var result = string.Format(value, parameter);
             _textComponent.Text = result;
-            _textComponent.RectTransform.DoScale(Vector3.Zero, Vector3.One, 1f, false, () =>
+            _textComponent.RectTransform.DoScale(Vector3.Zero, Vector3.One, 0.4f, false, () =>
             {
                 _currentState = GameState.None;
             });
@@ -50,7 +57,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
 
         private void InitializeGameStates()
         {
-            _gameStates.Add(GameState.Knock, "{0} knock");
+            _gameStates.Add(GameState.Knock, "{0} knocked");
+            _gameStates.Add(GameState.DidntKnock, "{0} didn't knock");
+            _gameStates.Add(GameState.DidntHitTable, "{0} didn't hit table");
+            _gameStates.Add(GameState.DidntHitOppositeTable, "{0} didn't hit opposite table");
+            _gameStates.Add(GameState.TooManyBouncesFromTable, "Too many bounces from table: {0}");
+            _gameStates.Add(GameState.KnockSucceed, "{0} succeeds his knock");
+            _gameStates.Add(GameState.Kicked, "{0} kicked");
+            _gameStates.Add(GameState.KickSucceed, "{0} succeeds his kick");
         }
     }
 }

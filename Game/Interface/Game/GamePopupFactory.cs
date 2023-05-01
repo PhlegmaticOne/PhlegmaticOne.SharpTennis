@@ -58,7 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var go = new GameObject();
             var text = TextComponent.Create(Colors.White, string.Empty, data);
             text.RectTransform.Anchor = Anchor.Top;
-            text.RectTransform.Size = new SizeF(400, data.FontSize);
+            text.RectTransform.Size = new SizeF(1000, data.FontSize);
             var gameStateSwitcher = new GameStateViewController();
             gameStateSwitcher.SetTextComponent(text);
             go.AddComponent(gameStateSwitcher, false);

@@ -14,7 +14,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private PlayerRacket _playerRacket;
         private EnemyRacket _enemyRacket;
 
-        private bool _knockShowed;
         private bool _knockChecked;
         private bool _inGameChecked;
         private bool _isLose;
@@ -29,7 +28,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
         }
 
-        public void Restart() => Restarted?.Invoke();
+        public void Restart()
+        {
+            _inGameChecked = false;
+            _isLose = false;
+            _knockChecked = false;
+            Restarted?.Invoke();
+        }
 
         public void SetupRackets(PlayerRacket playerRacket, EnemyRacket enemyRacket)
         {
@@ -44,14 +49,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             if (ball.BallGameState == BallGameState.None)
             {
-                if (_knockShowed == false)
-                {
-                    OnStateChanged(GameState.Knock, RacketType.Player.ToString());
-                    _knockShowed = true;
-                }
-
                 if (bouncedFrom.GameObject.HasComponent<FloorModel>())
                 {
+                    OnStateChanged(GameState.DidntKnock, RacketType.Player);
                     OnLose(RacketType.Player);
                     ReturnToStartPositionRandom(ball, RacketType.Player);
                 }
@@ -61,6 +61,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             if (ball.BallGameState == BallGameState.Knocked)
             {
+                OnStateChanged(GameState.Knock, GetRacketType(bouncedFrom));
                 _knockChecked = false;
                 _isLose = CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
                 _isLose = CheckScoreOnBallKnocked(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
@@ -68,6 +69,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             if (ball.BallGameState == BallGameState.InPlay)
             {
+                OnStateChanged(GameState.Kicked, GetRacketType(bouncedFrom));
                 _inGameChecked = false;
                 _isLose = CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Player, RacketType.Enemy);
                 _isLose = CheckScoreOnBallInPlay(bouncedFrom, ball, RacketType.Enemy, RacketType.Player);
@@ -91,9 +93,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             var fromFloor = bouncedFrom.GameObject.HasComponent<FloorModel>();
 
             if (ballModel.BouncedFromRacket == current &&
-                ballModel.BouncedFromTableTimes == 0 && 
-                fromFloor)
+                ballModel.BouncedFromTableTimes == 0 && fromFloor)
             {
+                OnStateChanged(GameState.DidntHitTable, current);
                 return LoseRacketOnPlay(current, opposite, ballModel);
             }
 
@@ -101,6 +103,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
                 ballModel.BouncedFromTablePart == current &&
                 ballModel.BouncedFromTableTimes >= 1)
             {
+                OnStateChanged(GameState.TooManyBouncesFromTable, current);
                 return LoseRacketOnPlay(current, opposite, ballModel);
             }
 
@@ -108,13 +111,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
                 ballModel.BouncedFromTablePart == opposite &&
                 ballModel.BouncedFromTableTimes >= 2)
             {
+                OnStateChanged(GameState.TooManyBouncesFromTable, opposite);
                 return LoseRacketOnPlay(opposite, current, ballModel);
             }
 
             if (ballModel.BouncedFromRacket == current &&
-                ballModel.BouncedFromTablePart == opposite &&
-                fromFloor)
+                ballModel.BouncedFromTablePart == opposite && fromFloor)
             {
+                OnStateChanged(GameState.KickSucceed, current);
                 return LoseRacketOnPlay(opposite, current, ballModel);
             }
 
@@ -134,16 +138,26 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
             if (ball.BouncedFromRacket == current &&
                 ball.BouncedFromTablePart == current &&
-                (ball.BouncedFromTableTimes == 0 || ball.BouncedFromTableTimes == 1) &&
                 fromFloor)
             {
-                return LoseRacketOnKnock(current, opposite, ball);
+                if (ball.BouncedFromTableTimes == 0)
+                {
+                    OnStateChanged(GameState.DidntHitTable, current);
+                    return LoseRacketOnKnock(current, opposite, ball);
+                }
+
+                if (ball.BouncedFromTableTimes == 1)
+                {
+                    OnStateChanged(GameState.DidntHitOppositeTable, current);
+                    return LoseRacketOnKnock(current, opposite, ball);
+                }
             }
 
             if (ball.BouncedFromRacket == current &&
                 ball.BouncedFromTablePart == current &&
                 ball.BouncedFromTableTimes >= 2)
             {
+                OnStateChanged(GameState.TooManyBouncesFromTable, current);
                 return LoseRacketOnPlay(current, opposite, ball);
             }
 
@@ -151,19 +165,43 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
                 ball.BouncedFromTablePart == opposite &&
                 ball.BouncedFromTableTimes >= 2)
             {
+                OnStateChanged(GameState.TooManyBouncesFromTable, opposite);
                 return LoseRacketOnKnock(opposite, current, ball);
             }
 
             if (ball.BouncedFromTablePart == opposite && fromFloor)
             {
+                OnStateChanged(GameState.KnockSucceed, current);
                 return LoseRacketOnKnock(opposite, current, ball);
             }
 
             return false;
         }
 
+        private RacketType GetRacketType(Component bouncedFrom)
+        {
+            if (bouncedFrom.GameObject.HasComponent<PlayerRacket>())
+            {
+                return RacketType.Player;
+            }
+
+            if (bouncedFrom.GameObject.HasComponent<EnemyRacket>())
+            {
+                return RacketType.Enemy;
+            }
+
+            return RacketType.None;
+        }
+
         private void OnLose(RacketType racketType) => Losed?.Invoke(racketType);
-        private void OnStateChanged(GameState gameState, string p) => StateChanged?.Invoke(gameState, p);
+        private void OnStateChanged(GameState gameState, RacketType racketType)
+        {
+            if (racketType == RacketType.None)
+            {
+                return;
+            }
+            StateChanged?.Invoke(gameState, racketType.ToString());
+        }
 
         private bool LoseRacketOnPlay(RacketType lose, RacketType opposite, BallModel ball)
         {
@@ -180,7 +218,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 
         private bool Lose(RacketType lose, RacketType opposite, BallModel ball)
         {
-            //_scoreSystem.AddScore(1, opposite);
             GetRacket(lose).OnLost(ball);
             ReturnToStartPositionRandom(ball, lose);
             Losed?.Invoke(lose);
