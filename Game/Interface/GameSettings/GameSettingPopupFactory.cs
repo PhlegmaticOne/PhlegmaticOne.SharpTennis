@@ -17,7 +17,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
     {
         private readonly InputNumberSelectableElement _inputNumberSelectableElement;
 
-        public GameSettingPopupFactory(GameSettingsPopup popup, InputNumberSelectableElement inputNumberSelectableElement) :
+        public GameSettingPopupFactory(GameSettingsPopup popup, 
+            InputNumberSelectableElement inputNumberSelectableElement) :
             base(popup)
         {
             _inputNumberSelectableElement = inputNumberSelectableElement;
@@ -81,7 +82,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 
         private ButtonComponent CreateCloseButton()
         {
-            var go = new GameObject("AAAAA");
+            var go = new GameObject();
             var image = ImageComponent.Create(@"assets\textures\ui\GameSettings\close.png",
                 new Vector2(600, -420), Anchor.Center);
             var text = TextComponent.Create(Colors.White, string.Empty, TextFormatData.DefaultForSize(50));

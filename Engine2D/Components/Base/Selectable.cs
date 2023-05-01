@@ -5,6 +5,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base
 {
     public class Selectable : RectComponent
     {
+        public bool DeselectOnMisClick { get; set; }
         public bool IsSelected { get; private set; }
         public Brush Brush { get; protected set; }
         public float Stroke { get; set; } = 5;

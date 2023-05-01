@@ -8,6 +8,7 @@ using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Models.Data;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX;
@@ -23,6 +24,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Win;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
@@ -74,20 +76,28 @@ namespace PhlegmaticOne.SharpTennis.Game
         private static void RegisterGameServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<ExitGameCommand>();
-            serviceCollection.AddSingleton<ShowGameSettingsPopupCommand>();
             serviceCollection.AddSingleton<StartGameCommand>();
             serviceCollection.AddSingleton<CloseLastPopupCommand>();
+            serviceCollection.AddSingleton<SaveSoundSettingsCommand>();
             serviceCollection.AddSingleton(x =>
             {
                 var exit = x.GetRequiredService<ExitGameCommand>();
-                var start = x.GetRequiredService<ShowGameSettingsPopupCommand>();
-                return new MenuPopupViewModel(start, exit);
+                var popupSystem = x.GetRequiredService<PopupSystem>();
+                var spawnGameSettings = new SpawnPopupCommand<GameSettingsPopup>(popupSystem);
+                var spawnSettings = new SpawnPopupCommand<SettingsPopup>(popupSystem);
+                return new MenuPopupViewModel(spawnGameSettings, exit, spawnSettings);
             });
             serviceCollection.AddSingleton(x =>
             {
                 var close = x.GetRequiredService<CloseLastPopupCommand>();
                 var start = x.GetRequiredService<StartGameCommand>();
                 return new GameSettingsViewModel(close, start);
+            });
+            serviceCollection.AddSingleton(x =>
+            {
+                var close = x.GetRequiredService<CloseLastPopupCommand>();
+                var save = x.GetRequiredService<SaveSoundSettingsCommand>();
+                return new SettingsPopupViewModel(close, save);
             });
 
             serviceCollection.AddSingleton<MenuSceneBuilder>();
@@ -127,11 +137,13 @@ namespace PhlegmaticOne.SharpTennis.Game
 
             serviceCollection.AddTransient<InputNumberSelectableElement>();
             serviceCollection.AddSingleton<GameDataProvider>();
+            serviceCollection.AddSingleton<ISoundSettingsProvider, JsonSoundSettingsProvider>();
 
             AddPopup<WinPopup, WinPopupFactory>(serviceCollection);
             AddPopup<MenuPopup, MenuPopupFactory>(serviceCollection);
             AddPopup<GamePopup, GamePopupFactory>(serviceCollection);
             AddPopup<GameSettingsPopup, GameSettingPopupFactory>(serviceCollection);
+            AddPopup<SettingsPopup, SettingsPopupFactory>(serviceCollection);
         }
 
         private static void AddPopup<TPopup, TFactory>(IServiceCollection serviceCollection) 

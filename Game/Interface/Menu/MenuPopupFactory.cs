@@ -21,10 +21,25 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu
             var background = CreateBackground();
             var exitButton = CreateExitButton(menuTextFormat);
             var playButton = CreatePlayButton(menuTextFormat);
+            var settingsButton = CreateSettingsButton();
 
-            var canvas = Canvas.Create(name, background, playButton.GameObject, exitButton.GameObject);
-            popup.Setup(playButton, exitButton);
+            var canvas = Canvas.Create(name, background, playButton.GameObject, exitButton.GameObject, settingsButton.GameObject);
+            popup.Setup(playButton, exitButton, settingsButton);
             return canvas;
+        }
+
+        private ButtonComponent CreateSettingsButton()
+        {
+            var playButtonObject = new GameObject();
+            var playButtonImage = ImageComponent.Create(@"assets\textures\ui\Settings\icon.png",
+                new Vector2(-60, 40), Anchor.TopRight);
+            var playButtonText = TextComponent.Create(Colors.White, string.Empty, TextFormatData.DefaultForSize(2));
+            var playButton = new ButtonComponent(playButtonImage, playButtonText);
+
+            playButtonObject.AddComponent(playButtonImage, false);
+            playButtonObject.AddComponent(playButtonText, false);
+            playButtonObject.AddComponent(playButton, false);
+            return playButton;
         }
 
         private ButtonComponent CreatePlayButton(TextFormatData textFormatData)

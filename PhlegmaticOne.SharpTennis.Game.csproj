@@ -79,6 +79,9 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Extensions.DependencyInjection.Abstractions.7.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -148,6 +151,9 @@
     <Compile Include="Common\Base\Scenes\Scene.cs" />
     <Compile Include="Common\Sound\Base\ISoundManager.cs" />
     <Compile Include="Common\Sound\Base\SharpAudioVoiceFactory.cs" />
+    <Compile Include="Common\Sound\Models\Data\ISoundSettingsProvider.cs" />
+    <Compile Include="Common\Sound\Models\Data\JsonSoundSettingsProvider.cs" />
+    <Compile Include="Common\Sound\Models\SoundSettings.cs" />
     <Compile Include="Common\Sound\SoundManager.cs" />
     <Compile Include="Common\StateMachine\EmptyState.cs" />
     <Compile Include="Common\StateMachine\IStateBehavior.cs" />
@@ -169,6 +175,7 @@
     <Compile Include="Engine2D\Components\Base\Selectable.cs" />
     <Compile Include="Engine2D\Components\Base\ResizableComponent.cs" />
     <Compile Include="Engine2D\Components\ButtonComponent.cs" />
+    <Compile Include="Engine2D\Components\CheckBox.cs" />
     <Compile Include="Engine2D\Components\TextFormatData.cs" />
     <Compile Include="Engine2D\Canvas.cs" />
     <Compile Include="Engine2D\CanvasRenderer.cs" />
@@ -202,7 +209,8 @@
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\CloseLastPopupCommand.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
-    <Compile Include="Game\Commands\ShowGameSettingsPopupCommand.cs" />
+    <Compile Include="Game\Commands\SaveSoundSettingsCommand.cs" />
+    <Compile Include="Game\Commands\SpawnPopupCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallBouncesController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
@@ -238,6 +246,7 @@
     <Compile Include="Game\Interface\Pause\PausePopupViewModel.cs" />
     <Compile Include="Game\Interface\Settings\SettingsPopup.cs" />
     <Compile Include="Game\Interface\Settings\SettingsPopupFactory.cs" />
+    <Compile Include="Game\Interface\Settings\SettingsPopupViewModel.cs" />
     <Compile Include="Game\Interface\Win\WinPopup.cs" />
     <Compile Include="Game\Interface\Win\WinPopupFactory.cs" />
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
@@ -402,7 +411,15 @@
     <Content Include="Assets\textures\ui\accept_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\textures\ui\Settings\settings.png" />
+    <Content Include="Assets\textures\ui\Settings\check_mark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\Settings\check_back.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\Settings\icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\textures\ui\win_popup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -412,7 +429,9 @@
     <Content Include="pixel.hlsl" />
     <Content Include="vertex.hlsl" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Assets\Data\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>PowerShell -Command "&amp; {Get-Item -Path \"$(ProjectDir)Shaders\*\" -Filter \"*.h\" | ForEach-Object { $_.Name } | ForEach-Object { Get-Content -Raw -Path \"$(ProjectDir)Shaders\$_\" | Out-File -FilePath \"$(TargetDir)Shaders\$_\" -Encoding ASCII }}"</PostBuildEvent>

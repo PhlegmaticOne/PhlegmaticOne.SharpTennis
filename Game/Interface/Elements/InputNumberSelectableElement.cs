@@ -14,11 +14,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
             _inputController.Pressed += InputControllerOnPressed;
         }
 
-        public override void Dispose()
-        {
-            _inputController.Pressed -= InputControllerOnPressed;
-        }
-
         private void InputControllerOnPressed(Key key)
         {
             if (IsSelected == false)

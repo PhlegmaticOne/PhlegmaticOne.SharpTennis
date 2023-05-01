@@ -107,6 +107,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
                 return;
             }
 
+            if (brush == null || brush.IsDisposed)
+            {
+                return;
+            }
+
             _renderTarget.Transform = rectTransform.GetTransformMatrix();
             _renderTarget.StrokeWidth = stroke;
             _renderTarget.DrawRectangle(rectTransform.RawBounds, brush);

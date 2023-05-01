@@ -1,11 +1,8 @@
-﻿using System.Windows.Forms;
-using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
-using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
-using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;

@@ -70,6 +70,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
         {
             _closeButton.OnClick.Clear();
             _submitButton.OnClick.Clear();
+            base.OnClose();
         }
     }
 }

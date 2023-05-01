@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Models.Data;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
 
@@ -9,6 +10,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Sound
 {
     public class SharpAudioVoice : IDisposable
     {
+        private readonly ISoundSettingsProvider _soundSettingsProvider;
         private readonly AudioBuffer _buffer;
         private readonly SoundStream _stream;
         private readonly SourceVoice _voice;
@@ -17,8 +19,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Sound
         private CancellationToken _cancellationToken;
         private bool _isPlaying;
 
-        public SharpAudioVoice(SharpAudioDevice device, string filename)
+        public SharpAudioVoice(SharpAudioDevice device, ISoundSettingsProvider soundSettingsProvider, string filename)
         {
+            _soundSettingsProvider = soundSettingsProvider;
             _isPlaying = false;
             InitializeCancellation();
 
@@ -41,6 +44,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Sound
 
         public void Play()
         {
+            if (_soundSettingsProvider.Settings.IsMuted)
+            {
+                return;
+            }
+
             if (_isPlaying)
             {
                 Stop();
@@ -48,6 +56,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Sound
 
             _voice.SubmitSourceBuffer(_buffer, _stream.DecodedPacketsInfo);
             _voice.Start();
+            _voice.SetVolume(_soundSettingsProvider.Settings.NormalizedVolume);
             _isPlaying = true;
             PlaySoundAsync();
         }

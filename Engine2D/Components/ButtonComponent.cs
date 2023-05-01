@@ -10,14 +10,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
         public ButtonComponent(ImageComponent imageComponent, TextComponent textComponent)
         {
             RectTransform = imageComponent.RectTransform;
-            textComponent.RectTransform = imageComponent.RectTransform;
+            if (textComponent != null)
+            {
+                textComponent.RectTransform = imageComponent.RectTransform;
+            }
             OnClick = new List<Action>();
         }
-
-        public ButtonComponent(ImageComponent imageComponent)
-        {
-            RectTransform = imageComponent.RectTransform;
-        }
+        public ButtonComponent(ImageComponent imageComponent) : this(imageComponent, null) { }
 
         public List<Action> OnClick { get; }
 
