@@ -8,7 +8,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
     public class WinController : BehaviorObject
     {
-        private const int WinScore = 1;
+        private int _winScore;
         private readonly PopupSystem _popupSystem;
 
         private Dictionary<RacketType, int> _loses;
@@ -30,6 +30,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _ballBouncesController.Losed += BallBouncesControllerOnLosed;
         }
 
+        public void SetupPlayToScore(int score) => _winScore = score;
+
         public override void OnDestroy()
         {
             _loses = InitLoses();
@@ -47,7 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         {
             _loses[obj]++;
 
-            if (_loses[obj] == WinScore)
+            if (_loses[obj] == _winScore)
             {
                 _moveController.ChangeEnabled(false);
                 var winner = obj == RacketType.Player ? RacketType.Enemy : RacketType.Player;

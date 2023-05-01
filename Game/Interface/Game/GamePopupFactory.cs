@@ -10,6 +10,7 @@ using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
 using System.Drawing;
 using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
+using SharpDX;
 using FontStyle = SharpDX.DirectWrite.FontStyle;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
@@ -23,15 +24,31 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var textFormatData = CreateGameTextFormatData();
             var scoreSystem = SetupScoreViews(textFormatData);
             var gameStateView = SetupGameStateView(textFormatData);
+            var infoText = CreateMessageText(new Vector2(50, -50));
 
             var canvas = Canvas.Create("GameCanvas", new List<GameObject>()
                 .FluentAdd(gameStateView.GameObject)
                 .FluentAdd(scoreSystem.PlayerText.GameObject)
                 .FluentAdd(scoreSystem.EnemyText.GameObject)
+                .FluentAdd(infoText.GameObject)
                 .ToArray());
 
-            popup.Setup(scoreSystem, gameStateView);
+            popup.SetupViews(scoreSystem, gameStateView, infoText);
             return canvas;
+        }
+
+        private TextComponent CreateMessageText(Vector2 offset)
+        {
+            var font = 40;
+            var go = new GameObject();
+            var text = TextComponent.Create(Colors.White, string.Empty, TextFormatData.DefaultForSize(font));
+            text.TextFormatData.TextAlignment = TextAlignment.Leading;
+            text.RectTransform.Anchor = Anchor.BottomLeft;
+            text.RectTransform.Offset = offset;
+            text.RectTransform.Size = new SizeF(400, font);
+            go.AddComponent(new ResizableComponent(text.RectTransform), false);
+            go.AddComponent(text, false);
+            return text;
         }
 
         private GameStateViewController SetupGameStateView(TextFormatData textFormatData)

@@ -18,6 +18,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public Vector3 Normal { get; set; }
         public Vector3 TableNormal { get; set; }
         public float TableHeight { get; set; }
+        public DifficultyType DifficultyType { get; set; }
     }
 
     public class RacketFactory : IFactory<RacketBase, RacketFactoryData>

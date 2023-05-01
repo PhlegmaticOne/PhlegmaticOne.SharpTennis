@@ -1,8 +1,10 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Engine2D;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 {
@@ -12,6 +14,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         private readonly CanvasManager _canvasManager;
         private ScoreSystem _scoreSystem;
         private GameStateViewController _gameStateViewController;
+        private TextComponent _infoText;
 
         public GamePopup(BallBouncesController ballBouncesController, CanvasManager canvasManager)
         {
@@ -21,10 +24,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             _ballBouncesController.StateChanged += BallBouncesControllerOnStateChanged;
         }
 
-        public void Setup(ScoreSystem scoreSystem, GameStateViewController gameStateViewController)
+        public void SetupViews(ScoreSystem scoreSystem, GameStateViewController gameStateViewController, TextComponent infoText)
         {
             _scoreSystem = scoreSystem;
             _gameStateViewController = gameStateViewController;
+            _infoText = infoText;
+        }
+
+        public void SetupGameData(GameData gameData)
+        {
+            var text = $"Game to score: {gameData.PlayToScore}\nDifficulty: {gameData.DifficultyType}";
+            _infoText.Text = text;
         }
 
         protected override void OnShow()

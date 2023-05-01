@@ -2,6 +2,8 @@
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -40,12 +42,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
             _renderTargetProperties.Usage = RenderTargetUsage.None;
         }
 
+        private Brush _test;
+
         public void Resize(Surface surface)
         {
             _renderTarget = new RenderTarget(_factory, surface, _renderTargetProperties);
             Utilities.Dispose(ref surface);
             _renderTarget.AntialiasMode = AntialiasMode.PerPrimitive;
             _renderTarget.TextAntialiasMode = Direct2DTextAntialiasMode.Cleartype;
+            _test = new SolidColorBrush(_renderTarget, Colors.White);
         }
 
         public Direct2DBitmap CreateImage(string fileName)
@@ -94,6 +99,19 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
             _renderTarget.DrawText(textComponent.Text, textComponent.TextFormat, 
                 textComponent.RectTransform.RawBounds, textComponent.Brush);
         }
+
+        public void DrawRectangle(RectTransform rectTransform, Brush brush, float stroke)
+        {
+            if (GlobalVariables.IsDisposed)
+            {
+                return;
+            }
+
+            _renderTarget.Transform = rectTransform.GetTransformMatrix();
+            _renderTarget.StrokeWidth = stroke;
+            _renderTarget.DrawRectangle(rectTransform.RawBounds, brush);
+        }
+
 
         public void RenderImage(ImageComponent imageComponent)
         {

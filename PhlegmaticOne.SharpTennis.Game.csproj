@@ -163,6 +163,7 @@
     <Compile Include="Engine2D\CanvasManager.cs" />
     <Compile Include="Engine2D\Components\Base\Colors.cs" />
     <Compile Include="Engine2D\Components\Base\IResizable.cs" />
+    <Compile Include="Engine2D\Components\Base\Selectable.cs" />
     <Compile Include="Engine2D\Components\Base\ResizableComponent.cs" />
     <Compile Include="Engine2D\Components\ButtonComponent.cs" />
     <Compile Include="Engine2D\Components\TextFormatData.cs" />
@@ -196,7 +197,9 @@
     <Compile Include="Common\Base\Transform.cs" />
     <Compile Include="Engine3D\Mesh\TextureMaterialsProvider.cs" />
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
+    <Compile Include="Game\Commands\CloseLastPopupCommand.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
+    <Compile Include="Game\Commands\ShowGameSettingsPopupCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
     <Compile Include="Game\Controllers\BallBouncesController.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
@@ -205,8 +208,14 @@
     <Compile Include="Game\Interface\Base\ICanvasFactory.cs" />
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
     <Compile Include="Game\Interface\Elements\GameStateViewController.cs" />
+    <Compile Include="Game\Interface\Elements\InputNumberSelectableElement.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
+    <Compile Include="Engine2D\Components\SelectableComponent.cs" />
+    <Compile Include="Engine2D\Components\SelectablePanel.cs" />
+    <Compile Include="Game\Interface\GameSettings\GameSettingPopupFactory.cs" />
+    <Compile Include="Game\Interface\GameSettings\GameSettingsPopup.cs" />
+    <Compile Include="Game\Interface\GameSettings\GameSettingsViewModel.cs" />
     <Compile Include="Game\Interface\Game\GamePopup.cs" />
     <Compile Include="Game\Interface\Game\GamePopupFactory.cs" />
     <Compile Include="Game\Interface\Menu\MenuCanvasViewModel.cs" />
@@ -226,10 +235,14 @@
     <Compile Include="Game\Models\Ball\BallFactory.cs" />
     <Compile Include="Game\Models\Ball\BallModel.cs" />
     <Compile Include="Game\Models\Ball\BallBounceProvider.cs" />
+    <Compile Include="Game\Models\Base\ColorType.cs" />
+    <Compile Include="Game\Models\Base\DifficultyType.cs" />
     <Compile Include="Game\Models\Base\IFactory.cs" />
     <Compile Include="Game\Models\Base\MeshableObject.cs" />
     <Compile Include="Game\Models\Floor\FloorFactory.cs" />
     <Compile Include="Game\Models\Floor\FloorModel.cs" />
+    <Compile Include="Game\Models\Game\GameData.cs" />
+    <Compile Include="Game\Models\Game\GameDataProvider.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KickComponent.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KnockComponent.cs" />
@@ -314,6 +327,36 @@
     <Content Include="Assets\textures\ui\cancel_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\textures\ui\GameSettings\black.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\easy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\hard.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\impossible.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\medium.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\popup.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\red.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\rounds.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\start_game.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\close.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\textures\ui\play.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -324,9 +367,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\cursor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\textures\ui\close_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\accept_button.png">

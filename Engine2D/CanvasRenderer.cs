@@ -3,6 +3,7 @@ using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine2D
@@ -63,6 +64,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
             if (gameObject.TryGetComponent<TextComponent>(out var text))
             {
                 _elementsRenderer.RenderText(text);
+            }
+
+            if (gameObject.TryGetComponent<Selectable>(out var selectable) && selectable.IsSelected)
+            {
+                _elementsRenderer.DrawRectangle(selectable.RectTransform, selectable.Brush, selectable.Stroke);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -9,6 +10,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
 {
     public class TextComponent : RectComponent
     {
+        private SolidColorBrush _brush;
         public static TextComponent Create(RawColor4 color, string text, TextFormatData textFormatData)
         {
             return new TextComponent
@@ -30,9 +32,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
         }
 
         public TextFormat TextFormat { get; set; }
-        public SolidColorBrush Brush { get; set; }
+
+        public SolidColorBrush Brush
+        {
+            get => _brush;
+            set
+            {
+                _brush = value;
+                BrushChanged?.Invoke(value);
+            }
+        }
+
         public TextFormatData TextFormatData { get; set; }
         public RawColor4 BrushColor { get; set; }
         public string Text { get; set; }
+        public event Action<Brush> BrushChanged;
     }
 }

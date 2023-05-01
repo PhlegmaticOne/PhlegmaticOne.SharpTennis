@@ -7,6 +7,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Sky;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
@@ -28,6 +29,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly SceneProvider _sceneProvider;
         private readonly WinController _winController;
         private readonly BallBouncesController _ballBouncesController;
+        private readonly GameDataProvider _gameDataProvider;
 
         public GameSceneBuilder(IFactory<TennisTable> tennisTableFactory,
             IFactory<RacketBase, RacketFactoryData> racketFactory,
@@ -37,7 +39,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             InputController inputController,
             SceneProvider sceneProvider,
             WinController winController,
-            BallBouncesController ballBouncesController)
+            BallBouncesController ballBouncesController,
+            GameDataProvider gameDataProvider)
         {
             _tennisTableFactory = tennisTableFactory;
             _racketFactory = racketFactory;
@@ -48,6 +51,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _sceneProvider = sceneProvider;
             _winController = winController;
             _ballBouncesController = ballBouncesController;
+            _gameDataProvider = gameDataProvider;
         }
 
         public Scene BuildScene()
@@ -63,6 +67,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         public void BuildModels(Scene scene)
         {
+            var gameData = _gameDataProvider.GameData;
+            var playerColor = gameData.PlayerColor == ColorType.Red ? Color.Red : Color.Black;
+            var enemyColor = gameData.PlayerColor == ColorType.Red ? Color.Black : Color.Red;
+
             var sky = _skyFactory.Create(new Transform(rotation: new Vector3(0, -90, 0)));
             AddMeshableObject(scene, sky);
 
@@ -72,12 +80,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddRacket(scene, new Transform(
                 new Vector3(-70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), Color.Red, Vector3.Right, true, table.TableTopPart);
+                new Vector3(1, 1, 1)), playerColor, Vector3.Right, true, table.TableTopPart);
 
             AddRacket(scene, new Transform(
                 new Vector3(70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), Color.Black, Vector3.Left, false, table.TableTopPart);
+                new Vector3(1, 1, 1)), enemyColor, Vector3.Left, false, table.TableTopPart);
 
             var ball = _ballFactory.Create(new Transform(position: new Vector3(-50, 20, 20)));
             AddMeshableObject(scene, ball);
@@ -103,6 +111,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             var ballController = scene.GetComponent<BallBouncesController>();
             var racketMoveController = scene.GetComponent<RacketMoveController>();
             _winController.Setup(ballController, racketMoveController);
+            _winController.SetupPlayToScore(_gameDataProvider.GameData.PlayToScore);
             scene.AddGameObject(CreateGameObjectWithComponent("WinController", _winController));
         }
 
@@ -151,7 +160,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
                 IsPlayer = isPlayer,
                 Normal = normal,
                 TableHeight = tableTopPart.Size.X / 2,
-                TableNormal = tableTopPart.Normal
+                TableNormal = tableTopPart.Normal,
+                DifficultyType = _gameDataProvider.GameData.DifficultyType
             });
 
             AddMeshableObject(scene, racket);

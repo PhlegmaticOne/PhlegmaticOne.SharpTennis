@@ -27,5 +27,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Extensions
             list.Add(item);
             return list;
         }
+
+        public static List<T> FluentAddRange<T>(this List<T> list, IEnumerable<T> items)
+        {
+            list.AddRange(items);
+            return list;
+        }
     }
 }

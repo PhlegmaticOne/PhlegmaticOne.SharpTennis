@@ -5,7 +5,6 @@ using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
-using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
 using SharpDX;
 using SharpDX.DirectWrite;
 using FontStyle = SharpDX.DirectWrite.FontStyle;
@@ -47,8 +46,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
                 new Vector2(320, 250), Anchor.Center);
             var text = TextComponent.Create(Colors.White, "Exit", textFormatData);
             var playButton = new ButtonComponent(image, text);
-            //playButton.OnClick.Add(() => _menuCanvasViewModel.PlayButtonCommand.Execute(null));
-
             go.AddComponent(image, false);
             go.AddComponent(text, false);
             go.AddComponent(playButton, false);
@@ -62,8 +59,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
                 new Vector2(-320, 250), Anchor.Center);
             var text = TextComponent.Create(Colors.White, "Continue", textFormatData);
             var playButton = new ButtonComponent(image, text);
-            //playButton.OnClick.Add(() => _menuCanvasViewModel.PlayButtonCommand.Execute(null));
-
             go.AddComponent(image, false);
             go.AddComponent(text, false);
             go.AddComponent(playButton, false);

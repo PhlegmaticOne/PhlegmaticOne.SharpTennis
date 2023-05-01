@@ -31,11 +31,33 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
 
         private static readonly Key[] KeyFuncCodes =
         {
-            Key.F1, Key.F2, Key.F3, Key.F4, Key.F5, Key.F6, Key.F7, Key.F8, Key.F9, Key.F10
+            Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0, Key.Back
         };
-        private readonly bool[] _keyFuncPreviousPressed = new bool[10];
-        private readonly bool[] _keyFuncCurrentPressed = new bool[10];
-        private readonly bool[] _keyFunc = new bool[10];
+        private readonly bool[] _keyFuncPreviousPressed;
+        private readonly bool[] _keyFuncCurrentPressed;
+        private readonly bool[] _keyFunc;
+
+        public event Action<Key> Pressed;
+
+        public InputController(RenderForm renderForm)
+        {
+            _directInput = new DirectInput();
+
+            _keyboard = new Keyboard(_directInput);
+            _keyboard.SetCooperativeLevel(renderForm.Handle, CooperativeLevel.Foreground | CooperativeLevel.NonExclusive);
+            AcquireKeyboard();
+            _keyboardState = new KeyboardState();
+
+            _mouse = new Mouse(_directInput);
+            _mouse.SetCooperativeLevel(renderForm.Handle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
+            AcquireMouse();
+            _mouseState = new MouseState();
+
+            _mousePressed = false;
+            _keyFuncPreviousPressed = new bool[KeyFuncCodes.Length];
+            _keyFuncCurrentPressed = new bool[KeyFuncCodes.Length];
+            _keyFunc = new bool[KeyFuncCodes.Length];
+        }
 
 
         private bool _mousePressed;
@@ -80,28 +102,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
         }
 
 
-        public InputController(RenderForm renderForm)
-        {
-            _directInput = new DirectInput();
-
-            _keyboard = new Keyboard(_directInput);
-            _keyboard.SetCooperativeLevel(renderForm.Handle, CooperativeLevel.Foreground | CooperativeLevel.NonExclusive);
-            AcquireKeyboard();
-            _keyboardState = new KeyboardState();
-
-            _mouse = new Mouse(_directInput);
-            _mouse.SetCooperativeLevel(renderForm.Handle, CooperativeLevel.Foreground | CooperativeLevel.NonExclusive);
-            AcquireMouse();
-            _mouseState = new MouseState();
-
-            _mousePressed = false;
-        }
-
-        public bool IsPressed(Key key)
-        {
-            return _keyboardState.IsPressed(key);
-        }
-
         private void AcquireKeyboard()
         {
             try
@@ -138,7 +138,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
         {
             previous = current;
             current = _keyboardState.IsPressed(key);
-            return previous && !current;
+            var result = previous && !current;
+
+            if (result)
+            {
+                Pressed?.Invoke(key);
+            }
+
+            return result;
         }
 
         private bool TriggerByKeyDown(Key key, ref bool previous, ref bool current)
@@ -150,7 +157,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
 
         private void ProcessKeyboardState()
         {
-            for (var i = 0; i <= 9; ++i)
+            for (var i = 0; i < KeyFuncCodes.Length; ++i)
             {
                 _keyFunc[i] = TriggerByKeyUp(KeyFuncCodes[i], ref _keyFuncPreviousPressed[i],
                     ref _keyFuncCurrentPressed[i]);
