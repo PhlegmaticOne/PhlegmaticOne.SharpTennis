@@ -1,6 +1,8 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
+﻿using System.Threading.Tasks;
+using PhlegmaticOne.SharpTennis.Game.Common.Base.Scenes;
 using PhlegmaticOne.SharpTennis.Game.Common.Commands;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Loading;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes.Base;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
@@ -24,8 +26,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
         public void Execute(object parameter)
         {
             _popupSystem.CloseAll();
-            var sceneBuilder = _sceneBuilderFactory.CreateSceneBuilder(_sceneBuilderFactory.Scenes.Menu);
-            var scene = sceneBuilder.BuildScene();
+            _popupSystem.SpawnPopup<LoadingPopup>();
+            ChangeSceneAsync();
+        }
+
+        private async void ChangeSceneAsync()
+        {
+            var result = await Task.WhenAll(Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                var sceneBuilder = _sceneBuilderFactory.CreateSceneBuilder(_sceneBuilderFactory.Scenes.Menu);
+                _popupSystem.CloseAll();
+                return sceneBuilder.BuildScene();
+            }));
+
+            var scene = result[0];
             _sceneProvider.ChangeScene(scene);
         }
     }

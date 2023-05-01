@@ -26,6 +26,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Interface;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Loading;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Menu;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Pause;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings;
@@ -180,6 +181,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             AddPopup<GameSettingsPopup, GameSettingPopupFactory>(serviceCollection);
             AddPopup<SettingsPopup, SettingsPopupFactory>(serviceCollection);
             AddPopup<PausePopup, PausePopupFactory>(serviceCollection);
+            AddPopup<LoadingPopup, LoadingPopupFactory>(serviceCollection);
         }
 
         private static void AddPopup<TPopup, TFactory>(IServiceCollection serviceCollection) 

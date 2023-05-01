@@ -18,6 +18,8 @@ using Direct2DAlphaMode = SharpDX.Direct2D1.AlphaMode;
 using Direct2DTextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;
 using WicPixelFormat = SharpDX.WIC.PixelFormat;
 using Direct2DBitmapInterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode;
+using System.Drawing;
+using Brush = SharpDX.Direct2D1.Brush;
 
 namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
 {
@@ -79,13 +81,33 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
             return textFormat;
         }
 
-        public void BeginRender() => _renderTarget.BeginDraw();
+        public void BeginRender()
+        {
+            try
+            {
+                _renderTarget?.BeginDraw();
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
+        }
 
-        public void EndRender() => _renderTarget.EndDraw();
+        public void EndRender()
+        {
+            try
+            {
+                _renderTarget?.EndDraw();
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
+        }
 
         public void RenderText(TextComponent textComponent)
         {
-            if (GlobalVariables.IsDisposed)
+            if (GlobalVariables.IsDisposed || _renderTarget == null)
             {
                 return;
             }
@@ -95,14 +117,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
                 return;
             }
 
-            _renderTarget.Transform = textComponent.RectTransform.GetTransformMatrix();
-            _renderTarget.DrawText(textComponent.Text, textComponent.TextFormat, 
-                textComponent.RectTransform.RawBounds, textComponent.Brush);
+            try
+            {
+                _renderTarget.Transform = textComponent.RectTransform.GetTransformMatrix();
+                _renderTarget?.DrawText(textComponent.Text, textComponent.TextFormat,
+                    textComponent.RectTransform.RawBounds, textComponent.Brush);
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
         }
 
         public void DrawRectangle(RectTransform rectTransform, Brush brush, float stroke)
         {
-            if (GlobalVariables.IsDisposed)
+            if (GlobalVariables.IsDisposed || _renderTarget == null)
             {
                 return;
             }
@@ -112,15 +141,22 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
                 return;
             }
 
-            _renderTarget.Transform = rectTransform.GetTransformMatrix();
-            _renderTarget.StrokeWidth = stroke;
-            _renderTarget.DrawRectangle(rectTransform.RawBounds, brush);
+            try
+            {
+                _renderTarget.Transform = rectTransform.GetTransformMatrix();
+                _renderTarget.StrokeWidth = stroke;
+                _renderTarget?.DrawRectangle(rectTransform.RawBounds, brush);
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
         }
 
 
         public void RenderImage(ImageComponent imageComponent)
         {
-            if (GlobalVariables.IsDisposed)
+            if (GlobalVariables.IsDisposed || _renderTarget == null)
             {
                 return;
             }
@@ -130,8 +166,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX
                 return;
             }
 
-            _renderTarget.Transform = imageComponent.RectTransform.GetTransformMatrix();
-            _renderTarget.DrawBitmap(imageComponent.Bitmap, imageComponent.Opacity, imageComponent.InterpolationMode);
+            try
+            {
+                _renderTarget.Transform = imageComponent.RectTransform.GetTransformMatrix();
+                _renderTarget?.DrawBitmap(imageComponent.Bitmap, imageComponent.Opacity, imageComponent.InterpolationMode);
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
         }
 
         public void DisposeOnResizing() => Utilities.Dispose(ref _renderTarget);

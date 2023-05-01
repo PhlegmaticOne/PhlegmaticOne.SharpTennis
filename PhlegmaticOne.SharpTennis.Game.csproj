@@ -240,6 +240,8 @@
     <Compile Include="Game\Interface\GameSettings\GameSettingsViewModel.cs" />
     <Compile Include="Game\Interface\Game\GamePopup.cs" />
     <Compile Include="Game\Interface\Game\GamePopupFactory.cs" />
+    <Compile Include="Game\Interface\Loading\LoadingPopup.cs" />
+    <Compile Include="Game\Interface\Loading\LoadingPopupFactory.cs" />
     <Compile Include="Game\Interface\Menu\MenuPopupViewModel.cs" />
     <Compile Include="Common\Sound\SharpAudioDevice.cs" />
     <Compile Include="Common\Sound\SharpAudioVoice.cs" />
@@ -377,6 +379,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\tennis_racket_hand.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\Loading\loading_icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\Loading\loading_back.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\restart_button.png">

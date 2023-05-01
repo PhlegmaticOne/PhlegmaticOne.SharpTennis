@@ -18,10 +18,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Tween.Actions.Base
             _onComplete = onComplete;
         }
 
-        public virtual void OnKill(Action action)
-        {
-            action?.Invoke();
-        }
+        public virtual void OnKill(Action action) => action?.Invoke();
 
         public bool IsFinished { get; private set; }
 
