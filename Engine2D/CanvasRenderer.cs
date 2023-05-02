@@ -38,7 +38,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D
 
         public void Render()
         {
-            foreach (var canvas in _canvases)
+            foreach (var canvas in _canvases.ToArray())
             {
                 foreach (var interfaceElement in canvas.GetElements())
                 {

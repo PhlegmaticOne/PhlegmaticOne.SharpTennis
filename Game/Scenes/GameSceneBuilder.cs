@@ -171,7 +171,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         {
             var playerRacket = scene.GetComponent<PlayerRacket>();
             scene.AddGameObject(CreateGameObjectWithComponent("PlayerRacketController",
-                new RacketMoveController(playerRacket, scene.Camera, _inputController)));
+                new RacketMoveController(playerRacket, scene.Camera, _inputController,
+                    scene.GetComponent<BallModel>())));
         }
 
 

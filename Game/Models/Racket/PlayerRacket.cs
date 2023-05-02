@@ -41,8 +41,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             _boxCollider = GameObject.GetComponent<BoxCollider3D>();
 
             _kickComponent.SetMaxLerp(_difficulty.GetMaxLerp());
-            //_knockComponent.SetMaxLerp(difficulty.GetMaxLerp());
-
             base.Start();
         }
 

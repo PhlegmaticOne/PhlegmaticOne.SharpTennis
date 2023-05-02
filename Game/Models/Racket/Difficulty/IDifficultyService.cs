@@ -41,7 +41,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty
         {
             switch (_difficulty)
             {
-                case DifficultyType.Easy: return 360;
+                case DifficultyType.Easy: return 400;
                 case DifficultyType.Medium: return 300;
                 case DifficultyType.Hard: return 240;
                 case DifficultyType.Impossible: return 320;
@@ -65,9 +65,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty
         {
             switch (_difficulty)
             {
-                case DifficultyType.Easy: return 0.01f;
+                case DifficultyType.Easy: return 0.008f;
                 case DifficultyType.Medium: return 0.01f;
-                case DifficultyType.Hard: return 0.015f;
+                case DifficultyType.Hard: return 0.013f;
                 case DifficultyType.Impossible: return 0.02f;
                 default: return 0.015f;
             }
@@ -77,11 +77,35 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty
         {
             switch (_difficulty)
             {
-                case DifficultyType.Easy: return 20;
-                case DifficultyType.Medium: return 20;
-                case DifficultyType.Hard: return 23;
+                case DifficultyType.Easy: return 25;
+                case DifficultyType.Medium: return 28;
+                case DifficultyType.Hard: return 31;
                 case DifficultyType.Impossible: return 100;
                 default: return 23;
+            }
+        }
+
+        public float GenerateKnockAngle()
+        {
+            switch (_difficulty)
+            {
+                case DifficultyType.Easy: return _random.Next(35, 45);
+                case DifficultyType.Medium: return _random.Next(25, 35);
+                case DifficultyType.Hard: return _random.Next(15, 25);
+                case DifficultyType.Impossible: return _random.Next(15, 45);
+                default: return _random.Next(15, 45);
+            }
+        }
+
+        public float GenerateKickAngle()
+        {
+            switch (_difficulty)
+            {
+                case DifficultyType.Easy: return _random.Next(20, 25);
+                case DifficultyType.Medium: return _random.Next(15, 20);
+                case DifficultyType.Hard: return _random.Next(10, 20);
+                case DifficultyType.Impossible: return _random.Next(10, 25);
+                default: return _random.Next(10, 25);
             }
         }
 

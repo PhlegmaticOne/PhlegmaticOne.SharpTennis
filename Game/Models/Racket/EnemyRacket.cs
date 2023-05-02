@@ -75,7 +75,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             var direction = (GetKnockRandomPoint() - Transform.Position).Normalized();
             var force = Random.Next(150, 200);
-            var y = Random.Next(20, 40);
+            var y = _difficulty.GenerateKnockAngle();
 
             ball.BouncedFromRacket = BallBounceType;
             ball.BallGameState = BallGameState.Knocked;
@@ -94,7 +94,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             }
 
             var newSpeed = PhysicMathHelper.CalculateSpeedToPoint(ballModel.Transform.Position,
-                GetRandomPoint(), GetRandomAngle());
+                GetRandomPoint(),
+                PhysicMathHelper.ToRadians(_difficulty.GenerateKickAngle()));
             ballModel.BallGameState = BallGameState.InPlay;
             ballModel.BounceDirect(this, newSpeed);
         }
@@ -223,6 +224,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             return new Vector3(-x, 1, -z);
         }
 
-        private static bool PositionMatches(Vector3 position) => position.X > MinX && position.Z > 2 * MinZ && position.Z < 2 * MaxZ;
+        private static bool PositionMatches(Vector3 position) => position.X > MinX;
     }
 }

@@ -2,6 +2,7 @@
 using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Input;
 using PhlegmaticOne.SharpTennis.Game.Engine3D;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 using SharpDX;
 
@@ -20,13 +21,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly RacketBase _racket;
         private readonly Camera _camera;
         private readonly InputController _inputController;
+        private readonly BallModel _ball;
 
 
-        public RacketMoveController(RacketBase racket, Camera camera, InputController inputController)
+        public RacketMoveController(RacketBase racket, Camera camera, InputController inputController,
+            BallModel ball)
         {
             _racket = racket;
             _camera = camera;
             _inputController = inputController;
+            _ball = ball;
         }
 
         public float MousePositionDivider { get; set; } = 20f;
@@ -47,6 +51,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             if (TryMoveBackRacket(deltaMove))
             {
                 MoveCamera(deltaMove.Z, deltaMove.Y, deltaMove.X);
+            }
+
+            TryRotateBall(deltaMove);
+        }
+
+        private void TryRotateBall(Vector3 deltaMove)
+        {
+            if (_ball.BouncedFromRacket == RacketType.Player && _ball.BouncedFromTablePart != RacketType.Enemy)
+            {
+                var z = deltaMove.Z;
+                var y = deltaMove.X / 1.5f;
+                _ball.SetSpeed(_ball.GetSpeed() + new Vector3(0, y, z));
             }
         }
 
