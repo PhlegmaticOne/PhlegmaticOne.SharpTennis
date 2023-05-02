@@ -7,5 +7,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
         public DifficultyType DifficultyType { get; set; }
         public ColorType PlayerColor { get; set; }
         public int PlayToScore { get; set; }
+        public int TimeInMinutes { get; set; }
+        public GameType GameType { get; set; }
+    }
+
+    public enum GameType
+    {
+        Score,
+        Time
     }
 }

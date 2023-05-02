@@ -143,7 +143,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         {
             var ballController = scene.GetComponent<BallBouncesController>();
             _winController.Setup(ballController);
-            _winController.SetupPlayToScore(_gameDataProvider.GameData.PlayToScore);
+            _winController.SetupGameData(_gameDataProvider.GameData);
             scene.AddGameObject(CreateGameObjectWithComponent("WinController", _winController));
         }
 

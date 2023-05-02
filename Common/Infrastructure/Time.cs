@@ -15,12 +15,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Infrastructure
         public static int Fps => _fps;
         public static float PassedTime => _time;
         public static float DeltaT => _deltaT;
+        public static bool Paused { get; set; }
 
+        public static event Action Updated;
         static Time()
         {
             Stopwatch = new Stopwatch();
             Reset();
         }
+
 
         public static void Reset()
         {
@@ -46,6 +49,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Infrastructure
                 _framesCounter = 0;
                 _previousFpsMeasurementTime = Stopwatch.ElapsedMilliseconds;
             }
+
+            if (Paused)
+            {
+                return;
+            }
+
+            Updated?.Invoke();
         }
     }
 }

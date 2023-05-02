@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
+using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Win;
@@ -12,6 +14,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
     public class WinController : BehaviorObject
     {
         private int _winScore;
+        private int _playTime;
+        private float _remainTime;
+        private GameData _gameData;
         private readonly PopupSystem _popupSystem;
         private readonly ISoundManager<GameSounds> _soundManager;
         private readonly IGamePauseFacade _gamePauseFacade;
@@ -40,11 +45,42 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _loses = InitLoses();
         }
 
-        public void SetupPlayToScore(int score) => _winScore = score;
+        public void SetupGameData(GameData gameData)
+        {
+            _winScore = gameData.PlayToScore;
+            _playTime = gameData.TimeInMinutes * 60;
+            _gameData = gameData;
+
+            if (_gameData.GameType == GameType.Time)
+            {
+                _remainTime = _playTime;
+                Time.Updated += TimeOnUpdated;
+            }
+        }
+
+        private void TimeOnUpdated()
+        {
+            _remainTime -= Time.DeltaT;
+
+            if (_remainTime <= 0)
+            {
+                Time.Updated -= TimeOnUpdated;
+                var winner = _loses[RacketType.Player] < _loses[RacketType.Enemy] ? RacketType.Player : RacketType.Enemy;
+                if (_loses[RacketType.Player] == _loses[RacketType.Enemy])
+                {
+                    winner = RacketType.None;
+                }
+
+                _gamePauseFacade.Pause();
+                PlaySound(winner);
+                SpawnWinPopup(winner);
+            }
+        }
 
         public override void OnDestroy()
         {
             _loses = InitLoses();
+            Time.Updated -= TimeOnUpdated;
             _ballBouncesController.Losed -= BallBouncesControllerOnLosed;
             _ballBouncesController.Restarted -= BallBouncesControllerOnRestarted;
         }
@@ -62,6 +98,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _loses[obj]++;
             var winner = obj == RacketType.Player ? RacketType.Enemy : RacketType.Player;
             PlaySound(winner);
+
+            if (_gameData.GameType == GameType.Time)
+            {
+                return;
+            }
 
             if (_loses[obj] == _winScore)
             {

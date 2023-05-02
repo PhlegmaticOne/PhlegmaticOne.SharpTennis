@@ -29,26 +29,30 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var textFormatData = CreateGameTextFormatData();
             var scoreSystem = SetupScoreViews(textFormatData);
             var gameStateView = SetupGameStateView(textFormatData);
-            var infoText = CreateMessageText(new Vector2(50, -50));
+            var infoText = CreateMessageText(new Vector2(50, -50), Anchor.BottomLeft, TextAlignment.Leading);
+            var fpsText = CreateMessageText(new Vector2(-50, -20), Anchor.BottomRight, TextAlignment.Trailing);
+            var timeText = CreateMessageText(new Vector2(30, -20), Anchor.Bottom, TextAlignment.Leading);
 
             var canvas = Canvas.Create("GameCanvas", new List<GameObject>()
                 .FluentAdd(gameStateView.GameObject)
+                .FluentAdd(fpsText.GameObject)
+                .FluentAdd(timeText.GameObject)
                 .FluentAdd(scoreSystem.PlayerText.GameObject)
                 .FluentAdd(scoreSystem.EnemyText.GameObject)
                 .FluentAdd(infoText.GameObject)
                 .ToArray());
 
-            popup.SetupViews(scoreSystem, gameStateView, infoText);
+            popup.SetupViews(scoreSystem, gameStateView, infoText, fpsText, timeText);
             return canvas;
         }
 
-        private TextComponent CreateMessageText(Vector2 offset)
+        private TextComponent CreateMessageText(Vector2 offset, Anchor anchor, TextAlignment textAlignment)
         {
             var font = 40;
             var go = new GameObject();
             var text = TextComponent.Create(Colors.White, string.Empty, TextFormatData.DefaultForSize(font));
-            text.TextFormatData.TextAlignment = TextAlignment.Leading;
-            text.RectTransform.Anchor = Anchor.BottomLeft;
+            text.TextFormatData.TextAlignment = textAlignment;
+            text.RectTransform.Anchor = anchor;
             text.RectTransform.Offset = offset;
             text.RectTransform.Size = new SizeF(400, font);
             go.AddComponent(new ResizableComponent(text.RectTransform), false);

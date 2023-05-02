@@ -18,6 +18,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
         public bool CanExecute(object parameter) => true;
         public void Execute(object parameter)
         {
+            if (parameter is bool)
+            {
+                _gameFacade.Continue();
+                return;
+            }
+
             _popupSystem.CloseLastPopup(true);
             _gameFacade.Continue();
         }

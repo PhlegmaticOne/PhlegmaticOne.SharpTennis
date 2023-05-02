@@ -50,7 +50,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
             var difficulty = gameData.DifficultyType;
             _enemyRacket.SetupDifficulty(difficulty);
             _playerRacket.SetupDifficulty(difficulty);
-            _winController.SetupPlayToScore(gameData.PlayToScore);
+            _winController.SetupGameData(gameData);
             ChangeRacketColors(gameData);
         }
 

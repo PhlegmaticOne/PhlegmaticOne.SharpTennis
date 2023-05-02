@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Transform;
@@ -10,6 +11,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
     {
         private ImageComponent _backImage;
         private ImageComponent _checkedImage;
+
+        public event Action<bool> Checked;
 
         public IReadOnlyList<GameObject> ImageObjects => new[] { _checkedImage.GameObject };
 
@@ -41,7 +44,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine2D.Components
         }
 
 
-        private void OnCheck() => Check(!IsSelected);
+        private void OnCheck()
+        {
+            Check(!IsSelected);
+            Checked?.Invoke(IsSelected);
+        }
 
         public void Check(bool isCheck)
         {

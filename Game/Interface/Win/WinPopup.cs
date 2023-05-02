@@ -29,6 +29,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
             _exitButton.OnClick.Add(() => _winPopupViewModel.ExitGameCommand.Execute(null));
         }
 
-        public void SetWinner(RacketType racket) => _winText.Text = "Winner: " + racket;
+        public void SetWinner(RacketType racket)
+        {
+            if (racket == RacketType.None)
+            {
+                _winText.Text = "Draw";
+            }
+            else
+            {
+                _winText.Text = "Winner: " + racket;
+            }
+        }
     }
 }

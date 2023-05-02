@@ -16,12 +16,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
     public class GameSettingPopupFactory : PopupFactory<GameSettingsPopup>
     {
         private readonly InputNumberSelectableElement _inputNumberSelectableElement;
+        private readonly InputNumberSelectableElement _timeSelectableElement;
 
         public GameSettingPopupFactory(GameSettingsPopup popup, 
-            InputNumberSelectableElement inputNumberSelectableElement) :
+            InputNumberSelectableElement inputNumberSelectableElement,
+            InputNumberSelectableElement timeSelectableElement) :
             base(popup)
         {
             _inputNumberSelectableElement = inputNumberSelectableElement;
+            _timeSelectableElement = timeSelectableElement;
         }
 
         public override Canvas SetupPopup(GameSettingsPopup popup)
@@ -30,29 +33,52 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
             var difficultyPanel = CreateSelectDifficultyPanel();
             var colorsPanel = CreateSelectColorPanel();
 
-            _inputNumberSelectableElement.Setup(@"assets\textures\ui\GameSettings\rounds.png", 80, "5");
-            _inputNumberSelectableElement.RectTransform.Offset = new Vector2(0, 220);
+            _inputNumberSelectableElement.Setup(@"assets\textures\ui\GameSettings\hard.png", 80, "5");
+            _inputNumberSelectableElement.RectTransform.Offset = new Vector2(-200, 220);
+            _inputNumberSelectableElement.DeselectOnMisClick = true;
+
+            _timeSelectableElement.Setup(@"assets\textures\ui\GameSettings\impossible.png", 80, "1");
+            _timeSelectableElement.RectTransform.Offset = new Vector2(360, 220);
+            _timeSelectableElement.DeselectOnMisClick = true;
 
             var closeButton = CreateCloseButton();
             var startButton = CreateStartGameButton();
             var header = CreateInfoText(new Vector2(0, -450), "Setup your game");
+            var roundsCheckBox = CreateCheckBox(new Vector2(-420, 220));
+            var timeCheckBox = CreateCheckBox(new Vector2(140, 220));
 
 
             var canvas = Canvas.Create("GameSettings", new List<GameObject>()
-                .FluentAdd(background)
+                .FluentAdd(background.GameObject)
                 .FluentAddRange(difficultyPanel.SelectableObjects)
                 .FluentAddRange(colorsPanel.SelectableObjects)
                 .FluentAdd(_inputNumberSelectableElement.GameObject)
+                .FluentAdd(_timeSelectableElement.GameObject)
                 .FluentAdd(closeButton.GameObject)
                 .FluentAdd(startButton.GameObject)
+                .FluentAdd(roundsCheckBox.GameObject)
+                .FluentAdd(timeCheckBox.GameObject)
+                .FluentAddRange(roundsCheckBox.ImageObjects)
+                .FluentAddRange(timeCheckBox.ImageObjects)
                 .FluentAdd(header)
                 .FluentAdd(CreateInfoText(new Vector2(0, -360), "Choose difficulty:"))
                 .FluentAdd(CreateInfoText(new Vector2(0, -130), "Choose your color:"))
-                .FluentAdd(CreateInfoText(new Vector2(0, 100), "Enter rounds to play:"))
+                .FluentAdd(CreateInfoText(new Vector2(-240, 100), "Rounds:"))
+                .FluentAdd(CreateInfoText(new Vector2(300, 100), "Time (minutes):"))
                 .ToArray());
-            popup.Setup(colorsPanel, difficultyPanel, _inputNumberSelectableElement, closeButton, startButton,
-                header.GetComponent<TextComponent>());
+            popup.Setup(colorsPanel, difficultyPanel, _inputNumberSelectableElement,
+                _timeSelectableElement, roundsCheckBox, timeCheckBox, closeButton, startButton,
+                header.GetComponent<TextComponent>(), background);
             return canvas;
+        }
+
+        private CheckBox CreateCheckBox(Vector2 offset)
+        {
+            var checkBox = CheckBox.Create(
+                @"assets\textures\ui\Settings\check_back.png",
+                @"assets\textures\ui\Settings\check_mark.png");
+            checkBox.SetOffset(offset);
+            return checkBox;
         }
 
 
@@ -123,15 +149,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 
         private SelectableComponent<T> CreateSelectable<T>(string image, int fontSize, T value)
         {
-            return SelectableComponent<T>.Create(image, fontSize, value);
+            var selectable = SelectableComponent<T>.Create(image, fontSize, value);
+            return selectable;
         }
 
-        private GameObject CreateBackground()
+        private ButtonComponent CreateBackground()
         {
             var backGround = new GameObject("Background");
             var image = ImageComponent.Create(@"assets\textures\ui\GameSettings\popup.png", Vector2.Zero, Anchor.Center);
+            var button = new ButtonComponent(image);
             backGround.AddComponent(image, false);
-            return backGround;
+            backGround.AddComponent(button, false);
+            return button;
         }
     }
 }

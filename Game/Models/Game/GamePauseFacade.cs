@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
+using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
@@ -20,6 +21,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
 
         public void Pause()
         {
+            Time.Paused = true;
             _ballModel.ChangeActive(false);
             _enemyRacket.ChangeActive(false);
             _racketMoveController.ChangeEnabled(false);
@@ -27,6 +29,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
 
         public void Continue()
         {
+            Time.Paused = false;
             _ballModel.ChangeActive(true);
             _enemyRacket.ChangeActive(true);
             _racketMoveController.ChangeEnabled(true);

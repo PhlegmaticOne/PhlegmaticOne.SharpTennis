@@ -62,7 +62,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Pause
         {
             if (_isContinue && _isContinueButtonPressed == false && _restartButtonPressed == false)
             {
-                _pausePopupViewModel.OnContinueCommand.Execute(null);
+                _pausePopupViewModel.OnContinueCommand.Execute(false);
             }
 
             _continueButton.OnClick.Clear();
@@ -71,6 +71,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Pause
             _restartButton.OnClick.Clear();
             _isContinue = true;
             _isContinueButtonPressed = false;
+            _restartButtonPressed = false;
             base.OnClose();
         }
     }
