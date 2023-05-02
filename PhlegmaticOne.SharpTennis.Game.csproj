@@ -210,6 +210,7 @@
     <Compile Include="Engine3D\Mesh\TextureMaterialsProvider.cs" />
     <Compile Include="Engine3D\Rigid\RigidBody3D.cs" />
     <Compile Include="Game\Commands\CloseLastPopupCommand.cs" />
+    <Compile Include="Game\Commands\ContinueGameAfterWinCommand.cs" />
     <Compile Include="Game\Commands\ContinueGameCommand.cs" />
     <Compile Include="Game\Commands\ExitGameCommand.cs" />
     <Compile Include="Game\Commands\ExitToMenuCommand.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Game\Interface\CanvasManagerFactory.cs" />
     <Compile Include="Game\Interface\Elements\GameStateViewController.cs" />
     <Compile Include="Game\Interface\Elements\InputNumberSelectableElement.cs" />
+    <Compile Include="Game\Interface\Elements\InputStringSelectableElement.cs" />
     <Compile Include="Game\Interface\Elements\ScoreSystem.cs" />
     <Compile Include="Game\Interface\Elements\ScoreText.cs" />
     <Compile Include="Engine2D\Components\SelectableComponent.cs" />
@@ -279,6 +281,10 @@
     <Compile Include="Game\Models\Game\GamePauseFacade.cs" />
     <Compile Include="Game\Models\Game\GameRestartFacade.cs" />
     <Compile Include="Game\Models\Game\GameSounds.cs" />
+    <Compile Include="Game\Models\Game\Player\Data\IPlayerDataProvider.cs" />
+    <Compile Include="Game\Models\Game\Player\Data\JsonPlayerDataProvider.cs" />
+    <Compile Include="Game\Models\Game\Player\PlayerData.cs" />
+    <Compile Include="Game\Models\Racket\Difficulty\IDifficultyService.cs" />
     <Compile Include="Game\Models\Racket\EnemyRacket.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KickComponent.cs" />
     <Compile Include="Game\Models\Racket\Kicks\KnockComponent.cs" />

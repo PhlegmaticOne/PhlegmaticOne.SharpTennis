@@ -3,7 +3,9 @@ using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using SharpDX;
 
@@ -11,20 +13,36 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public class PlayerRacket : RacketBase
     {
+        private readonly IDifficultyService<PlayerRacketDifficulty> _difficultyService;
+        private PlayerRacketDifficulty _difficulty;
         private KnockComponent _knockComponent;
         private KickComponent _kickComponent;
         private BoxCollider3D _boxCollider;
         public PlayerRacket(MeshComponent coloredComponent, MeshComponent handComponent,
-            ISoundManager<GameSounds> soundManager) : 
-            base(coloredComponent, handComponent, soundManager) { }
+            ISoundManager<GameSounds> soundManager,
+            IDifficultyService<PlayerRacketDifficulty> difficultyService) : 
+            base(coloredComponent, handComponent, soundManager)
+        {
+            _difficultyService = difficultyService;
+        }
 
         protected override RacketType BallBounceType => RacketType.Player;
+
+        public override void SetupDifficulty(DifficultyType difficultyType)
+        {
+            _difficulty = _difficultyService.GetDifficulty(difficultyType);
+        }
+
 
         public override void Start()
         {
             _knockComponent = GameObject.GetComponent<KnockComponent>();
             _kickComponent = GameObject.GetComponent<KickComponent>();
             _boxCollider = GameObject.GetComponent<BoxCollider3D>();
+
+            _kickComponent.SetMaxLerp(_difficulty.GetMaxLerp());
+            //_knockComponent.SetMaxLerp(difficulty.GetMaxLerp());
+
             base.Start();
         }
 
@@ -40,6 +58,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
             KickBall(ballModel);
         }
+
 
         private void KnockBall(BallModel ballModel)
         {

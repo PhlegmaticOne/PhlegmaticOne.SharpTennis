@@ -5,9 +5,9 @@ using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
-using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using SharpDX;
 
@@ -16,7 +16,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
     public class RacketFactoryData : IFactoryData
     {
         public bool IsPlayer { get; set; }
-        public Color Color { get; set; }
+        public ColorType ColorType { get; set; }
         public Vector3 Normal { get; set; }
         public Vector3 TableNormal { get; set; }
         public float TableHeight { get; set; }
@@ -28,14 +28,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         private readonly MeshLoader _meshLoader;
         private readonly TextureMaterialsProvider _textureMaterialsProvider;
         private readonly ISoundManager<GameSounds> _soundManager;
+        private readonly IDifficultyService<PlayerRacketDifficulty> _playerDifficultyService;
+        private readonly IDifficultyService<EnemyRacketDifficulty> _enemyDifficultyService;
 
         public RacketFactory(MeshLoader meshLoader,
             TextureMaterialsProvider textureMaterialsProvider,
-            ISoundManager<GameSounds> soundManager)
+            ISoundManager<GameSounds> soundManager,
+            IDifficultyService<PlayerRacketDifficulty> playerDifficultyService,
+            IDifficultyService<EnemyRacketDifficulty> enemyDifficultyService)
         {
             _meshLoader = meshLoader;
             _textureMaterialsProvider = textureMaterialsProvider;
             _soundManager = soundManager;
+            _playerDifficultyService = playerDifficultyService;
+            _enemyDifficultyService = enemyDifficultyService;
         }
 
 
@@ -56,26 +62,23 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
                 go.AddComponent(new KnockComponent(racketFactoryData.TableHeight));
             }
             var model = CreateRacket(racketFactoryData.IsPlayer, racket, racketFactoryData);
+            model.SetupDifficulty(racketFactoryData.DifficultyType);
             model.Normal = racketFactoryData.Normal;
-            model.Color(racketFactoryData.Color);
+            model.Color(racketFactoryData.ColorType);
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(model);
             go.AddComponent(new KnockComponent(racketFactoryData.TableHeight));
             go.AddComponent(new KickComponent(racketFactoryData.TableHeight));
             go.AddComponent(new RigidBody3D(Vector3.Zero, RigidBodyType.Kinematic));
             go.AddComponent(CreateCollider(transform.Position, racketFactoryData.IsPlayer));
-            if (racketFactoryData.IsPlayer == false)
-            {
-                SetupEnemyWithDifficulty((EnemyRacket)model, racketFactoryData.DifficultyType);
-            }
             return model;
         }
 
         private RacketBase CreateRacket(bool isPlayer, List<MeshComponent> meshes, RacketFactoryData data)
         {
             return isPlayer
-                ? (RacketBase)new PlayerRacket(meshes[0], meshes[1], _soundManager)
-                : new EnemyRacket(meshes[0], meshes[1], _soundManager, data.TableNormal);
+                ? (RacketBase)new PlayerRacket(meshes[0], meshes[1], _soundManager, _playerDifficultyService)
+                : new EnemyRacket(meshes[0], meshes[1], _soundManager, _enemyDifficultyService, data.TableNormal);
         }
 
         private BoxCollider3D CreateCollider(Vector3 position, bool isPlayer)
@@ -92,13 +95,5 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             };
             return collider;
         }
-
-        private void SetupEnemyWithDifficulty(EnemyRacket enemyRacket, DifficultyType difficultyType)
-        {
-
-        }
-
-
-        //Was : var collider = new BoxCollider3D(position - new Vector3(1f, 0.5f, 1.5f), position + new Vector3(1f, 5, 3.5f))
     }
 }

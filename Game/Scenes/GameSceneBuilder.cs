@@ -79,8 +79,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         public void BuildModels(Scene scene)
         {
             var gameData = _gameDataProvider.GameData;
-            var playerColor = gameData.PlayerColor == ColorType.Red ? Color.Red : Color.Black;
-            var enemyColor = gameData.PlayerColor == ColorType.Red ? Color.Black : Color.Red;
+            var enemyColorType = gameData.PlayerColor == ColorType.Red ? ColorType.Black : ColorType.Red;
 
             var sky = _skyFactory.Create(new Transform(rotation: new Vector3(0, -90, 0)));
             AddMeshableObject(scene, sky);
@@ -91,12 +90,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddRacket(scene, new Transform(
                 new Vector3(-70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), playerColor, Vector3.Right, true, table.TableTopPart);
+                new Vector3(1, 1, 1)), gameData.PlayerColor, Vector3.Right, true, table.TableTopPart);
 
             AddRacket(scene, new Transform(
                 new Vector3(70, 9, 0),
                 new Vector3(90, -180, -90),
-                new Vector3(1, 1, 1)), enemyColor, Vector3.Left, false, table.TableTopPart);
+                new Vector3(1, 1, 1)), enemyColorType, Vector3.Left, false, table.TableTopPart);
 
             var ball = _ballFactory.Create(new Transform(position: new Vector3(-50, 20, 20)));
             AddMeshableObject(scene, ball);
@@ -184,12 +183,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         }
 
 
-        private void AddRacket(Scene scene, Transform transform, Color color, Vector3 normal, bool isPlayer,
+        private void AddRacket(Scene scene, Transform transform, ColorType colorType, Vector3 normal, bool isPlayer,
             TableTopPart tableTopPart)
         {
             var racket = _racketFactory.Create(transform, new RacketFactoryData
             {
-                Color = color,
+                ColorType = colorType,
                 IsPlayer = isPlayer,
                 Normal = normal,
                 TableHeight = tableTopPart.Size.X / 2,

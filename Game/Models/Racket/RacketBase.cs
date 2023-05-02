@@ -32,9 +32,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             AddMeshes(_coloredComponent, _handComponent);
         }
 
-        public List<MeshComponent> Boxes { get; set; }
         public BoxCollider3D BoxCollider { get; private set; }
         public Vector3 Normal { get; set; }
+        public ColorType ColorType { get; set; }
 
         public override void Start()
         {
@@ -46,10 +46,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             _startPosition = Transform.Position;
         }
 
-        public void Reset() => Transform.SetPosition(_startPosition);
+        public virtual void Reset() => Transform.SetPosition(_startPosition);
 
-        public void Color(Color color)
+        public void Color(ColorType colorType)
         {
+            ColorType = colorType;
+            var color = colorType == ColorType.Red ? SharpDX.Color.Red : SharpDX.Color.Black;
             var vector = new Vector3(color.R, color.G, color.B) / 255;
             var properties = _coloredComponent.MeshObjectData.Material.MaterialProperties;
             properties.SetColor(vector);
@@ -70,6 +72,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 
         protected abstract RacketType BallBounceType { get; }
         protected abstract void OnCollisionWithBall(BallModel ballModel);
+        public abstract void SetupDifficulty(DifficultyType difficulty);
         public virtual void OnLost(BallModel ball) { }
         public virtual void OnBallBounced(BallModel ball) { }
 

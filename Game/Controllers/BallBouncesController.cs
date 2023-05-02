@@ -19,7 +19,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private bool _isLose;
 
         public event Action<RacketType> Losed;
-        public event Action<GameState, string> StateChanged;
+        public event Action<GameState, RacketType> StateChanged;
         public event Action Restarted;
 
         public BallBouncesController(BallBounceProvider ballBounceProvider)
@@ -200,7 +200,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             {
                 return;
             }
-            StateChanged?.Invoke(gameState, racketType.ToString());
+            StateChanged?.Invoke(gameState, racketType);
         }
 
         private bool LoseRacketOnPlay(RacketType lose, RacketType opposite, BallModel ball)

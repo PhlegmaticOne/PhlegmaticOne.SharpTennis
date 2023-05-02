@@ -2,6 +2,6 @@
 {
     public interface IGameRestartFacade
     {
-        void Restart();
+        void Restart(bool isFromWinning);
     }
 }

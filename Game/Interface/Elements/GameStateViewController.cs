@@ -2,6 +2,8 @@
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Player.Data;
 using SharpDX;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
@@ -21,13 +23,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
 
     public class GameStateViewController : RectComponent
     {
+        private readonly IPlayerDataProvider _playerDataProvider;
         private TextComponent _textComponent;
 
         private readonly Dictionary<GameState, string> _gameStates;
         private GameState _currentState;
 
-        public GameStateViewController()
+        public GameStateViewController(IPlayerDataProvider playerDataProvider)
         {
+            _playerDataProvider = playerDataProvider;
             _gameStates = new Dictionary<GameState, string>();
             InitializeGameStates();
         }
@@ -38,7 +42,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
             RectTransform = textComponent.RectTransform;
         }
 
-        public void Show(GameState gameState, string parameter)
+        public void Show(GameState gameState, RacketType racketType)
         {
             if (_currentState != GameState.None)
             {
@@ -47,12 +51,27 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
 
             _currentState = gameState;
             var value = _gameStates[gameState];
-            var result = string.Format(value, parameter);
+            var result = string.Format(value, GetParameter(racketType));
             _textComponent.Text = result;
             _textComponent.RectTransform.DoScale(Vector3.Zero, Vector3.One, 0.4f, false, () =>
             {
                 _currentState = GameState.None;
             });
+        }
+
+        private string GetParameter(RacketType racketType)
+        {
+            if (racketType == RacketType.Player)
+            {
+                return _playerDataProvider.PlayerData.Name;
+            }
+
+            if (racketType == RacketType.Enemy)
+            {
+                return RacketType.Enemy.ToString();
+            }
+
+            return string.Empty;
         }
 
         private void InitializeGameStates()

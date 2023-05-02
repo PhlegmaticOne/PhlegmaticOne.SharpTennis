@@ -43,7 +43,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
         {
             var go = new GameObject();
             var image = ImageComponent.Create(@"assets\textures\ui\cancel_button.png",
-                new Vector2(320, 250), Anchor.Center);
+                new Vector2(0, 230), Anchor.Center);
             var text = TextComponent.Create(Colors.White, "Exit", textFormatData);
             var playButton = new ButtonComponent(image, text);
             go.AddComponent(image, false);
@@ -56,7 +56,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Win
         {
             var go = new GameObject();
             var image = ImageComponent.Create(@"assets\textures\ui\accept_button.png", 
-                new Vector2(-320, 250), Anchor.Center);
+                new Vector2(0, 0), Anchor.Center);
             var text = TextComponent.Create(Colors.White, "Continue", textFormatData);
             var playButton = new ButtonComponent(image, text);
             go.AddComponent(image, false);

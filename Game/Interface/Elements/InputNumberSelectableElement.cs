@@ -14,6 +14,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
             _inputController.Pressed += InputControllerOnPressed;
         }
 
+        public int MaxStringLength { get; set; } = 10;
+
         private void InputControllerOnPressed(Key key)
         {
             if (IsSelected == false)
@@ -23,7 +25,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
 
             if (key == Key.Back)
             {
-                if (Value.Length == 0)
+                if (Value.Length == 0 || Value.Length >= MaxStringLength)
                 {
                     return;
                 }

@@ -21,8 +21,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
 
         public void Execute(object parameter)
         {
-            _popupSystem.CloseLastPopup(true);
-            _gameRestartFacade.Restart();
+            var isFromWinning = parameter is bool;
+            while (_popupSystem.Popups.Count != 1)
+            {
+                _popupSystem.CloseLastPopup(true);
+            }
+            _gameRestartFacade.Restart(isFromWinning);
             _gamePauseFacade.Continue();
         }
     }

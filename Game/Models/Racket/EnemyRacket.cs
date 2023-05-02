@@ -6,7 +6,10 @@ using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using SharpDX;
 using PhlegmaticOne.SharpTennis.Game.Common.StateMachine;
 using PhlegmaticOne.SharpTennis.Game.Common.Tween;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.MathHelpers;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.States;
@@ -15,15 +18,18 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
 {
     public class EnemyRacket : RacketBase
     {
+        private const float MoveToStartLerp = 0.03f;
         private const float MinX = 0;
         private const float MaxX = 30;
         private const float MinZ = -25;
         private const float MaxZ = 25;
 
+        private readonly IDifficultyService<EnemyRacketDifficulty> _difficultyService;
+        private EnemyRacketDifficulty _difficulty;
         private readonly Vector3 _tableNormal;
         private StateComponent _stateComponent;
         private KnockComponent _knockComponent;
-        private float _moveToStartLerp;
+        private BoxCollider3D _boxCollider;
         private Vector3 _startPosition;
         private Vector3 _approximatedPosition;
         private BallModel _ballModel;
@@ -31,26 +37,37 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public EnemyRacket(MeshComponent coloredComponent,
             MeshComponent handComponent,
             ISoundManager<GameSounds> soundManager,
+            IDifficultyService<EnemyRacketDifficulty> difficultyService,
             Vector3 tableNormal) : 
             base(coloredComponent, handComponent, soundManager)
         {
+            _difficultyService = difficultyService;
             _tableNormal = tableNormal;
-            _moveToStartLerp = 0.01f;
         }
 
         protected override RacketType BallBounceType => RacketType.Enemy;
 
-        public void ChangeActive(bool active)
+        public override void SetupDifficulty(DifficultyType difficultyType)
         {
-            _stateComponent.ChangeEnabled(active);
+            _difficulty = _difficultyService.GetDifficulty(difficultyType);
         }
+
+        public override void Reset()
+        {
+            _stateComponent.Enter(State.None);
+            base.Reset();
+        }
+
+        public void ChangeActive(bool active) => _stateComponent.ChangeEnabled(active);
 
         public override void Start()
         {
             _startPosition = Transform.Position;
             _stateComponent = GameObject.GetComponent<StateComponent>();
             _knockComponent = GameObject.GetComponent<KnockComponent>();
+            _boxCollider = GameObject.GetComponent<BoxCollider3D>();
             InitializeStates();
+
             base.Start();
         }
 
@@ -58,10 +75,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             var direction = (GetKnockRandomPoint() - Transform.Position).Normalized();
             var force = Random.Next(150, 200);
-            var y = Random.Next(40, 50);
+            var y = Random.Next(20, 40);
 
             ball.BouncedFromRacket = BallBounceType;
             ball.BallGameState = BallGameState.Knocked;
+            _boxCollider.DisableOnTime(0.3f);
             _knockComponent.KnockBall(ball, direction, force, -1 * y);
         }
 
@@ -80,6 +98,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             ballModel.BallGameState = BallGameState.InPlay;
             ballModel.BounceDirect(this, newSpeed);
         }
+
 
         public override void OnBallBounced(BallModel ball)
         {
@@ -107,11 +126,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             var states = States<EnemyRacketStates>.Get;
             _stateComponent.AddState(states.StayingState, () => new EmptyState());
             _stateComponent.AddState(states.FollowingBallState,
-                () => new FollowingObjectState(_approximatedPosition, 0.015f, this));
+                () => new FollowingObjectState(_approximatedPosition, _difficulty.GetFollowingLerp(), this));
             _stateComponent.AddState(states.MovingToStartState,
-                () => new FollowingObjectState(_startPosition, _moveToStartLerp, this));
+                () => new FollowingObjectState(_startPosition, MoveToStartLerp, this));
             _stateComponent.AddState(states.KnockState, 
-                () => new EnemyKnockState(_startPosition, 0.05f, this, _ballModel));
+                () => new EnemyKnockState(_startPosition, MoveToStartLerp, this, _ballModel));
             _stateComponent.Exit();
         }
 
@@ -154,7 +173,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         {
             Invoke(time, () =>
             {
-                if (comparePosition && (Transform.Position - _approximatedPosition).Length() >= 25)
+                if (comparePosition && (Transform.Position - _approximatedPosition).Length() >= _difficulty.GetMaxPositionToKick())
                 {
                     return;
                 }

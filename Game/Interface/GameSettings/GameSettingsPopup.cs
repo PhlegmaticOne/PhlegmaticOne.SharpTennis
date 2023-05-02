@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
+﻿using PhlegmaticOne.SharpTennis.Game.Common.Commands;
+using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
@@ -18,6 +19,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
         private InputNumberSelectableElement _scoreComponent;
         private ButtonComponent _closeButton;
         private ButtonComponent _submitButton;
+        private TextComponent _header;
 
 
         public GameSettingsPopup(GameDataProvider gameDataProvider, GameSettingsViewModel viewModel,
@@ -27,25 +29,43 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
             _viewModel = viewModel;
         }
 
+        public void SetupHeaderText(string text) => _header.Text = text;
+
+        public void ResetStartGameCommand()
+        {
+            SetupStartGameCommand(_viewModel.StartGameCommand, null);
+        }
+
+        public void SetupStartGameCommand(ICommand startGameCommand, object value)
+        {
+            _submitButton.OnClick.Clear();
+            _submitButton.OnClick.Add(() =>
+            {
+                SetupGameData();
+                startGameCommand.Execute(value);
+            });
+        }
 
         public void Setup(SelectablePanel<ColorType> colorsPanel, 
             SelectablePanel<DifficultyType> difficultyPanel,
             InputNumberSelectableElement scoreComponent,
             ButtonComponent closeComponent,
-            ButtonComponent submitButton)
+            ButtonComponent submitButton,
+            TextComponent header)
         {
             _colorPanel = colorsPanel;
             _difficultyPanel = difficultyPanel;
             _scoreComponent = scoreComponent;
             _closeButton = closeComponent;
             _submitButton = submitButton;
+            _header = header;
 
             _closeButton.OnClick.Add(() => _viewModel.CloseCommand.Execute(null));
-            _submitButton.OnClick.Add(() =>
-            {
-                SetupGameData();
-                _viewModel.StartGameCommand.Execute(null);
-            });
+        }
+
+        protected override void OnShow()
+        {
+            ResetStartGameCommand();
         }
 
         private void SetupGameData()

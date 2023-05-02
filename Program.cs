@@ -36,7 +36,9 @@ using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Floor;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Base;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Player.Data;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Sky;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Table;
 using PhlegmaticOne.SharpTennis.Game.Game.Scenes;
@@ -89,6 +91,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<ContinueGameCommand>();
             serviceCollection.AddSingleton<ExitToMenuCommand>();
             serviceCollection.AddSingleton<RestartGameCommand>();
+            serviceCollection.AddSingleton<ContinueGameAfterWinCommand>();
             serviceCollection.AddSingleton(x =>
             {
                 var exit = x.GetRequiredService<ExitGameCommand>();
@@ -111,7 +114,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             });
             serviceCollection.AddSingleton(x =>
             {
-                var continueCommand = x.GetRequiredService<RestartGameCommand>();
+                var continueCommand = x.GetRequiredService<ContinueGameAfterWinCommand>();
                 var exitToMenu = x.GetRequiredService<ExitToMenuCommand>();
                 return new WinPopupViewModel(continueCommand, exitToMenu);
             });
@@ -162,6 +165,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<BallBouncesController>();
 
             serviceCollection.AddTransient<InputNumberSelectableElement>();
+            serviceCollection.AddTransient<InputStringSelectableElement>();
             serviceCollection.AddSingleton<GameDataProvider>();
             serviceCollection.AddSingleton<ISoundSettingsProvider, JsonSoundSettingsProvider>();
 
@@ -174,6 +178,10 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<IGameRestartFacade>(x => x.GetRequiredService<GameRestartFacade>());
             serviceCollection.AddSingleton<GamePauseFacade>();
             serviceCollection.AddSingleton<GameRestartFacade>();
+
+            serviceCollection.AddSingleton<IDifficultyService<PlayerRacketDifficulty>, PlayerDifficultyService>();
+            serviceCollection.AddSingleton<IDifficultyService<EnemyRacketDifficulty>, EnemyDifficultyService>();
+            serviceCollection.AddSingleton<IPlayerDataProvider, JsonPlayerDataProvider>();
 
             AddPopup<WinPopup, WinPopupFactory>(serviceCollection);
             AddPopup<MenuPopup, MenuPopupFactory>(serviceCollection);

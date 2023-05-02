@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SharpDX;
 using SharpDX.DirectInput;
 using SharpDX.Windows;
@@ -29,11 +30,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
         public int MouseRelativePositionY => _mouseRelativePositionY;
         public int MouseRelativePositionZ => _mouseRelativePositionZ;
 
-        private static readonly Key[] KeyFuncCodes =
-        {
-            Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0,
-            Key.Back, Key.Escape
-        };
+        private readonly Key[] KeyFuncCodes;
         private readonly bool[] _keyFuncPreviousPressed;
         private readonly bool[] _keyFuncCurrentPressed;
         private readonly bool[] _keyFunc;
@@ -54,6 +51,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
             AcquireMouse();
             _mouseState = new MouseState();
 
+            KeyFuncCodes = Enum.GetValues(typeof(Key)).Cast<Key>().ToArray();
             _mousePressed = false;
             _keyFuncPreviousPressed = new bool[KeyFuncCodes.Length];
             _keyFuncCurrentPressed = new bool[KeyFuncCodes.Length];

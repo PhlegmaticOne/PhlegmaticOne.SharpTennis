@@ -45,6 +45,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         public override void OnDestroy()
         {
             _loses = InitLoses();
+            _ballBouncesController.Losed -= BallBouncesControllerOnLosed;
+            _ballBouncesController.Restarted -= BallBouncesControllerOnRestarted;
         }
 
         private Dictionary<RacketType, int> InitLoses() =>

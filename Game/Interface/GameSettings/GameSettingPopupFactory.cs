@@ -35,6 +35,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 
             var closeButton = CreateCloseButton();
             var startButton = CreateStartGameButton();
+            var header = CreateInfoText(new Vector2(0, -450), "Setup your game");
 
 
             var canvas = Canvas.Create("GameSettings", new List<GameObject>()
@@ -44,12 +45,13 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
                 .FluentAdd(_inputNumberSelectableElement.GameObject)
                 .FluentAdd(closeButton.GameObject)
                 .FluentAdd(startButton.GameObject)
-                .FluentAdd(CreateInfoText(new Vector2(0, -450), "Setup your game"))
+                .FluentAdd(header)
                 .FluentAdd(CreateInfoText(new Vector2(0, -360), "Choose difficulty:"))
                 .FluentAdd(CreateInfoText(new Vector2(0, -130), "Choose your color:"))
                 .FluentAdd(CreateInfoText(new Vector2(0, 100), "Enter rounds to play:"))
                 .ToArray());
-            popup.Setup(colorsPanel, difficultyPanel, _inputNumberSelectableElement, closeButton, startButton);
+            popup.Setup(colorsPanel, difficultyPanel, _inputNumberSelectableElement, closeButton, startButton,
+                header.GetComponent<TextComponent>());
             return canvas;
         }
 
@@ -61,7 +63,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
             var text = TextComponent.Create(Colors.White, message, TextFormatData.DefaultForSize(font));
             text.RectTransform.Anchor = Anchor.Center;
             text.RectTransform.Offset = offset;
-            text.RectTransform.Size = new SizeF(600, font);
+            text.RectTransform.Size = new SizeF(800, font);
             go.AddComponent(new ResizableComponent(text.RectTransform), false);
             go.AddComponent(text, false);
             return go;

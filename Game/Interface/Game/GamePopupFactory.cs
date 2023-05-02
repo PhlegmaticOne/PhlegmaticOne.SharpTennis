@@ -10,6 +10,7 @@ using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
 using System.Drawing;
 using PhlegmaticOne.SharpTennis.Game.Common.Extensions;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Player.Data;
 using SharpDX;
 using FontStyle = SharpDX.DirectWrite.FontStyle;
 
@@ -17,7 +18,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 {
     public class GamePopupFactory : PopupFactory<GamePopup>
     {
-        public GamePopupFactory(GamePopup popup) : base(popup) { }
+        private readonly IPlayerDataProvider _playerDataProvider;
+        public GamePopupFactory(GamePopup popup, IPlayerDataProvider playerDataProvider) : base(popup)
+        {
+            _playerDataProvider = playerDataProvider;
+        }
 
         public override Canvas SetupPopup(GamePopup popup)
         {
@@ -59,7 +64,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             var text = TextComponent.Create(Colors.White, string.Empty, data);
             text.RectTransform.Anchor = Anchor.Top;
             text.RectTransform.Size = new SizeF(1000, data.FontSize);
-            var gameStateSwitcher = new GameStateViewController();
+            var gameStateSwitcher = new GameStateViewController(_playerDataProvider);
             gameStateSwitcher.SetTextComponent(text);
             go.AddComponent(gameStateSwitcher, false);
             go.AddComponent(new ResizableComponent(text.RectTransform), false);
@@ -69,8 +74,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 
         private ScoreSystem SetupScoreViews(TextFormatData textFormatData)
         {
-            var scoreSystem = new ScoreSystem();
-            var playerText = CreateScoreText(textFormatData, Colors.White, Anchor.TopLeft, "You", true);
+            var scoreSystem = new ScoreSystem(_playerDataProvider);
+            var playerText = CreateScoreText(textFormatData, Colors.White, Anchor.TopLeft, 
+                _playerDataProvider.PlayerData.Name, true);
             var enemyText = CreateScoreText(textFormatData, Colors.White, Anchor.TopRight, "Enemy", false);
             scoreSystem.PlayerText = playerText;
             scoreSystem.EnemyText = enemyText;

@@ -7,7 +7,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
     public class ScoreText : RectComponent
     {
         private readonly TextComponent _textComponent;
-        private readonly string _preScoreText;
+        private string _preScoreText;
         private int _score;
 
         public ScoreText(TextComponent textComponent, string preScoreText, bool isPlayerScore)
@@ -22,6 +22,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
         }
 
         public bool IsPlayerScore { get; }
+
+        public void ChangePreScoreText(string preScoreText)
+        {
+            _preScoreText = preScoreText;
+            UpdateScoreText(_score);
+        }
 
         public void AddScore(int score)
         {

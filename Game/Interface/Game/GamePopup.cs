@@ -52,7 +52,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         }
 
 
-        private void BallBouncesControllerOnStateChanged(GameState obj, string parameter)
+        private void BallBouncesControllerOnStateChanged(GameState obj, RacketType parameter)
         {
             _gameStateViewController.Show(obj, parameter);
         }

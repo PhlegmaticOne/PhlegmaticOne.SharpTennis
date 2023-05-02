@@ -8,12 +8,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
 {
     public class KnockComponent : Component
     {
-        private const float Lerp = 300;
+        private float _lerp = 300;
         private readonly float _tablePartHeight;
 
         public KnockComponent(float tablePartHeight)
         {
             _tablePartHeight = tablePartHeight;
+        }
+
+        public void SetMaxLerp(float maxLerp)
+        {
+            _lerp = maxLerp;
         }
 
         public void KnockBall(BallModel ball, Vector3 direction, float force, float speedY = -20)
@@ -31,7 +36,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Kicks
             var maxZ = direction.Z * k;
             var maxX = Math.Abs(k) * direction.X;
             var line = new Vector3(maxX, 1, maxZ);
-            var lerp = MathUtil.Lerp(0f, 1f, force > Lerp ? 1 : force / Lerp);
+            var lerp = MathUtil.Lerp(0f, 1f, force > _lerp ? 1 : force / _lerp);
             return Vector3.Lerp(Vector3.Zero, line, lerp);
         }
     }
