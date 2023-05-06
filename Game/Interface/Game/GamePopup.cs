@@ -71,7 +71,10 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 
         public void SetupGameData(GameData gameData)
         {
-            var text = $"Game to score: {gameData.PlayToScore}\nDifficulty: {gameData.DifficultyType}";
+            var text = gameData.GameType == GameType.Score ?
+                $"Game to score: {gameData.PlayToScore}" : 
+                $"Game with time: {gameData.TimeInMinutes}";
+            text += $"\nDifficulty: {gameData.DifficultyType}";
             _infoText.Text = text;
 
             if (gameData.GameType == GameType.Time)

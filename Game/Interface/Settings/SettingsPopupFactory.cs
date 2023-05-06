@@ -19,18 +19,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
     {
         private readonly InputNumberSelectableElement _inputNumberSelectableElement;
         private readonly InputStringSelectableElement _inputNameSelectableElement;
+        private readonly InputStringSelectableElement _inputColorSelectableElement;
         private readonly ISoundSettingsProvider _soundSettingsProvider;
         private readonly IPlayerDataProvider _playerDataProvider;
 
         public SettingsPopupFactory(SettingsPopup popup,
             InputNumberSelectableElement inputNumberSelectableElement,
             InputStringSelectableElement inputNameSelectableElement,
+            InputStringSelectableElement inputColorSelectableElement,
             ISoundSettingsProvider soundSettingsProvider,
             IPlayerDataProvider playerDataProvider) :
             base(popup)
         {
             _inputNumberSelectableElement = inputNumberSelectableElement;
             _inputNameSelectableElement = inputNameSelectableElement;
+            _inputColorSelectableElement = inputColorSelectableElement;
             _soundSettingsProvider = soundSettingsProvider;
             _playerDataProvider = playerDataProvider;
         }
@@ -46,13 +49,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
             _inputNumberSelectableElement.MaxStringLength = 3;
             _inputNumberSelectableElement.Setup(@"assets\textures\ui\GameSettings\impossible.png", 80, 
                 _soundSettingsProvider.Settings.Volume.ToString(CultureInfo.InvariantCulture));
-            _inputNumberSelectableElement.RectTransform.Offset = new Vector2(-100, -130);
+            _inputNumberSelectableElement.RectTransform.Offset = new Vector2(-100, -180);
 
             _inputNameSelectableElement.DeselectOnMisClick = true;
             _inputNameSelectableElement.MaxStringLength = 12;
             _inputNameSelectableElement.Setup(@"assets\textures\ui\GameSettings\rounds.png", 80, 
                 _playerDataProvider.PlayerData.Name);
-            _inputNameSelectableElement.RectTransform.Offset = new Vector2(160, 50);
+            _inputNameSelectableElement.RectTransform.Offset = new Vector2(160, -30);
+
+            _inputColorSelectableElement.DeselectOnMisClick = true;
+            _inputColorSelectableElement.MaxStringLength = 6;
+            _inputColorSelectableElement.AllowNumbers = true;
+            _inputColorSelectableElement.Setup(@"assets\textures\ui\GameSettings\rounds.png", 80, 
+                _playerDataProvider.PlayerData.Color);
+            _inputColorSelectableElement.RectTransform.Offset = new Vector2(160, 120);
 
             var canvas = Canvas.Create("SettingsCanvas", new List<GameObject>()
                 .FluentAdd(background.GameObject)
@@ -61,13 +71,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
                 .FluentAddRange(checkBox.ImageObjects)
                 .FluentAdd(_inputNumberSelectableElement.GameObject)
                 .FluentAdd(_inputNameSelectableElement.GameObject)
+                .FluentAdd(_inputColorSelectableElement.GameObject)
                 .FluentAdd(saveButton.GameObject)
                 .FluentAdd(CreateInfoText(new Vector2(0, -320), "Settings"))
-                .FluentAdd(CreateInfoText(new Vector2(-440, -130), "Sound volume:"))
-                .FluentAdd(CreateInfoText(new Vector2(250, -130), "Mute sound:"))
-                .FluentAdd(CreateInfoText(new Vector2(-440, 50), "Enter your name:"))
+                .FluentAdd(CreateInfoText(new Vector2(-440, -180), "Sound volume:"))
+                .FluentAdd(CreateInfoText(new Vector2(250, -180), "Mute sound:"))
+                .FluentAdd(CreateInfoText(new Vector2(-440, -30), "Enter your name:"))
+                .FluentAdd(CreateInfoText(new Vector2(-440, 120), "Your color (HEX):"))
                 .ToArray());
-            popup.Setup(background, closeButton, saveButton, _inputNumberSelectableElement, checkBox, _inputNameSelectableElement);
+            popup.Setup(background, closeButton, saveButton, _inputNumberSelectableElement, checkBox, 
+                _inputNameSelectableElement, _inputColorSelectableElement);
             return canvas;
         }
 
@@ -75,7 +88,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
         {
             var go = new GameObject();
             var image = ImageComponent.Create(@"assets\textures\ui\GameSettings\start_game.png",
-                new Vector2(0, 270), Anchor.Center);
+                new Vector2(0, 280), Anchor.Center);
             var text = TextComponent.Create(Colors.White, "Save", textFormatData);
             var playButton = new ButtonComponent(image, text);
             go.AddComponent(image, false);
@@ -89,7 +102,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
             var checkBox = CheckBox.Create(
                 @"assets\textures\ui\Settings\check_back.png",
                 @"assets\textures\ui\Settings\check_mark.png");
-            checkBox.SetOffset(new Vector2(500, -130));
+            checkBox.SetOffset(new Vector2(500, -180));
             return checkBox;
         }
 
@@ -110,7 +123,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
         {
             var go = new GameObject();
             var image = ImageComponent.Create(@"assets\textures\ui\GameSettings\close.png",
-                new Vector2(590, -300), Anchor.Center);
+                new Vector2(610, -320), Anchor.Center);
             var text = TextComponent.Create(Colors.White, string.Empty, TextFormatData.DefaultForSize(50));
             var playButton = new ButtonComponent(image, text);
             go.AddComponent(image, false);

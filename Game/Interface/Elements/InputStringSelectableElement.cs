@@ -15,15 +15,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
         }
 
         public int MaxStringLength { get; set; } = 10;
+        public bool AllowNumbers { get; set; } = false;
 
         private void InputControllerOnPressed(Key key)
         {
-            if (IsSelected == false || Value.Length >= MaxStringLength)
-            {
-                return;
-            }
-
-            if (key == Key.Back)
+            if (IsSelected && key == Key.Back)
             {
                 if (Value.Length == 0)
                 {
@@ -32,6 +28,21 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements
                 var newValue = Value.Substring(0, Value.Length - 1);
                 UpdateValue(newValue);
                 return;
+            }
+
+            if (IsSelected == false || Value.Length >= MaxStringLength)
+            {
+                return;
+            }
+
+            if (AllowNumbers)
+            {
+                var number = KeysToNumberStringParser.Parse(key);
+                if (number != string.Empty)
+                {
+                    UpdateValue(Value + number);
+                    return;
+                }
             }
 
             if (key.ToString().Length > 1)

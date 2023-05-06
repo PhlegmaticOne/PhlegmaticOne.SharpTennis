@@ -25,7 +25,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Player.Data
             {
                 return new PlayerData
                 {
-                    Name = "player"
+                    Name = "player",
+                    Color = "000000"
                 };
             }
             var json = File.ReadAllText(FilePath);

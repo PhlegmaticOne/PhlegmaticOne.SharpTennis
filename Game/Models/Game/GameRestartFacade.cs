@@ -1,4 +1,7 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+﻿using System.Linq;
+using PhlegmaticOne.SharpTennis.Game.Engine2D.Popups;
+using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
+using PhlegmaticOne.SharpTennis.Game.Game.Interface.Game;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Ball;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Base;
@@ -11,17 +14,20 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
         private readonly BallBouncesController _ballBouncesController;
         private readonly GameDataProvider _gameDataProvider;
         private readonly WinController _winController;
+        private readonly PopupSystem _popupSystem;
         private BallModel _ballModel;
         private PlayerRacket _playerRacket;
         private EnemyRacket _enemyRacket;
 
         public GameRestartFacade(BallBouncesController ballBouncesController,
             GameDataProvider gameDataProvider,
-            WinController winController)
+            WinController winController,
+            PopupSystem popupSystem)
         {
             _ballBouncesController = ballBouncesController;
             _gameDataProvider = gameDataProvider;
             _winController = winController;
+            _popupSystem = popupSystem;
         }
 
         public void Setup(BallModel ballModel, PlayerRacket playerRacket, EnemyRacket enemyRacket)
@@ -51,7 +57,16 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
             _enemyRacket.SetupDifficulty(difficulty);
             _playerRacket.SetupDifficulty(difficulty);
             _winController.SetupGameData(gameData);
+            TrySetupGamePopup();
             ChangeRacketColors(gameData);
+        }
+
+        private void TrySetupGamePopup()
+        {
+            if (_popupSystem.Popups.First() is GamePopup first)
+            {
+                first.SetupGameData(_gameDataProvider.GameData);
+            }
         }
 
         private void ChangeRacketColors(GameData gameData)

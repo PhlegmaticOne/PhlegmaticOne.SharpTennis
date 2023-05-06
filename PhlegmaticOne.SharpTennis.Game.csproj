@@ -301,7 +301,6 @@
     <Compile Include="Game\Models\Table\TableTopPart.cs" />
     <Compile Include="Game\Models\Table\TennisTable.cs" />
     <Compile Include="Game\Models\Table\TennisTableFactory.cs" />
-    <Compile Include="Game\Models\Wall\WallModel.cs" />
     <Compile Include="Common\Base\Scenes\ISceneBuilder.cs" />
     <Compile Include="Game\Scenes\Base\SceneBuilderFactory.cs" />
     <Compile Include="Game\Scenes\GameSceneBuilder.cs" />
@@ -385,6 +384,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\tennis_racket_hand.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\textures\ui\GameSettings\custom.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\textures\ui\Loading\loading_icon.png">

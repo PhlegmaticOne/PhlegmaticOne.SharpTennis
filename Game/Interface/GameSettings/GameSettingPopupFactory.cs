@@ -127,7 +127,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
             var panel = SelectablePanel<ColorType>.Create(new List<SelectableComponent<ColorType>>
             {
                 CreateSelectable(@"assets\textures\ui\GameSettings\red.png", fontSize, ColorType.Red),
-                CreateSelectable(@"assets\textures\ui\GameSettings\black.png", fontSize, ColorType.Black)
+                CreateSelectable(@"assets\textures\ui\GameSettings\black.png", fontSize, ColorType.Black),
+                CreateSelectable(@"assets\textures\ui\GameSettings\custom.png", fontSize, ColorType.Custom)
             });
             panel.SetItemsOffset(350, new Vector2(0, -20), 20);
             return panel;

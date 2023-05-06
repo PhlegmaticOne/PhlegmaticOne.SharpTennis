@@ -80,6 +80,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Common.Input
             }
         }
 
+        public bool IsPressed(Key key)
+        {
+            return _keyboardState.IsPressed(key);
+        }
+
         public bool MouseRight
         {
             get

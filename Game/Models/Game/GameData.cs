@@ -9,6 +9,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
         public int PlayToScore { get; set; }
         public int TimeInMinutes { get; set; }
         public GameType GameType { get; set; }
+        public string CustomColor { get; set; }
     }
 
     public enum GameType

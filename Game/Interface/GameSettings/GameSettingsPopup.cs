@@ -7,6 +7,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Models.Game;
 using System.Linq;
+using PhlegmaticOne.SharpTennis.Game.Game.Models.Game.Player.Data;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 {
@@ -14,6 +15,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
     {
         private readonly GameDataProvider _gameDataProvider;
         private readonly GameSettingsViewModel _viewModel;
+        private readonly IPlayerDataProvider _playerDataProvider;
 
         private SelectablePanel<ColorType> _colorPanel;
         private SelectablePanel<DifficultyType> _difficultyPanel;
@@ -28,10 +30,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
 
 
         public GameSettingsPopup(GameDataProvider gameDataProvider, GameSettingsViewModel viewModel,
-            ISoundManager<GameSounds> soundManager) : base(soundManager)
+            ISoundManager<GameSounds> soundManager, IPlayerDataProvider playerDataProvider) : base(soundManager)
         {
             _gameDataProvider = gameDataProvider;
             _viewModel = viewModel;
+            _playerDataProvider = playerDataProvider;
         }
 
         public void SetupHeaderText(string text) => _header.Text = text;
@@ -131,7 +134,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.GameSettings
                 PlayToScore = score,
                 PlayerColor = _colorPanel.Value,
                 TimeInMinutes = timeInMinutes,
-                GameType = _scoreCheckBox.IsSelected ? GameType.Score : GameType.Time
+                GameType = _scoreCheckBox.IsSelected ? GameType.Score : GameType.Time,
+                CustomColor = _playerDataProvider.PlayerData.Color
             });
         }
 

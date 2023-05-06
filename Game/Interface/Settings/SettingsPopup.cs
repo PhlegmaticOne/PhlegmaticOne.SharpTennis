@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Models;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Models.Data;
@@ -23,6 +24,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
         private CheckBox _isMutedCheckBox;
         private ButtonComponent _backButton;
         private InputStringSelectableElement _nameElement;
+        private InputStringSelectableElement _inputColorSelectableElement;
 
         public SettingsPopup(SettingsPopupViewModel settingsPopupViewModel,
             ISoundSettingsProvider soundSettingsProvider,
@@ -36,13 +38,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
 
         public void Setup(ButtonComponent backButton, ButtonComponent closeButton, ButtonComponent saveButton,
             InputNumberSelectableElement volumeElement, CheckBox isMutedCheckBox,
-            InputStringSelectableElement nameElement)
+            InputStringSelectableElement nameElement, InputStringSelectableElement inputColorSelectableElement)
         {
             _closeButton = closeButton;
             _saveButton = saveButton;
             _volumeElement = volumeElement;
             _isMutedCheckBox = isMutedCheckBox;
             _backButton = backButton;
+            _inputColorSelectableElement = inputColorSelectableElement;
             _nameElement = nameElement;
 
             _backButton.OnClick.Add(DeselectsComponents);
@@ -59,11 +62,19 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
                 });
 
                 var newName = _nameElement.Value;
+                var newColor = _inputColorSelectableElement.Value;
                 if (string.IsNullOrWhiteSpace(newName))
                 {
                     return;
                 }
+
+                if (new Regex("^[0-9a-fA-F]{6}$").IsMatch(newColor) == false)
+                {
+                    return;
+                }
+
                 _playerDataProvider.PlayerData.Name = newName;
+                _playerDataProvider.PlayerData.Color = newColor;
                 _playerDataProvider.ForceSave();
             });
         }

@@ -7,6 +7,7 @@ using PhlegmaticOne.SharpTennis.Game.Common.Render;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.DirectX;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.DirectX;
 using SharpDX;
+using SharpDX.DirectInput;
 using SharpDX.DXGI;
 using SharpDX.Windows;
 using Screen = PhlegmaticOne.SharpTennis.Game.Common.Infrastructure.Screen;

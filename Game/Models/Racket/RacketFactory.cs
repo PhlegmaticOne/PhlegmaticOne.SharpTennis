@@ -21,6 +21,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
         public Vector3 TableNormal { get; set; }
         public float TableHeight { get; set; }
         public DifficultyType DifficultyType { get; set; }
+        public Color Custom { get; set; }
     }
 
     public class RacketFactory : IFactory<RacketBase, RacketFactoryData>
@@ -64,7 +65,14 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             var model = CreateRacket(racketFactoryData.IsPlayer, racket, racketFactoryData);
             model.SetupDifficulty(racketFactoryData.DifficultyType);
             model.Normal = racketFactoryData.Normal;
-            model.Color(racketFactoryData.ColorType);
+            if (racketFactoryData.ColorType == ColorType.Custom)
+            {
+                model.Color(racketFactoryData.Custom);
+            }
+            else
+            {
+                model.Color(racketFactoryData.ColorType);
+            }
             go.Transform.SetPosition(transform.Position);
             go.AddComponent(model);
             go.AddComponent(new KnockComponent(racketFactoryData.TableHeight));

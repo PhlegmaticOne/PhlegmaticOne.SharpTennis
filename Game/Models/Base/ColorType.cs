@@ -3,6 +3,7 @@
     public enum ColorType
     {
         Black,
-        Red
+        Red,
+        Custom
     }
 }
