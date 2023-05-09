@@ -221,7 +221,8 @@
     <Compile Include="Game\Commands\SaveSoundSettingsCommand.cs" />
     <Compile Include="Game\Commands\SpawnPopupCommand.cs" />
     <Compile Include="Game\Commands\StartGameCommand.cs" />
-    <Compile Include="Game\Controllers\BallBouncesController.cs" />
+    <Compile Include="Game\Controllers\TennisGameController.cs" />
+    <Compile Include="Game\Controllers\PlayerRacketColorChangedListener.cs" />
     <Compile Include="Game\Controllers\RacketMoveController.cs" />
     <Compile Include="Game\Controllers\WinController.cs" />
     <Compile Include="Game\Global\Base\ListenerInitializer.cs" />

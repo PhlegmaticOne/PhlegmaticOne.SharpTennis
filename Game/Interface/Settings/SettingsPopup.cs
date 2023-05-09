@@ -50,33 +50,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
 
             _backButton.OnClick.Add(DeselectsComponents);
             _closeButton.OnClick.Add(() => _settingsPopupViewModel.CloseCommand.Execute(null));
-            _saveButton.OnClick.Add(() =>
-            {
-                var newVolume = _volumeElement.NumberValue;
-                var changeVolume = !(newVolume == -1 || newVolume > 100);
-                var isMute = _isMutedCheckBox.IsSelected;
-                _settingsPopupViewModel.SaveCommand.Execute(new SoundSettings
-                {
-                    IsMuted = isMute,
-                    Volume = changeVolume ? newVolume : _soundSettingsProvider.Settings.Volume
-                });
-
-                var newName = _nameElement.Value;
-                var newColor = _inputColorSelectableElement.Value;
-                if (string.IsNullOrWhiteSpace(newName))
-                {
-                    return;
-                }
-
-                if (new Regex("^[0-9a-fA-F]{6}$").IsMatch(newColor) == false)
-                {
-                    return;
-                }
-
-                _playerDataProvider.PlayerData.Name = newName;
-                _playerDataProvider.PlayerData.Color = newColor;
-                _playerDataProvider.ForceSave();
-            });
+            _saveButton.OnClick.Add(SaveModel);
         }
 
         protected override void OnShow()
@@ -91,6 +65,34 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Settings
             _closeButton.OnClick.Clear();
             _saveButton.OnClick.Clear();
             base.OnClose();
+        }
+
+        private void SaveModel()
+        {
+            var newVolume = _volumeElement.NumberValue;
+            var changeVolume = !(newVolume == -1 || newVolume > 100);
+            var isMute = _isMutedCheckBox.IsSelected;
+            _settingsPopupViewModel.SaveCommand.Execute(new SoundSettings
+            {
+                IsMuted = isMute,
+                Volume = changeVolume ? newVolume : _soundSettingsProvider.Settings.Volume
+            });
+
+            var newName = _nameElement.Value;
+            var newColor = _inputColorSelectableElement.Value;
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                return;
+            }
+
+            if (new Regex("^[0-9a-fA-F]{6}$").IsMatch(newColor) == false)
+            {
+                return;
+            }
+
+            _playerDataProvider.PlayerData.Name = newName;
+            _playerDataProvider.PlayerData.Color = newColor;
+            _playerDataProvider.ForceSave();
         }
 
         private void DeselectsComponents()

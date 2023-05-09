@@ -16,7 +16,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         private float _remainTime;
         private bool _updateTimer;
 
-        private readonly BallBouncesController _ballBouncesController;
+        private readonly TennisGameController _ballBouncesController;
         private readonly CanvasManager _canvasManager;
         private ScoreSystem _scoreSystem;
         private GameStateViewController _gameStateViewController;
@@ -24,7 +24,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         private TextComponent _fpsText;
         private TextComponent _timeText;
 
-        public GamePopup(BallBouncesController ballBouncesController, CanvasManager canvasManager,
+        public GamePopup(TennisGameController ballBouncesController, CanvasManager canvasManager,
             ISoundManager<GameSounds> soundManager) : base(soundManager)
         {
             _ballBouncesController = ballBouncesController;

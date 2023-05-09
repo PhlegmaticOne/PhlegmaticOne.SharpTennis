@@ -162,7 +162,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<IFactory<SkyModel>, SkyFactory>();
             serviceCollection.AddSingleton<BallBounceProvider>();
             serviceCollection.AddSingleton<WinController>();
-            serviceCollection.AddSingleton<BallBouncesController>();
+            serviceCollection.AddSingleton<TennisGameController>();
 
             serviceCollection.AddTransient<InputNumberSelectableElement>();
             serviceCollection.AddTransient<InputStringSelectableElement>();
@@ -178,6 +178,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<IGameRestartFacade>(x => x.GetRequiredService<GameRestartFacade>());
             serviceCollection.AddSingleton<GamePauseFacade>();
             serviceCollection.AddSingleton<GameRestartFacade>();
+            serviceCollection.AddSingleton<PlayerRacketColorChangedListener>();
 
             serviceCollection.AddSingleton<IDifficultyService<PlayerRacketDifficulty>, PlayerDifficultyService>();
             serviceCollection.AddSingleton<IDifficultyService<EnemyRacketDifficulty>, EnemyDifficultyService>();

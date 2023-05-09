@@ -31,7 +31,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly InputController _inputController;
         private readonly SceneProvider _sceneProvider;
         private readonly WinController _winController;
-        private readonly BallBouncesController _ballBouncesController;
+        private readonly TennisGameController _ballBouncesController;
+        private readonly PlayerRacketColorChangedListener _playerRacketColorChangedListener;
         private readonly GameDataProvider _gameDataProvider;
         private readonly GameListenerInitializer _gameListenerInitializer;
         private readonly GamePauseFacade _gameDynamicFacade;
@@ -45,7 +46,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             InputController inputController,
             SceneProvider sceneProvider,
             WinController winController,
-            BallBouncesController ballBouncesController,
+            TennisGameController ballBouncesController,
+            PlayerRacketColorChangedListener playerRacketColorChangedListener,
             GameDataProvider gameDataProvider,
             GameListenerInitializer gameListenerInitializer,
             GamePauseFacade gameDynamicFacade,
@@ -60,6 +62,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _sceneProvider = sceneProvider;
             _winController = winController;
             _ballBouncesController = ballBouncesController;
+            _playerRacketColorChangedListener = playerRacketColorChangedListener;
             _gameDataProvider = gameDataProvider;
             _gameListenerInitializer = gameListenerInitializer;
             _gameDynamicFacade = gameDynamicFacade;
@@ -77,7 +80,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             return scene;
         }
 
-        public void BuildModels(Scene scene)
+        private void BuildModels(Scene scene)
         {
             var gameData = _gameDataProvider.GameData;
             var enemyColorType = gameData.PlayerColor == ColorType.Red ? ColorType.Black : ColorType.Red;
@@ -114,8 +117,17 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddPhysicSystems(scene);
             AddWinController(scene);
             AddGameListenerInitializer(scene);
+            AddPlayerRacketMoveController(scene);
 
             InitializeGameFacades(scene);
+        }
+
+        private void AddRacketColorChangedListener(Scene scene)
+        {
+            _playerRacketColorChangedListener.Setup(
+                scene.GetComponent<PlayerRacket>());
+            scene.AddGameObject(CreateGameObjectWithComponent("ColorChangedListener",
+                _playerRacketColorChangedListener));
         }
 
         private void InitializeGameFacades(Scene scene)
@@ -140,7 +152,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
         private void AddWinController(Scene scene)
         {
-            var ballController = scene.GetComponent<BallBouncesController>();
+            var ballController = scene.GetComponent<TennisGameController>();
             _winController.Setup(ballController);
             _winController.SetupGameData(_gameDataProvider.GameData);
             scene.AddGameObject(CreateGameObjectWithComponent("WinController", _winController));

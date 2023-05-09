@@ -1,4 +1,6 @@
 ﻿using PhlegmaticOne.SharpTennis.Game.Game.Models.Base;
+using SharpDX;
+using System.Globalization;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
 {
@@ -10,6 +12,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
         public int TimeInMinutes { get; set; }
         public GameType GameType { get; set; }
         public string CustomColor { get; set; }
+
+        public Color ParsedColor()
+        {
+            var color = int.Parse(CustomColor + "FF", NumberStyles.HexNumber);
+            return Color.FromAbgr(color);
+        }
     }
 
     public enum GameType

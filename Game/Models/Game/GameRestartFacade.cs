@@ -11,7 +11,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
 {
     public class GameRestartFacade : IGameRestartFacade
     {
-        private readonly BallBouncesController _ballBouncesController;
+        private readonly TennisGameController _ballBouncesController;
         private readonly GameDataProvider _gameDataProvider;
         private readonly WinController _winController;
         private readonly PopupSystem _popupSystem;
@@ -19,7 +19,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
         private PlayerRacket _playerRacket;
         private EnemyRacket _enemyRacket;
 
-        public GameRestartFacade(BallBouncesController ballBouncesController,
+        public GameRestartFacade(TennisGameController ballBouncesController,
             GameDataProvider gameDataProvider,
             WinController winController,
             PopupSystem popupSystem)
@@ -71,6 +71,12 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Game
 
         private void ChangeRacketColors(GameData gameData)
         {
+            if(gameData.PlayerColor == ColorType.Custom)
+            {
+                _playerRacket.Color(gameData.ParsedColor());
+                _enemyRacket.Color(ColorType.Black);
+                return;
+            }
             var playerColor = gameData.PlayerColor == ColorType.Red ? ColorType.Red : ColorType.Black;
             var enemyColor = gameData.PlayerColor == ColorType.Red ? ColorType.Black : ColorType.Red;
             _playerRacket.Color(playerColor);

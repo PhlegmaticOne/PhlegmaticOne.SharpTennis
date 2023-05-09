@@ -22,7 +22,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly IGamePauseFacade _gamePauseFacade;
 
         private Dictionary<RacketType, int> _loses;
-        private BallBouncesController _ballBouncesController;
+        private TennisGameController _ballBouncesController;
 
         public WinController(PopupSystem popupSystem, ISoundManager<GameSounds> soundManager,
             IGamePauseFacade gamePauseFacade)
@@ -33,7 +33,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             _loses = InitLoses();
         }
 
-        public void Setup(BallBouncesController ballBouncesController)
+        public void Setup(TennisGameController ballBouncesController)
         {
             _ballBouncesController = ballBouncesController;
             _ballBouncesController.Losed += BallBouncesControllerOnLosed;

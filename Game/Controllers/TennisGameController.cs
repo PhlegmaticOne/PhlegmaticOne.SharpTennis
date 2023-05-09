@@ -8,7 +8,7 @@ using PhlegmaticOne.SharpTennis.Game.Game.Models.Racket;
 
 namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
-    public class BallBouncesController : BehaviorObject
+    public class TennisGameController : BehaviorObject
     {
         private readonly BallBounceProvider _ballBounceProvider;
         private PlayerRacket _playerRacket;
@@ -22,7 +22,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         public event Action<GameState, RacketType> StateChanged;
         public event Action Restarted;
 
-        public BallBouncesController(BallBounceProvider ballBounceProvider)
+        public TennisGameController(BallBounceProvider ballBounceProvider)
         {
             _ballBounceProvider = ballBounceProvider;
             _ballBounceProvider.BallBounced += BallBounceProviderOnBallBounced;
