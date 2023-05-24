@@ -3,6 +3,7 @@ using PhlegmaticOne.SharpTennis.Game.Common.Infrastructure;
 using PhlegmaticOne.SharpTennis.Game.Common.Sound.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine2D;
 using PhlegmaticOne.SharpTennis.Game.Engine2D.Components;
+using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
 using PhlegmaticOne.SharpTennis.Game.Game.Controllers;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Base;
 using PhlegmaticOne.SharpTennis.Game.Game.Interface.Elements;
@@ -37,6 +38,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
 
         private void TimeOnUpdated()
         {
+            UpdateRigid();
             _fpsText.Text = "FPS: " + Time.Fps;
 
             if (_updateTimer)
@@ -95,7 +97,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
             base.OnClose();
         }
 
-
         private void BallBouncesControllerOnStateChanged(GameState obj, RacketType parameter)
         {
             _gameStateViewController.Show(obj, parameter);
@@ -105,6 +106,11 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Interface.Game
         {
             var addScore = obj == RacketType.Player ? RacketType.Enemy : RacketType.Player;
             _scoreSystem.AddScore(1, addScore);
+        }
+
+        private void UpdateRigid()
+        {
+            RigidBody3D.GravityMultiplier = -Time.Fps;
         }
     }
 }

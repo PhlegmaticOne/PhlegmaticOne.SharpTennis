@@ -80,7 +80,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty
                 case DifficultyType.Easy: return 25;
                 case DifficultyType.Medium: return 28;
                 case DifficultyType.Hard: return 31;
-                case DifficultyType.Impossible: return 100;
+                case DifficultyType.Impossible: return 200;
                 default: return 23;
             }
         }
@@ -104,8 +104,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket.Difficulty
                 case DifficultyType.Easy: return _random.Next(20, 25);
                 case DifficultyType.Medium: return _random.Next(15, 20);
                 case DifficultyType.Hard: return _random.Next(10, 20);
-                case DifficultyType.Impossible: return _random.Next(10, 25);
-                default: return _random.Next(10, 25);
+                case DifficultyType.Impossible: return _random.Next(20, 30);
+                default: return _random.Next(25, 25);
             }
         }
 

@@ -47,9 +47,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         {
             _isLose = false;
 
-            if (ball.BallGameState == BallGameState.None)
+            if (bouncedFrom == null || ball.BallGameState == BallGameState.None)
             {
-                if (bouncedFrom.GameObject.HasComponent<FloorModel>())
+                if (bouncedFrom == null || bouncedFrom.GameObject.HasComponent<FloorModel>())
                 {
                     OnStateChanged(GameState.DidntKnock, RacketType.Player);
                     OnLose(RacketType.Player);

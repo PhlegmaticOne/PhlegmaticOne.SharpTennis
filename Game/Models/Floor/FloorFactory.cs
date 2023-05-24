@@ -44,7 +44,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Floor
 
             var width = halfWidth * 2;
             var height = halfHeight * 2;
-            var depth = 15;
+            var depth = 30;
 
             var a = position + new Vector3(halfWidth, 0, halfHeight);
             var b = a - new Vector3(width, depth, height);

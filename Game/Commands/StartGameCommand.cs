@@ -43,7 +43,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Commands
         {
             var result = await Task.WhenAll(Task.Run(async () =>
             {
-                await Task.Delay(2000);
+                await Task.Delay(1000);
                 var sceneBuilder = _sceneBuilder.CreateSceneBuilder(_sceneBuilder.Scenes.Game);
                 return sceneBuilder.BuildScene();
             }));

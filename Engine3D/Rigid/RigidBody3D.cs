@@ -7,7 +7,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid
     public class RigidBody3D : BehaviorObject
     {
         public static float GlobalAcceleration = -1f;
-        public static float GravityMultiplier = -150f;
+        public static float GravityMultiplier = -140f;
         public static float G => GlobalAcceleration * GravityMultiplier;
         public Vector3 Speed { get; set; }
         public Vector3 Acceleration { get; set; }

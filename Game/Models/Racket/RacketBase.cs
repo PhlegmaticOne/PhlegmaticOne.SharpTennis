@@ -53,10 +53,6 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Racket
             ColorType = colorType;
             var color = colorType == ColorType.Red ? SharpDX.Color.Red : SharpDX.Color.Black;
             Color(color);
-            //var vector = new Vector3(color.R, color.G, color.B) / 255;
-            //var properties = _coloredComponent.MeshObjectData.Material.MaterialProperties;
-            //properties.SetColor(vector);
-            //_coloredComponent.MeshObjectData.Material.MaterialProperties = properties;
         }
 
         public void Color(Color color)

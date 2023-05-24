@@ -2,15 +2,16 @@
 {
     public class SceneProvider
     {
-        public Scene Scene { get; private set; }
+        private Scene _scene;
+        public Scene Scene => _scene;
 
         public void ChangeScene(Scene scene)
         {
-            Scene?.OnDestroy();
-            Scene = scene;
-            Scene.Start();
+            _scene?.OnDestroy();
+            _scene = scene;
+            _scene.Start();
         }
 
-        public void UpdateScene() => Scene?.UpdateBehavior();
+        public void UpdateScene() => _scene?.UpdateBehavior();
     }
 }

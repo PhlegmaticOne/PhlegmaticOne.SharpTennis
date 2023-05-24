@@ -33,6 +33,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private readonly WinController _winController;
         private readonly TennisGameController _ballBouncesController;
         private readonly PlayerRacketColorChangedListener _playerRacketColorChangedListener;
+        private readonly RacketMoveController _racketMoveController;
         private readonly GameDataProvider _gameDataProvider;
         private readonly GameListenerInitializer _gameListenerInitializer;
         private readonly GamePauseFacade _gameDynamicFacade;
@@ -48,6 +49,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             WinController winController,
             TennisGameController ballBouncesController,
             PlayerRacketColorChangedListener playerRacketColorChangedListener,
+            RacketMoveController racketMoveController,
             GameDataProvider gameDataProvider,
             GameListenerInitializer gameListenerInitializer,
             GamePauseFacade gameDynamicFacade,
@@ -63,6 +65,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             _winController = winController;
             _ballBouncesController = ballBouncesController;
             _playerRacketColorChangedListener = playerRacketColorChangedListener;
+            _racketMoveController = racketMoveController;
             _gameDataProvider = gameDataProvider;
             _gameListenerInitializer = gameListenerInitializer;
             _gameDynamicFacade = gameDynamicFacade;
@@ -118,7 +121,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
             AddWinController(scene);
             AddGameListenerInitializer(scene);
             AddPlayerRacketMoveController(scene);
-
+            AddRacketColorChangedListener(scene);
             InitializeGameFacades(scene);
         }
 
@@ -181,9 +184,9 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
         private void AddPlayerRacketMoveController(Scene scene)
         {
             var playerRacket = scene.GetComponent<PlayerRacket>();
-            scene.AddGameObject(CreateGameObjectWithComponent("PlayerRacketController",
-                new RacketMoveController(playerRacket, scene.Camera, _inputController,
-                    scene.GetComponent<BallModel>())));
+            var ball = scene.GetComponent<BallModel>();
+            _racketMoveController.Setup(playerRacket, scene.Camera, ball);
+            scene.AddGameObject(CreateGameObjectWithComponent("PlayerRacketController", _racketMoveController));
         }
 
 
@@ -207,7 +210,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Scenes
 
             var line = 2;
 
-            for (var i = -line; i <= line; i++)
+            for (var i = -line - 2; i <= line; i++)
             {
                 foreach (var position in positions)
                 {

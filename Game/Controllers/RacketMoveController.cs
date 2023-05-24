@@ -10,6 +10,8 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
 {
     public class RacketMoveController : BehaviorObject
     {
+        #region Reg
+
         private readonly float _minX = -30;
         private readonly float _maxX = -94;
         private readonly float _minZ = -40;
@@ -17,28 +19,33 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
         private readonly float _minY = 6;
         private readonly float _maxY = 12;
 
+        #endregion
 
-        private readonly RacketBase _racket;
-        private readonly Camera _camera;
         private readonly InputController _inputController;
-        private readonly BallModel _ball;
+        private RacketBase _racket;
+        private Camera _camera;
+        private BallModel _ball;
 
 
-        public RacketMoveController(RacketBase racket, Camera camera, InputController inputController,
-            BallModel ball)
+        public RacketMoveController(InputController inputController)
+        {
+            _inputController = inputController;
+        }
+
+        public void Setup(RacketBase racket, Camera camera, BallModel ball)
         {
             _racket = racket;
             _camera = camera;
-            _inputController = inputController;
             _ball = ball;
+            ChangeEnabled(true);
         }
 
-        public float MousePositionDivider { get; set; } = 20f;
+        public float MousePositionDivider { get; set; } = 30f;
 
 
         protected override void Update()
         {
-            if (_inputController.MouseUpdated == false)
+            if (_inputController.MouseUpdated == false || Enabled == false)
             {
                 return;
             }
@@ -46,6 +53,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Controllers
             var deltaMove = GetMouseDeltaMove();
             deltaMove.Y = MoveDownOrUp();
             _racket.Transform.Move(deltaMove);
+            deltaMove.Y = 0;
             _racket.UpdateSpeed(deltaMove / Time.DeltaT);
 
             if (TryMoveBackRacket(deltaMove))

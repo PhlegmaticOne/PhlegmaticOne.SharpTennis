@@ -179,6 +179,7 @@ namespace PhlegmaticOne.SharpTennis.Game
             serviceCollection.AddSingleton<GamePauseFacade>();
             serviceCollection.AddSingleton<GameRestartFacade>();
             serviceCollection.AddSingleton<PlayerRacketColorChangedListener>();
+            serviceCollection.AddSingleton<RacketMoveController>();
 
             serviceCollection.AddSingleton<IDifficultyService<PlayerRacketDifficulty>, PlayerDifficultyService>();
             serviceCollection.AddSingleton<IDifficultyService<EnemyRacketDifficulty>, EnemyDifficultyService>();

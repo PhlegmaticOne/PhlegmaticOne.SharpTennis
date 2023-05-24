@@ -1,4 +1,5 @@
-﻿using PhlegmaticOne.SharpTennis.Game.Common.Base;
+﻿using System;
+using PhlegmaticOne.SharpTennis.Game.Common.Base;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Colliders;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Mesh;
 using PhlegmaticOne.SharpTennis.Game.Engine3D.Rigid;
@@ -25,6 +26,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
     {
         private Vector3 _lastSpeed;
         private Vector3 _startPosition;
+        private Vector3 _lastPosition;
 
         private readonly MeshComponent _mesh;
         private readonly BallBounceProvider _ballBounceProvider;
@@ -55,6 +57,7 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
         public void Reset()
         {
+            ChangeActive(true);
             SetSpeed(Vector3.Zero);
             Transform.SetPosition(_startPosition);
         }
@@ -92,6 +95,15 @@ namespace PhlegmaticOne.SharpTennis.Game.Game.Models.Ball
 
         public void SetSpeed(Vector3 speed) => RigidBody.Speed = speed;
 
-        private void TransformOnMoved(Vector3 obj) => _mesh.Transform.Move(obj);
+        private void TransformOnMoved(Vector3 obj)
+        {
+            if (float.IsNaN(obj.X))
+            {
+                Bounce(null, Vector3.Up);
+                return;
+            }
+
+            _mesh.Transform.Move(obj);
+        }
     }
 }
